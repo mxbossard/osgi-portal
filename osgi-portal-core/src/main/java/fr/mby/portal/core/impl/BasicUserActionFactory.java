@@ -16,28 +16,22 @@
 package fr.mby.portal.core.impl;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import fr.mby.portal.IUserAction;
-import fr.mby.portal.core.IPortalManager;
-import fr.mby.portal.core.IUserActionDispatcher;
 import fr.mby.portal.core.IUserActionFactory;
+import fr.mby.portal.impl.BasicUserAction;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicPortalManager implements IPortalManager {
+public class BasicUserActionFactory implements IUserActionFactory {
 
-	private IUserActionFactory userActionFactory;
-	
-	private IUserActionDispatcher userActionDispatcher;
-	
 	@Override
-	public void dispatchUserAction(final HttpServletRequest request,
-			final HttpServletResponse response) {
-		final IUserAction userAction = this.userActionFactory.build(request);
-		this.userActionDispatcher.dispatch(userAction);
+	public IUserAction build(final HttpServletRequest request) {
+		final BasicUserAction userAction = new BasicUserAction();
+		
+		return userAction;
 	}
 
 }

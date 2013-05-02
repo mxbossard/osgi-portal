@@ -13,16 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.core;
+package fr.mby.portal.message.impl;
 
-import fr.mby.portal.message.IReply;
+import fr.mby.portal.IEvent;
+import fr.mby.portal.message.IEventMessage;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public interface IReplyFactory {
+public class BasicEventMessage extends BasicMessage implements IEventMessage {
 
-	IReply build(String messageType);
-	
+	/* (non-Javadoc)
+	 * @see fr.mby.portal.message.IEventMessage#getEvent()
+	 */
+	@Override
+	public IEvent getEvent() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

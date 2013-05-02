@@ -16,10 +16,11 @@
 package fr.mby.portal.core.impl;
 
 import fr.mby.portal.IUserAction;
-import fr.mby.portal.core.IMessageFactory;
-import fr.mby.portal.core.IReplyFactory;
+import fr.mby.portal.message.IMessageFactory;
+import fr.mby.portal.message.IReplyFactory;
 import fr.mby.portal.core.IUserActionDispatcher;
 import fr.mby.portal.message.IMessage;
+import fr.mby.portal.message.IMessage.MessageType;
 import fr.mby.portal.message.IMessageDispatcher;
 import fr.mby.portal.message.IReply;
 
@@ -40,7 +41,7 @@ public class BasicUserActionDispatcher implements IUserActionDispatcher {
 	 */
 	@Override
 	public void dispatch(final IUserAction userAction) {
-		final String messageType = null;
+		final MessageType messageType = null;
 		final IMessage message = this.messageFactory.build(messageType);
 		final IReply reply = this.replyFactory.build(messageType);
 		

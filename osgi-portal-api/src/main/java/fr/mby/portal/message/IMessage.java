@@ -26,6 +26,12 @@ import fr.mby.portal.app.IAppSession;
  */
 public interface IMessage {
 
+	public enum MessageType {
+		ACTION,
+		RENDER,
+		EVENT;
+	}
+	
 	/**
 	 * Returns the user action origin of this application action.
 	 * 

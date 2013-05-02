@@ -13,16 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.core;
+package fr.mby.portal.message.impl;
 
-import fr.mby.portal.message.IMessage;
+import fr.mby.portal.message.IActionMessage;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public interface IMessageFactory {
+public class BasicActionMessage extends BasicMessage implements IActionMessage {
 
-	IMessage build(String messageType);
-	
 }
