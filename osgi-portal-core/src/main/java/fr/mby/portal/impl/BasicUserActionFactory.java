@@ -13,13 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.core.impl;
+package fr.mby.portal.impl;
+
+import java.security.Principal;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.util.Assert;
+
+import fr.mby.portal.IPortalContext;
 import fr.mby.portal.IUserAction;
-import fr.mby.portal.core.IUserActionFactory;
-import fr.mby.portal.impl.BasicUserAction;
+import fr.mby.portal.IUserActionFactory;
 
 /**
  * @author Maxime Bossard - 2013
@@ -29,7 +34,17 @@ public class BasicUserActionFactory implements IUserActionFactory {
 
 	@Override
 	public IUserAction build(final HttpServletRequest request) {
-		final BasicUserAction userAction = new BasicUserAction();
+		Assert.notNull(request, "No HTTP request provided !");
+		
+		IPortalContext portalContext = null;
+		Principal userPrincipal = null;
+		Map<String, Iterable<String>> properties = null;
+		@SuppressWarnings("unchecked")
+		Map<String, String[]> parameters = request.getParameterMap();
+		Map<String, Object> attributes = null;
+		
+		final BasicUserAction userAction = new BasicUserAction(
+				portalContext, userPrincipal, properties, parameters, attributes);
 		
 		return userAction;
 	}

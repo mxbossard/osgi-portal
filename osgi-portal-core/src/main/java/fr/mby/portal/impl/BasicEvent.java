@@ -23,13 +23,24 @@ import fr.mby.portal.IEvent;
  */
 public class BasicEvent implements IEvent {
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IEvent#getName()
+	private String name;
+
+	/**
+	 * Getter of name.
+	 * @return the name
 	 */
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return name;
 	}
 
+	/**
+	 * Setter of name.
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	
 }

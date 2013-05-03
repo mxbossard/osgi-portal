@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.core;
+package fr.mby.portal;
 
 import javax.servlet.http.HttpServletRequest;
 

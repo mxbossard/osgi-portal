@@ -16,8 +16,11 @@
 package fr.mby.portal.impl;
 
 import java.security.Principal;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.Map;
+
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import fr.mby.portal.IPortalContext;
 import fr.mby.portal.IUserAction;
@@ -28,124 +31,128 @@ import fr.mby.portal.IUserAction;
  */
 public class BasicUserAction implements IUserAction {
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getPortalContext()
-	 */
+	private IPortalContext portalContext;
+	
+	private Principal userPrincipal;
+	
+	private Map<String, Iterable<String>> properties;
+	
+	private Map<String, String[]> parameters;
+	
+	private Map<String, Object> attributes;
+	
+	protected BasicUserAction(final IPortalContext portalContext, final Principal userPrincipal,
+			final Map<String, Iterable<String>> properties, final Map<String, String[]> parameters, 
+			final Map<String, Object> attributes) {
+		Assert.notNull(portalContext, "No PortalContext provided !");
+		Assert.notNull(userPrincipal, "No User Principal provided !");
+		Assert.notNull(properties, "No properties provided !");
+		Assert.notNull(parameters, "No parameters provided !");
+		Assert.notNull(attributes, "No attributes provided !");
+		
+		this.portalContext = portalContext;
+		this.userPrincipal = userPrincipal;
+		this.properties = properties;
+		this.parameters = parameters;
+		this.attributes = attributes;
+	}
+
 	@Override
 	public IPortalContext getPortalContext() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.portalContext;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getUserPrincipal()
-	 */
 	@Override
 	public Principal getUserPrincipal() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.userPrincipal;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getProperty(java.lang.String)
-	 */
 	@Override
-	public String getProperty(String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+	public String getProperty(final String name) throws IllegalArgumentException {
+		if (!StringUtils.hasText(name)) {
+			throw new IllegalArgumentException("No property name provided !");
+		}
+		
+		return this.getProperties(name).iterator().next();
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getProperties(java.lang.String)
-	 */
 	@Override
-	public Enumeration<String> getProperties(String name)
+	public Iterable<String> getProperties(String name)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!StringUtils.hasText(name)) {
+			throw new IllegalArgumentException("No property name provided !");
+		}
+		return this.properties.get(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getPropertyNames()
-	 */
 	@Override
-	public Enumeration<String> getPropertyNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<String> getPropertyNames() {
+		return this.properties.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getParameter(java.lang.String)
-	 */
 	@Override
 	public String getParameter(String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!StringUtils.hasText(name)) {
+			throw new IllegalArgumentException("No property name provided !");
+		}
+		
+		String value = null;
+		final String[] values = this.getParameterValues(name);
+		if (values != null && values.length > 0) {
+			value = values[0];
+		}
+		
+		return value;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getParameterValues(java.lang.String)
-	 */
 	@Override
 	public String[] getParameterValues(String name)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!StringUtils.hasText(name)) {
+			throw new IllegalArgumentException("No property name provided !");
+		}
+		
+		final String[] values = this.parameters.get(name);
+		return values;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getParameterNames()
-	 */
 	@Override
-	public Enumeration<String> getParameterNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<String> getParameterNames() {
+		return this.parameters.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getParameterMap()
-	 */
 	@Override
 	public Map<String, String[]> getParameterMap() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.unmodifiableMap(this.parameters);
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getAttribute(java.lang.String)
-	 */
 	@Override
 	public Object getAttribute(String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!StringUtils.hasText(name)) {
+			throw new IllegalArgumentException("No property name provided !");
+		}
+
+		return this.attributes.get(name);
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#getAttributeNames()
-	 */
 	@Override
-	public Enumeration<String> getAttributeNames() {
-		// TODO Auto-generated method stub
-		return null;
+	public Iterable<String> getAttributeNames() {
+		return this.attributes.keySet();
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#setAttribute(java.lang.String, java.lang.Object)
-	 */
 	@Override
 	public void setAttribute(String name, Object value)
 			throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-
+		this.attributes.put(name, value);
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.IUserAction#removeAttribute(java.lang.String)
-	 */
 	@Override
 	public Object removeAttribute(String name) throws IllegalArgumentException {
-		// TODO Auto-generated method stub
-		return null;
+		if (!StringUtils.hasText(name)) {
+			throw new IllegalArgumentException("No property name provided !");
+		}
+
+		return this.removeAttribute(name);
 	}
 
 }

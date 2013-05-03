@@ -12,6 +12,11 @@
 		<module>osgi-portal-core</module>
 	</modules>
 
+	<properties>
+		<spring.version>3.2.2.RELEASE</spring.version>
+		<log4j.version>2.0-beta4</log4j.version>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>

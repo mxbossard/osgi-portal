@@ -61,14 +61,14 @@ public interface IUserAction {
 	 * @return an Enumeration containing the values of the requested property. If the request does not have any properties of that name return an empty Enumeration.
 	 * @throws IllegalArgumentException - if name is null.
 	 */
-	Enumeration<java.lang.String> getProperties(String name) throws IllegalArgumentException;
+	Iterable<java.lang.String> getProperties(String name) throws IllegalArgumentException;
 	
 	/**
 	 * Returns a Enumeration of all the property names this request contains. If the request has no properties, this method returns an empty Enumeration.
 	 * 
 	 * @return an Enumeration of all the property names sent with this request; if the request has no properties, an empty Enumeration.
 	 */
-	Enumeration<java.lang.String> getPropertyNames();
+	Iterable<java.lang.String> getPropertyNames();
 
 	/**
 	 * Returns the value of a request parameter as a String, or null if the parameter does not exist. Request parameters are extra information sent with the request. The returned parameter are "x-www-form-urlencoded" decoded.
@@ -98,7 +98,7 @@ public interface IUserAction {
 	 * 
 	 * @return an Enumeration of String objects, each String containing the name of a request parameter; or an empty Enumeration if the request has no parameters.
 	 */
-	Enumeration<java.lang.String> getParameterNames();
+	Iterable<java.lang.String> getParameterNames();
 	
 	/**
 	 * Returns a Map of the parameters of this request. Request parameters are extra information sent with the request. The returned parameters are "x-www-form-urlencoded" decoded.
@@ -125,7 +125,7 @@ public interface IUserAction {
 	 * 
 	 * @return an Enumeration of strings containing the names of the request attributes, or an empty Enumeration if the request has no attributes available to it.
 	 */
-	Enumeration<java.lang.String> getAttributeNames();
+	Iterable<java.lang.String> getAttributeNames();
 
 	/**
 	 * Stores an attribute in this request.
