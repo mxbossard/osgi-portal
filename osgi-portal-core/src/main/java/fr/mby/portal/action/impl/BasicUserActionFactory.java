@@ -24,6 +24,8 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.action.IUserAction;
@@ -37,14 +39,18 @@ import fr.mby.portal.security.IPrincipalResolver;
  * @author Maxime Bossard - 2013
  * 
  */
+@Service
 public class BasicUserActionFactory implements IUserActionFactory, InitializingBean {
 
+	@Autowired
 	/** Resolver for portal context. */
 	private IPortalContextResolver<HttpServletRequest> portalContextResolver;
 
+	@Autowired
 	/** Resolver for principal. */
 	private IPrincipalResolver<HttpServletRequest> principalResolver;
 
+	@Autowired
 	/** Resolver for properties. */
 	private IRequestPropertiesResolver requestPropertiesResolver;
 
@@ -53,7 +59,7 @@ public class BasicUserActionFactory implements IUserActionFactory, InitializingB
 	public IUserAction build(final HttpServletRequest request) {
 		Assert.notNull(request, "No HTTP request provided !");
 
-		IPortalContext portalContext = null;
+		final IPortalContext portalContext = this.portalContextResolver.resolve(request);
 		final Principal userPrincipal = this.principalResolver.resolve(request);
 		final Map<String, Iterable<String>> properties = this.requestPropertiesResolver.resolve(request);
 		final Map<String, String[]> parameters = request.getParameterMap();
@@ -82,6 +88,7 @@ public class BasicUserActionFactory implements IUserActionFactory, InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.portalContextResolver, "No IPortalContextResolver configured !");
 		Assert.notNull(this.principalResolver, "No IPrincipalResolver configured !");
 		Assert.notNull(this.requestPropertiesResolver, "No IRequestPropertiesResolver configured !");
 	}

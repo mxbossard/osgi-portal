@@ -14,16 +14,33 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.action;
+package fr.mby.portal.context.impl;
 
 import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
+
+import fr.mby.portal.context.IPortalContext;
+import fr.mby.portal.context.IPortalContextResolver;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IUserActionFactory {
+@Service
+public class UniquePortalContextResolver implements IPortalContextResolver<HttpServletRequest>, InitializingBean {
 
-	IUserAction build(HttpServletRequest request);
+	private IPortalContext uniquePortalContext;
+
+	@Override
+	public IPortalContext resolve(final HttpServletRequest object) {
+		return this.uniquePortalContext;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.uniquePortalContext = new BasicPortalContext();
+	}
 
 }
