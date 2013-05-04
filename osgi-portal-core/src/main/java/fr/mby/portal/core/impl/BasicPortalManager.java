@@ -18,8 +18,8 @@ package fr.mby.portal.core.impl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import fr.mby.portal.IUserAction;
-import fr.mby.portal.IUserActionFactory;
+import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.action.IUserActionFactory;
 import fr.mby.portal.core.IPortalManager;
 import fr.mby.portal.core.IUserActionDispatcher;
 

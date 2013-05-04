@@ -15,7 +15,7 @@
  */
 package fr.mby.portal.message;
 
-import fr.mby.portal.IEvent;
+import fr.mby.portal.event.IEvent;
 
 /**
  * @author Maxime Bossard - 2013

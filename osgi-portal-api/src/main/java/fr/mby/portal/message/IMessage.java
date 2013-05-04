@@ -15,7 +15,7 @@
  */
 package fr.mby.portal.message;
 
-import fr.mby.portal.IUserAction;
+import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.app.IAppContext;
 import fr.mby.portal.app.IAppPreferences;
 import fr.mby.portal.app.IAppSession;

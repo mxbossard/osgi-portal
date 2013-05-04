@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal;
+package fr.mby.portal.action;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fr.mby.portal.IUserAction;
+import fr.mby.portal.action.IUserAction;
 
 /**
  * @author Maxime Bossard - 2013

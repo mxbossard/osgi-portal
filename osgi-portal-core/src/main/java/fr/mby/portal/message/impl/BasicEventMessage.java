@@ -15,7 +15,7 @@
  */
 package fr.mby.portal.message.impl;
 
-import fr.mby.portal.IEvent;
+import fr.mby.portal.event.IEvent;
 import fr.mby.portal.message.IEventMessage;
 
 /**

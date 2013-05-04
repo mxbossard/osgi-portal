@@ -15,9 +15,9 @@
  */
 package fr.mby.portal.core.impl;
 
-import fr.mby.portal.IUserAction;
 import fr.mby.portal.message.IMessageFactory;
 import fr.mby.portal.message.IReplyFactory;
+import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.core.IUserActionDispatcher;
 import fr.mby.portal.message.IMessage;
 import fr.mby.portal.message.IMessage.MessageType;

@@ -13,34 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.impl;
+package fr.mby.portal.context.impl;
 
-import fr.mby.portal.IEvent;
+import fr.mby.portal.context.IPortalContext;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicEvent implements IEvent {
+public class BasicPortalContext implements IPortalContext {
 
-	private String name;
-
-	/**
-	 * Getter of name.
-	 * @return the name
-	 */
-	@Override
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Setter of name.
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	
 }

@@ -13,20 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.core;
 
-import fr.mby.portal.action.IUserAction;
+package fr.mby.portal.properties;
 
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
- * The IUserActionDispatcher define an object which receive actions 
- * from the client and sends them through the portal environment.
- * 
  * @author Maxime Bossard - 2013
- *
+ * 
  */
-public interface IUserActionDispatcher {
+public interface IRequestPropertiesResolver {
 
-	void dispatch(IUserAction userAction);
-	
+	Map<String, Iterable<String>> resolve(HttpServletRequest request);
+
 }

@@ -13,20 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.core;
-
-import fr.mby.portal.action.IUserAction;
-
+package fr.mby.portal.event;
 
 /**
- * The IUserActionDispatcher define an object which receive actions 
- * from the client and sends them through the portal environment.
- * 
  * @author Maxime Bossard - 2013
  *
  */
-public interface IUserActionDispatcher {
+public interface IEvent {
 
-	void dispatch(IUserAction userAction);
+	String getName();
 	
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.impl;
+package fr.mby.portal.action.impl;
 
 import java.security.Principal;
 import java.util.Collections;
@@ -22,8 +22,8 @@ import java.util.Map;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import fr.mby.portal.IPortalContext;
-import fr.mby.portal.IUserAction;
+import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.context.IPortalContext;
 
 /**
  * @author Maxime Bossard - 2013

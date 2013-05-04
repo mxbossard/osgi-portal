@@ -13,14 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal;
+package fr.mby.portal.event.impl;
+
+import fr.mby.portal.event.IEvent;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public interface IEvent {
+public class BasicEvent implements IEvent {
 
-	String getName();
+	private String name;
+
+	/**
+	 * Getter of name.
+	 * @return the name
+	 */
+	@Override
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Setter of name.
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	
 }
