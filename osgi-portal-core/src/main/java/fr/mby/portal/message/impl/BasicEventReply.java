@@ -21,6 +21,6 @@ import fr.mby.portal.message.IEventReply;
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicEventReply extends BasicReply implements IEventReply {
+public class BasicEventReply extends AbstractReply implements IEventReply {
 
 }

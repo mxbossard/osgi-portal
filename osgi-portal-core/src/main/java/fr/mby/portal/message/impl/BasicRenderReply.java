@@ -21,6 +21,6 @@ import fr.mby.portal.message.IRenderReply;
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicRenderReply extends BasicReply implements IRenderReply {
+public class BasicRenderReply extends AbstractReply implements IRenderReply {
 
 }

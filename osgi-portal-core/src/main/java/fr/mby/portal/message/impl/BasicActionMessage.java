@@ -21,6 +21,6 @@ import fr.mby.portal.message.IActionMessage;
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicActionMessage extends BasicMessage implements IActionMessage {
+public class BasicActionMessage extends AbstractMessage implements IActionMessage {
 
 }

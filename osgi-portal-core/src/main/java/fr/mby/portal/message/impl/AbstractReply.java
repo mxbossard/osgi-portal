@@ -21,6 +21,6 @@ import fr.mby.portal.message.IReply;
  * @author Maxime Bossard - 2013
  *
  */
-public abstract class BasicReply implements IReply {
+public abstract class AbstractReply implements IReply {
 
 }

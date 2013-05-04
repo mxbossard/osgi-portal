@@ -25,7 +25,7 @@ import fr.mby.portal.message.IMessage;
  * @author Maxime Bossard - 2013
  *
  */
-public abstract class BasicMessage implements IMessage {
+public abstract class AbstractMessage implements IMessage {
 
 	/* (non-Javadoc)
 	 * @see fr.mby.portal.message.IMessage#getUserAction()

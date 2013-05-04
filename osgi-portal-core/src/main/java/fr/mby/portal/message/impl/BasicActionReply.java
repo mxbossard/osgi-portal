@@ -21,6 +21,6 @@ import fr.mby.portal.message.IActionReply;
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicActionReply extends BasicReply implements IActionReply {
+public class BasicActionReply extends AbstractReply implements IActionReply {
 
 }

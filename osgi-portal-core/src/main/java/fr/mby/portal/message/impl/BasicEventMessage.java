@@ -22,7 +22,7 @@ import fr.mby.portal.message.IEventMessage;
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicEventMessage extends BasicMessage implements IEventMessage {
+public class BasicEventMessage extends AbstractMessage implements IEventMessage {
 
 	/* (non-Javadoc)
 	 * @see fr.mby.portal.message.IEventMessage#getEvent()

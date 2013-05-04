@@ -21,6 +21,6 @@ import fr.mby.portal.message.IRenderMessage;
  * @author Maxime Bossard - 2013
  *
  */
-public class BasicRenderMessage extends BasicMessage implements IRenderMessage {
+public class BasicRenderMessage extends AbstractMessage implements IRenderMessage {
 
 }
