@@ -19,7 +19,7 @@ package fr.mby.portal.app;
  * @author Maxime Bossard - 2013
  *
  */
-public interface IAppSession {
+public interface ISession {
 
 	Object getAttribute(String name) throws IllegalArgumentException;
 	

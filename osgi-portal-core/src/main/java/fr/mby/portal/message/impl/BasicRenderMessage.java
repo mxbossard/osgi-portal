@@ -13,14 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.message.impl;
 
+import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.app.IAppContext;
+import fr.mby.portal.app.IAppPreferences;
 import fr.mby.portal.message.IRenderMessage;
+import fr.mby.portal.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public class BasicRenderMessage extends AbstractMessage implements IRenderMessage {
+
+	/**
+	 * @param appContext
+	 * @param sessionManager
+	 * @param appPreferences
+	 * @param userAction
+	 */
+	protected BasicRenderMessage(IAppContext appContext, ISessionManager sessionManager,
+			IAppPreferences appPreferences, IUserAction userAction) {
+		super(appContext, sessionManager, appPreferences, userAction);
+	}
 
 }

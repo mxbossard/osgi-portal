@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.context;
+package fr.mby.portal.event.impl;
+
+import org.springframework.stereotype.Service;
+
+import fr.mby.portal.event.IEvent;
+import fr.mby.portal.event.IEventFactory;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalContextResolver<T> {
+@Service
+public class BasicEventFactory implements IEventFactory {
 
-	IPortalContext resolve(T object);
+	@Override
+	public IEvent build(final String name) {
+		return new BasicEvent(name);
+	}
 
 }

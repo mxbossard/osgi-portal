@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.context;
+package fr.mby.portal.preferences;
+
+import fr.mby.portal.app.IAppPreferences;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalContextResolver<T> {
+public interface IAppPreferencesResolver<T> {
 
-	IPortalContext resolve(T object);
+	IAppPreferences resolve(T object);
 
 }

@@ -13,10 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.core.impl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.action.IUserActionFactory;
@@ -25,19 +31,27 @@ import fr.mby.portal.core.IUserActionDispatcher;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
-public class BasicPortalManager implements IPortalManager {
+@Service
+public class BasicPortalManager implements IPortalManager, InitializingBean {
 
+	@Autowired
 	private IUserActionFactory userActionFactory;
-	
+
+	@Autowired
 	private IUserActionDispatcher userActionDispatcher;
-	
+
 	@Override
-	public void dispatchUserAction(final HttpServletRequest request,
-			final HttpServletResponse response) {
+	public void dispatchUserAction(final HttpServletRequest request, final HttpServletResponse response) {
 		final IUserAction userAction = this.userActionFactory.build(request);
 		this.userActionDispatcher.dispatch(userAction);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.userActionFactory, "No IUserActionFactory configured");
+		Assert.notNull(this.userActionDispatcher, "No IUserActionDispatcher configured");
 	}
 
 }

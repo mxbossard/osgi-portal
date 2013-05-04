@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.context;
+package fr.mby.portal.session;
+
+import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.app.ISession;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalContextResolver<T> {
+public interface ISessionManager {
 
-	IPortalContext resolve(T object);
+	ISession getAppSession(IUserAction userAction, boolean create);
 
 }

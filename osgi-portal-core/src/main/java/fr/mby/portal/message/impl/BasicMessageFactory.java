@@ -13,37 +13,79 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.message.impl;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
+import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.app.IAppContext;
+import fr.mby.portal.app.IAppPreferences;
+import fr.mby.portal.context.IAppContextResolver;
+import fr.mby.portal.event.IEvent;
+import fr.mby.portal.event.IEventFactory;
+import fr.mby.portal.message.IMessage;
 import fr.mby.portal.message.IMessage.MessageType;
 import fr.mby.portal.message.IMessageFactory;
-import fr.mby.portal.message.IMessage;
+import fr.mby.portal.preferences.IAppPreferencesResolver;
+import fr.mby.portal.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
-public class BasicMessageFactory implements IMessageFactory {
+@Service
+public class BasicMessageFactory implements IMessageFactory, InitializingBean {
+
+	@Autowired
+	private IAppContextResolver<IUserAction> appContextResolver;
+
+	@Autowired
+	private IAppPreferencesResolver<IUserAction> appPreferencesResolver;
+
+	@Autowired
+	private ISessionManager sessionManager;
+
+	@Autowired
+	private IEventFactory eventFactory;
 
 	@Override
-	public IMessage build(final MessageType messageType) {
+	public IMessage build(final IUserAction userAction, final MessageType messageType) {
+		Assert.notNull(userAction, "No IUserAction provided !");
+		Assert.notNull(messageType, "No MessageType provided !");
+
+		final IAppContext appContext = this.appContextResolver.resolve(userAction);
+		final IAppPreferences appPrefs = this.appPreferencesResolver.resolve(userAction);
+
 		final IMessage message;
-		
+
 		switch (messageType) {
-		case ACTION:
-			message = new BasicActionMessage();
-			break;
-		case EVENT:
-			message = new BasicEventMessage();
-			break;
-		case RENDER:
-			message = new BasicRenderMessage();
-			break;
-		default:
-			throw new IllegalArgumentException("Unknown message type !");
+			case ACTION :
+				message = new BasicActionMessage(appContext, this.sessionManager, appPrefs, userAction);
+				break;
+			case RENDER :
+				message = new BasicRenderMessage(appContext, this.sessionManager, appPrefs, userAction);
+				break;
+			case EVENT :
+				final IEvent event = this.eventFactory.build("testEvent");
+				message = new BasicEventMessage(appContext, this.sessionManager, appPrefs, userAction, event);
+				break;
+			default :
+				throw new IllegalArgumentException("Unknown message type !");
 		}
-		
+
 		return message;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.appContextResolver, "No IAppContextResolver provided !");
+		Assert.notNull(this.appPreferencesResolver, "No IAppPreferencesResolver provided !");
+		Assert.notNull(this.sessionManager, "No ISessionManager provided !");
+		Assert.notNull(this.eventFactory, "No IEventFactory provided !");
 	}
 
 }

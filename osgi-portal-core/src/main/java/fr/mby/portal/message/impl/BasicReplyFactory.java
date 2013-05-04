@@ -13,36 +13,38 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.message.impl;
 
+import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.message.IMessage.MessageType;
 import fr.mby.portal.message.IReply;
 import fr.mby.portal.message.IReplyFactory;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public class BasicReplyFactory implements IReplyFactory {
 
 	@Override
-	public IReply build(final MessageType messageType) {
+	public IReply build(final IUserAction userAction, final MessageType messageType) {
 		final IReply reply;
-		
+
 		switch (messageType) {
-		case ACTION:
-			reply = new BasicActionReply();
-			break;
-		case EVENT:
-			reply = new BasicEventReply();
-			break;
-		case RENDER:
-			reply = new BasicRenderReply();
-			break;
-		default:
-			throw new IllegalArgumentException("Unknown message type !");
+			case ACTION :
+				reply = new BasicActionReply();
+				break;
+			case RENDER :
+				reply = new BasicRenderReply();
+				break;
+			case EVENT :
+				reply = new BasicEventReply();
+				break;
+			default :
+				throw new IllegalArgumentException("Unknown message type !");
 		}
-		
+
 		return reply;
 	}
 

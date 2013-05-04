@@ -13,43 +13,48 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.core.impl;
 
-import fr.mby.portal.message.IMessageFactory;
-import fr.mby.portal.message.IReplyFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.core.IUserActionDispatcher;
 import fr.mby.portal.message.IMessage;
 import fr.mby.portal.message.IMessage.MessageType;
 import fr.mby.portal.message.IMessageDispatcher;
+import fr.mby.portal.message.IMessageFactory;
 import fr.mby.portal.message.IReply;
+import fr.mby.portal.message.IReplyFactory;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
+@Service
 public class BasicUserActionDispatcher implements IUserActionDispatcher {
 
+	@Autowired
 	private IMessageFactory messageFactory;
-	
+
+	@Autowired
 	private IReplyFactory replyFactory;
-	
+
+	@Autowired
 	private IMessageDispatcher messageDispatcher;
-	
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.core.IUserActionDispatcher#dispatch(fr.mby.portal.IUserAction)
-	 */
+
 	@Override
 	public void dispatch(final IUserAction userAction) {
 		final MessageType messageType = null;
-		final IMessage message = this.messageFactory.build(messageType);
-		final IReply reply = this.replyFactory.build(messageType);
-		
+		final IMessage message = this.messageFactory.build(userAction, messageType);
+		final IReply reply = this.replyFactory.build(userAction, messageType);
+
 		this.internalDispatch(message, reply);
 	}
-	
+
 	protected void internalDispatch(final IMessage message, final IReply reply) {
-		messageDispatcher.dispatch(message, reply);
+		this.messageDispatcher.dispatch(message, reply);
 	}
 
 }

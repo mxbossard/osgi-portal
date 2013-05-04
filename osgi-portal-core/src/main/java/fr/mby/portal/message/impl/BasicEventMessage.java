@@ -13,24 +13,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.message.impl;
 
+import org.springframework.util.Assert;
+
+import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.app.IAppContext;
+import fr.mby.portal.app.IAppPreferences;
 import fr.mby.portal.event.IEvent;
 import fr.mby.portal.message.IEventMessage;
+import fr.mby.portal.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public class BasicEventMessage extends AbstractMessage implements IEventMessage {
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.message.IEventMessage#getEvent()
+	private final IEvent event;
+
+	/**
+	 * @param appContext
+	 * @param sessionManager
+	 * @param appPreferences
+	 * @param userAction
 	 */
+	protected BasicEventMessage(IAppContext appContext, ISessionManager sessionManager, IAppPreferences appPreferences,
+			IUserAction userAction, final IEvent event) {
+		super(appContext, sessionManager, appPreferences, userAction);
+
+		Assert.notNull(event, "No IEvent provided !");
+
+		this.event = event;
+	}
+
 	@Override
 	public IEvent getEvent() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.event;
 	}
 
 }

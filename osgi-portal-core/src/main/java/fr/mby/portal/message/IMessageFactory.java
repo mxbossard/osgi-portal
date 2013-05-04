@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.message;
 
-import fr.mby.portal.message.IMessage;
+import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.message.IMessage.MessageType;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public interface IMessageFactory {
 
-	IMessage build(MessageType messageType);
-	
+	IMessage build(IUserAction userAction, MessageType messageType) throws IllegalArgumentException;
+
 }

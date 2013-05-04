@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.context;
+package fr.mby.portal.app;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalContextResolver<T> {
+public interface IPortalAppResolver<T> {
 
-	IPortalContext resolve(T object);
+	Iterable<IPortalApp> resolve(T object);
 
 }

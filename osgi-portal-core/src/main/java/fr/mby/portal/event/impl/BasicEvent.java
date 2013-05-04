@@ -13,20 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.event.impl;
+
+import org.springframework.util.Assert;
 
 import fr.mby.portal.event.IEvent;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public class BasicEvent implements IEvent {
 
-	private String name;
+	private final String name;
+
+	/** Protected constructor. Use the factory. */
+	protected BasicEvent(final String name) {
+		super();
+
+		Assert.notNull(name, "No name provided !");
+
+		this.name = name;
+	}
 
 	/**
 	 * Getter of name.
+	 * 
 	 * @return the name
 	 */
 	@Override
@@ -34,13 +47,4 @@ public class BasicEvent implements IEvent {
 		return name;
 	}
 
-	/**
-	 * Setter of name.
-	 * @param name the name to set
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	
 }

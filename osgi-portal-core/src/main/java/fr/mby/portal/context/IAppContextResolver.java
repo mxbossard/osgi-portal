@@ -16,12 +16,14 @@
 
 package fr.mby.portal.context;
 
+import fr.mby.portal.app.IAppContext;
+
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalContextResolver<T> {
+public interface IAppContextResolver<T> {
 
-	IPortalContext resolve(T object);
+	IAppContext resolve(T object);
 
 }

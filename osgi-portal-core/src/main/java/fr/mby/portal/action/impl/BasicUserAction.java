@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.action.impl;
 
 import java.security.Principal;
@@ -27,29 +28,30 @@ import fr.mby.portal.context.IPortalContext;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public class BasicUserAction implements IUserAction {
 
-	private IPortalContext portalContext;
-	
-	private Principal userPrincipal;
-	
-	private Map<String, Iterable<String>> properties;
-	
-	private Map<String, String[]> parameters;
-	
-	private Map<String, Object> attributes;
-	
+	private final IPortalContext portalContext;
+
+	private final Principal userPrincipal;
+
+	private final Map<String, Iterable<String>> properties;
+
+	private final Map<String, String[]> parameters;
+
+	private final Map<String, Object> attributes;
+
+	/** Protected constructor. Use the factory. */
 	protected BasicUserAction(final IPortalContext portalContext, final Principal userPrincipal,
-			final Map<String, Iterable<String>> properties, final Map<String, String[]> parameters, 
+			final Map<String, Iterable<String>> properties, final Map<String, String[]> parameters,
 			final Map<String, Object> attributes) {
 		Assert.notNull(portalContext, "No PortalContext provided !");
 		Assert.notNull(userPrincipal, "No User Principal provided !");
 		Assert.notNull(properties, "No properties provided !");
 		Assert.notNull(parameters, "No parameters provided !");
 		Assert.notNull(attributes, "No attributes provided !");
-		
+
 		this.portalContext = portalContext;
 		this.userPrincipal = userPrincipal;
 		this.properties = properties;
@@ -72,13 +74,12 @@ public class BasicUserAction implements IUserAction {
 		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("No property name provided !");
 		}
-		
+
 		return this.getProperties(name).iterator().next();
 	}
 
 	@Override
-	public Iterable<String> getProperties(String name)
-			throws IllegalArgumentException {
+	public Iterable<String> getProperties(String name) throws IllegalArgumentException {
 		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("No property name provided !");
 		}
@@ -95,23 +96,22 @@ public class BasicUserAction implements IUserAction {
 		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("No property name provided !");
 		}
-		
+
 		String value = null;
 		final String[] values = this.getParameterValues(name);
 		if (values != null && values.length > 0) {
 			value = values[0];
 		}
-		
+
 		return value;
 	}
 
 	@Override
-	public String[] getParameterValues(String name)
-			throws IllegalArgumentException {
+	public String[] getParameterValues(String name) throws IllegalArgumentException {
 		if (!StringUtils.hasText(name)) {
 			throw new IllegalArgumentException("No property name provided !");
 		}
-		
+
 		final String[] values = this.parameters.get(name);
 		return values;
 	}
@@ -141,8 +141,7 @@ public class BasicUserAction implements IUserAction {
 	}
 
 	@Override
-	public void setAttribute(String name, Object value)
-			throws IllegalArgumentException {
+	public void setAttribute(String name, Object value) throws IllegalArgumentException {
 		this.attributes.put(name, value);
 	}
 

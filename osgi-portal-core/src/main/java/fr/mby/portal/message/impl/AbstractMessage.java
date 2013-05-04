@@ -13,54 +13,65 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.message.impl;
+
+import org.springframework.util.Assert;
 
 import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.app.IAppContext;
 import fr.mby.portal.app.IAppPreferences;
-import fr.mby.portal.app.IAppSession;
+import fr.mby.portal.app.ISession;
 import fr.mby.portal.message.IMessage;
+import fr.mby.portal.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public abstract class AbstractMessage implements IMessage {
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.message.IMessage#getUserAction()
-	 */
+	private final IAppContext appContext;
+	private final ISessionManager sessionManager;
+	private final IAppPreferences appPreferences;
+	private final IUserAction userAction;
+
+	/** Protected constructor. Use the factory. */
+	protected AbstractMessage(final IAppContext appContext, final ISessionManager sessionManager,
+			final IAppPreferences appPreferences, final IUserAction userAction) {
+		super();
+
+		Assert.notNull(appContext, "No IAppContext provided !");
+		Assert.notNull(sessionManager, "No ISessionManager provided !");
+		Assert.notNull(appPreferences, "No IAppPreferences provided !");
+		Assert.notNull(userAction, "No IUserAction provided !");
+
+		this.appContext = appContext;
+		this.sessionManager = sessionManager;
+		this.appPreferences = appPreferences;
+		this.userAction = userAction;
+	}
+
 	@Override
 	public IUserAction getUserAction() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.userAction;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.message.IMessage#getAppContext()
-	 */
 	@Override
 	public IAppContext getAppContext() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.appContext;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.message.IMessage#getAppSession(boolean)
-	 */
 	@Override
-	public IAppSession getAppSession(boolean create) {
-		// TODO Auto-generated method stub
-		return null;
+	public ISession getAppSession(final boolean create) {
+		final ISession session = this.sessionManager.getAppSession(this.userAction, create);
+
+		return session;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.message.IMessage#getPreferences()
-	 */
 	@Override
 	public IAppPreferences getPreferences() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.appPreferences;
 	}
 
 }

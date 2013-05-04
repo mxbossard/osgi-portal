@@ -14,14 +14,29 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.context;
+package fr.mby.portal.app;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import fr.mby.portal.action.IUserAction;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalContextResolver<T> {
+@Service
+public class BasicPortalAppResolver implements IPortalAppResolver<IUserAction> {
 
-	IPortalContext resolve(T object);
+	@Autowired
+	private List<IPortalApp> portalApplications;
+
+	@Override
+	public Iterable<IPortalApp> resolve(final IUserAction userAction) {
+		// Return all apps
+		return this.portalApplications;
+	}
 
 }

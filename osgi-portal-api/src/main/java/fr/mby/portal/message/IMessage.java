@@ -18,7 +18,7 @@ package fr.mby.portal.message;
 import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.app.IAppContext;
 import fr.mby.portal.app.IAppPreferences;
-import fr.mby.portal.app.IAppSession;
+import fr.mby.portal.app.ISession;
 
 /**
  * @author Maxime Bossard - 2013
@@ -50,7 +50,7 @@ public interface IMessage {
 	 * @param create - true to create a new session, false to return null if there is no current session
 	 * @return the app session
 	 */
-	IAppSession getAppSession(boolean create);
+	ISession getAppSession(boolean create);
 	
 	/**
 	 * Returns the preferences object associated with the app.

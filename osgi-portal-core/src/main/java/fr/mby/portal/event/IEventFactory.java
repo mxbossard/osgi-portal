@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.context;
+package fr.mby.portal.event;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalContextResolver<T> {
+public interface IEventFactory {
 
-	IPortalContext resolve(T object);
+	IEvent build(String name);
 
 }
