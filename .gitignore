@@ -3,6 +3,7 @@
 */target
 */.settings
 *.class
+*.springBeans
 
 # Package Files #
 *.jar
