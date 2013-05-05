@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.app;
+package fr.mby.portal.context.impl;
 
-import java.util.Map;
+import fr.mby.portal.app.IAppContext;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAppPreferences {
+public class BasicAppContext implements IAppContext {
 
-	Map<String, String[]> getMap();
+	@Override
+	public void log(String message, Object[]... objects) {
+		// TODO Auto-generated method stub
 
-	Iterable<String> getNames();
+	}
 
-	String getValue(String name, String def);
+	@Override
+	public void log(String message, Throwable throwable, Object[]... objects) {
+		// TODO Auto-generated method stub
 
-	String[] getValues(String name, String[] def);
+	}
 
 }

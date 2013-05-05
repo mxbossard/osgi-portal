@@ -14,41 +14,32 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.message.impl;
+package fr.mby.portal.session.impl;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.message.IMessage.MessageType;
-import fr.mby.portal.message.IReply;
-import fr.mby.portal.message.IReplyFactory;
+import fr.mby.portal.app.ISession;
+import fr.mby.portal.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Service
-public class BasicReplyFactory implements IReplyFactory {
+public class UniqueSessionManager implements ISessionManager, InitializingBean {
+
+	private ISession uniqueSession;
 
 	@Override
-	public IReply build(final IUserAction userAction, final MessageType messageType) {
-		final IReply reply;
+	public ISession getAppSession(IUserAction userAction, boolean create) {
+		return this.uniqueSession;
+	}
 
-		switch (messageType) {
-			case ACTION :
-				reply = new BasicActionReply();
-				break;
-			case RENDER :
-				reply = new BasicRenderReply();
-				break;
-			case EVENT :
-				reply = new BasicEventReply();
-				break;
-			default :
-				throw new IllegalArgumentException("Unknown message type !");
-		}
-
-		return reply;
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.uniqueSession = new BasicSession();
 	}
 
 }

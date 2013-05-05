@@ -14,41 +14,32 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.message.impl;
+package fr.mby.portal.context.impl;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
 import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.message.IMessage.MessageType;
-import fr.mby.portal.message.IReply;
-import fr.mby.portal.message.IReplyFactory;
+import fr.mby.portal.app.IAppContext;
+import fr.mby.portal.context.IAppContextResolver;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Service
-public class BasicReplyFactory implements IReplyFactory {
+public class UniqueAppContextResolver implements IAppContextResolver<IUserAction>, InitializingBean {
+
+	private IAppContext uniqueAppContext;
 
 	@Override
-	public IReply build(final IUserAction userAction, final MessageType messageType) {
-		final IReply reply;
+	public IAppContext resolve(final IUserAction userAction) {
+		return this.uniqueAppContext;
+	}
 
-		switch (messageType) {
-			case ACTION :
-				reply = new BasicActionReply();
-				break;
-			case RENDER :
-				reply = new BasicRenderReply();
-				break;
-			case EVENT :
-				reply = new BasicEventReply();
-				break;
-			default :
-				throw new IllegalArgumentException("Unknown message type !");
-		}
-
-		return reply;
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.uniqueAppContext = new BasicAppContext();
 	}
 
 }

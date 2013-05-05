@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.context.IPortalContext;
@@ -71,18 +70,15 @@ public class BasicUserAction implements IUserAction {
 
 	@Override
 	public String getProperty(final String name) throws IllegalArgumentException {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("No property name provided !");
-		}
+		Assert.hasText(name, "No property name provided !");
 
 		return this.getProperties(name).iterator().next();
 	}
 
 	@Override
 	public Iterable<String> getProperties(String name) throws IllegalArgumentException {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("No property name provided !");
-		}
+		Assert.hasText(name, "No property name provided !");
+
 		return this.properties.get(name);
 	}
 
@@ -93,9 +89,7 @@ public class BasicUserAction implements IUserAction {
 
 	@Override
 	public String getParameter(String name) throws IllegalArgumentException {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("No property name provided !");
-		}
+		Assert.hasText(name, "No property name provided !");
 
 		String value = null;
 		final String[] values = this.getParameterValues(name);
@@ -108,9 +102,7 @@ public class BasicUserAction implements IUserAction {
 
 	@Override
 	public String[] getParameterValues(String name) throws IllegalArgumentException {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("No property name provided !");
-		}
+		Assert.hasText(name, "No property name provided !");
 
 		final String[] values = this.parameters.get(name);
 		return values;
@@ -128,9 +120,7 @@ public class BasicUserAction implements IUserAction {
 
 	@Override
 	public Object getAttribute(String name) throws IllegalArgumentException {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("No property name provided !");
-		}
+		Assert.hasText(name, "No property name provided !");
 
 		return this.attributes.get(name);
 	}
@@ -147,9 +137,7 @@ public class BasicUserAction implements IUserAction {
 
 	@Override
 	public Object removeAttribute(String name) throws IllegalArgumentException {
-		if (!StringUtils.hasText(name)) {
-			throw new IllegalArgumentException("No property name provided !");
-		}
+		Assert.hasText(name, "No property name provided !");
 
 		return this.removeAttribute(name);
 	}

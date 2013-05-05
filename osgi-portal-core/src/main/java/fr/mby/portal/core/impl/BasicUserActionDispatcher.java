@@ -46,7 +46,11 @@ public class BasicUserActionDispatcher implements IUserActionDispatcher {
 
 	@Override
 	public void dispatch(final IUserAction userAction) {
-		final MessageType messageType = null;
+		this.internalDispatch(userAction, MessageType.ACTION);
+		this.internalDispatch(userAction, MessageType.RENDER);
+	}
+
+	protected void internalDispatch(final IUserAction userAction, final MessageType messageType) {
 		final IMessage message = this.messageFactory.build(userAction, messageType);
 		final IReply reply = this.replyFactory.build(userAction, messageType);
 
@@ -54,7 +58,7 @@ public class BasicUserActionDispatcher implements IUserActionDispatcher {
 	}
 
 	protected void internalDispatch(final IMessage message, final IReply reply) {
+
 		this.messageDispatcher.dispatch(message, reply);
 	}
-
 }

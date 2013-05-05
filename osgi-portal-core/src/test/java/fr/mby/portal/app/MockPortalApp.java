@@ -16,20 +16,39 @@
 
 package fr.mby.portal.app;
 
-import java.util.Map;
+import fr.mby.portal.message.IActionMessage;
+import fr.mby.portal.message.IActionReply;
+import fr.mby.portal.message.IRenderMessage;
+import fr.mby.portal.message.IRenderReply;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAppPreferences {
+public class MockPortalApp implements IPortalApp {
 
-	Map<String, String[]> getMap();
+	@Override
+	public void destory() {
+		// TODO Auto-generated method stub
 
-	Iterable<String> getNames();
+	}
 
-	String getValue(String name, String def);
+	@Override
+	public void init(IAppConfig config) {
+		// TODO Auto-generated method stub
 
-	String[] getValues(String name, String[] def);
+	}
+
+	@Override
+	public void processAction(IActionMessage request, IActionReply response) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void render(IRenderMessage request, IRenderReply response) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
