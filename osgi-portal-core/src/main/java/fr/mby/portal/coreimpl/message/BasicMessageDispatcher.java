@@ -22,7 +22,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.app.IEventApp;
 import fr.mby.portal.app.IPortalApp;
+import fr.mby.portal.core.app.IEventAppResolver;
 import fr.mby.portal.core.app.IPortalAppResolver;
 import fr.mby.portal.message.IActionMessage;
 import fr.mby.portal.message.IActionReply;
@@ -44,13 +46,24 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 	@Autowired
 	private IPortalAppResolver<IUserAction> portalAppResolver;
 
+	@Autowired
+	private IEventAppResolver<IUserAction> eventAppResolver;
+
 	@Override
 	public void dispatch(final IMessage message, final IReply reply) {
 		final Iterable<IPortalApp> portalApps = this.portalAppResolver.resolve(message.getUserAction());
 
 		if (portalApps != null) {
 			for (IPortalApp portalApp : portalApps) {
-				this.dispatch(portalApp, message, reply);
+				this.dispatchToPortalApp(portalApp, message, reply);
+			}
+		}
+
+		final Iterable<IEventApp> eventApps = this.eventAppResolver.resolve(message.getUserAction());
+
+		if (eventApps != null) {
+			for (IEventApp eventApp : eventApps) {
+				this.dispatchToEventApp(eventApp, message, reply);
 			}
 		}
 	}
@@ -58,6 +71,7 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.portalAppResolver, "No IPortalAppResolver configured !");
+		Assert.notNull(this.eventAppResolver, "No IEventAppResolver configured !");
 	}
 
 	/**
@@ -65,14 +79,29 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 	 * @param message
 	 * @param reply
 	 */
-	protected void dispatch(final IPortalApp portalApp, final IMessage message, final IReply reply) {
+	protected void dispatchToPortalApp(final IPortalApp portalApp, final IMessage message, final IReply reply) {
 		if (portalApp != null) {
 			if (this.isActionMessage(message, reply)) {
 				portalApp.processAction((IActionMessage) message, (IActionReply) reply);
 			} else if (this.isRenderMessage(message, reply)) {
 				portalApp.render((IRenderMessage) message, (IRenderReply) reply);
-			} else if (this.isEventMessage(message, reply)) {
-				// TODO implement event listener
+			} else {
+				throw new IllegalStateException("Fail to dispatch IMessages to IPortalApp.");
+			}
+		}
+	}
+
+	/**
+	 * @param portalApp
+	 * @param message
+	 * @param reply
+	 */
+	protected void dispatchToEventApp(final IEventApp eventApp, final IMessage message, final IReply reply) {
+		if (eventApp != null) {
+			if (this.isEventMessage(message, reply)) {
+				eventApp.processEvent((IEventMessage) message, (IEventReply) reply);
+			} else {
+				throw new IllegalStateException("Fail to dispatch IMessages to IEventApp.");
 			}
 		}
 	}

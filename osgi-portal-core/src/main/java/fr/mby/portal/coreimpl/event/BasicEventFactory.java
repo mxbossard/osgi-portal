@@ -16,6 +16,8 @@
 
 package fr.mby.portal.coreimpl.event;
 
+import java.io.Serializable;
+
 import org.springframework.stereotype.Service;
 
 import fr.mby.portal.core.event.IEventFactory;
@@ -29,8 +31,8 @@ import fr.mby.portal.event.IEvent;
 public class BasicEventFactory implements IEventFactory {
 
 	@Override
-	public IEvent build(final String name) {
-		return new BasicEvent(name);
+	public IEvent build(final String name, final Serializable value) {
+		return new BasicEvent(name, value);
 	}
 
 }

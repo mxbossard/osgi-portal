@@ -18,6 +18,8 @@ package fr.mby.portal.app;
 
 import fr.mby.portal.message.IActionMessage;
 import fr.mby.portal.message.IActionReply;
+import fr.mby.portal.message.IEventMessage;
+import fr.mby.portal.message.IEventReply;
 import fr.mby.portal.message.IRenderMessage;
 import fr.mby.portal.message.IRenderReply;
 
@@ -25,7 +27,7 @@ import fr.mby.portal.message.IRenderReply;
  * @author Maxime Bossard - 2013
  * 
  */
-public class MockPortalApp implements IPortalApp {
+public class MockPortalApp implements IPortalApp, IEventApp {
 
 	@Override
 	public void destory() {
@@ -47,6 +49,12 @@ public class MockPortalApp implements IPortalApp {
 
 	@Override
 	public void render(IRenderMessage request, IRenderReply response) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void processEvent(IEventMessage request, IEventReply response) {
 		// TODO Auto-generated method stub
 
 	}

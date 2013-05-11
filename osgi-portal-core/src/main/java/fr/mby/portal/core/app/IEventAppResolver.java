@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.event;
+package fr.mby.portal.core.app;
 
-import java.io.Serializable;
+import fr.mby.portal.app.IEventApp;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IEvent {
+public interface IEventAppResolver<T> {
 
-	String getName();
-
-	Serializable getValue();
+	Iterable<IEventApp> resolve(T object);
 
 }

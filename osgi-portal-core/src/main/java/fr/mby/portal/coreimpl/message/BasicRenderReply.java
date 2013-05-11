@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.coreimpl.message;
 
 import fr.mby.portal.message.IRenderReply;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public class BasicRenderReply extends AbstractReply implements IRenderReply {
 

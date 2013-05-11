@@ -14,18 +14,31 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.event;
+package fr.mby.portal.coreimpl.app;
 
-import java.io.Serializable;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.app.IEventApp;
+import fr.mby.portal.core.app.IEventAppResolver;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IEvent {
+@Service
+public class BasicEventAppResolver implements IEventAppResolver<IUserAction> {
 
-	String getName();
+	@Autowired
+	private List<IEventApp> portalEventApplications;
 
-	Serializable getValue();
+	@Override
+	public Iterable<IEventApp> resolve(final IUserAction userAction) {
+		// Return all event apps
+		return this.portalEventApplications;
+	}
 
 }

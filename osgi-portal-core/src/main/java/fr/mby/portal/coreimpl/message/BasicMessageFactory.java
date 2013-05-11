@@ -70,7 +70,7 @@ public class BasicMessageFactory implements IMessageFactory, InitializingBean {
 				message = new BasicRenderMessage(appContext, this.sessionManager, appPrefs, userAction);
 				break;
 			case EVENT :
-				final IEvent event = this.eventFactory.build("testEvent");
+				final IEvent event = this.eventFactory.build("testEvent", "eventValue");
 				message = new BasicEventMessage(appContext, this.sessionManager, appPrefs, userAction, event);
 				break;
 			default :

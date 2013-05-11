@@ -16,6 +16,8 @@
 
 package fr.mby.portal.core.event;
 
+import java.io.Serializable;
+
 import fr.mby.portal.event.IEvent;
 
 /**
@@ -24,6 +26,6 @@ import fr.mby.portal.event.IEvent;
  */
 public interface IEventFactory {
 
-	IEvent build(String name);
+	IEvent build(String name, Serializable value);
 
 }

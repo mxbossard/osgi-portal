@@ -16,6 +16,8 @@
 
 package fr.mby.portal.coreimpl.event;
 
+import java.io.Serializable;
+
 import org.springframework.util.Assert;
 
 import fr.mby.portal.event.IEvent;
@@ -28,13 +30,17 @@ public class BasicEvent implements IEvent {
 
 	private final String name;
 
+	private final Serializable value;
+
 	/** Protected constructor. Use the factory. */
-	protected BasicEvent(final String name) {
+	protected BasicEvent(final String name, final Serializable value) {
 		super();
 
 		Assert.notNull(name, "No name provided !");
+		Assert.notNull(value, "No value provided !");
 
 		this.name = name;
+		this.value = value;
 	}
 
 	/**
@@ -44,7 +50,12 @@ public class BasicEvent implements IEvent {
 	 */
 	@Override
 	public String getName() {
-		return name;
+		return this.name;
+	}
+
+	@Override
+	public Serializable getValue() {
+		return this.value;
 	}
 
 }
