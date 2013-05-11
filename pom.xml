@@ -10,6 +10,7 @@
 	<modules>
 		<module>osgi-portal-api</module>
 		<module>osgi-portal-core</module>
+		<module>osgi-portal-web</module>
 	</modules>
 
 	<properties>
