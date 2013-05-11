@@ -39,7 +39,7 @@ public class HeaderAggregator extends AbstractReplyAggregator<IInternalReply> {
 
 	/** Logger. */
 	@SuppressWarnings("unused")
-	private static final Logger log = LogManager.getLogger(HeaderAggregator.class);
+	private static final Logger LOG = LogManager.getLogger(HeaderAggregator.class);
 
 	@Override
 	public void aggregate(final HttpServletResponse response, final IInternalReply reply) {

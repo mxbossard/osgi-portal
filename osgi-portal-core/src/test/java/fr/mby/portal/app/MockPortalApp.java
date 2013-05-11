@@ -66,8 +66,6 @@ public class MockPortalApp implements IPortalApp, IEventApp {
 			writer.append("</body>");
 			writer.append("</html>");
 
-			writer.flush();
-
 		} catch (final IllegalStateException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

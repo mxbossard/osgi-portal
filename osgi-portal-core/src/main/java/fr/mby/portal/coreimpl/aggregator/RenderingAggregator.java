@@ -36,7 +36,7 @@ import fr.mby.portal.core.message.IInternalRenderReply;
 public class RenderingAggregator extends AbstractReplyAggregator<IInternalRenderReply> {
 
 	/** Logger. */
-	private static final Logger log = LogManager.getLogger(RenderingAggregator.class);
+	private static final Logger LOG = LogManager.getLogger(RenderingAggregator.class);
 
 	@Override
 	public void aggregate(final HttpServletResponse response, final IInternalRenderReply reply) {
@@ -49,7 +49,7 @@ public class RenderingAggregator extends AbstractReplyAggregator<IInternalRender
 			writer.write(replyStream.toString());
 			replyStream.close();
 		} catch (final IOException e) {
-			RenderingAggregator.log.error("Error while rendering IReply !", e);
+			RenderingAggregator.LOG.error("Error while rendering IReply !", e);
 		}
 
 	}

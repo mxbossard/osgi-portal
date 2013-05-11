@@ -16,13 +16,19 @@
 
 package fr.mby.portal.coreimpl.message;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.core.message.IInternalMimeReply;
@@ -32,6 +38,9 @@ import fr.mby.portal.core.message.IInternalMimeReply;
  * 
  */
 public class AbstractMimeReply extends AbstractReply implements IInternalMimeReply {
+
+	/** Logger. */
+	private static final Logger LOG = LogManager.getLogger(AbstractMimeReply.class);
 
 	private String contentType;
 
@@ -86,7 +95,7 @@ public class AbstractMimeReply extends AbstractReply implements IInternalMimeRep
 		this.writerUsed = true;
 
 		if (this.writer == null) {
-			this.writer = new PrintWriter(this.backingStream);
+			this.writer = new PrintWriterProxy(this.backingStream);
 		}
 
 		return this.writer;
@@ -106,8 +115,17 @@ public class AbstractMimeReply extends AbstractReply implements IInternalMimeRep
 	}
 
 	@Override
-	public void flushBuffer() throws IOException {
+	public synchronized void flushBuffer() throws IOException {
+		if (this.commited) {
+			return;
+		}
+
 		this.commited = true;
+
+		if (this.writer != null) {
+			this.writer.flush();
+		}
+
 		this.backingStream.flush();
 	}
 
@@ -126,6 +144,106 @@ public class AbstractMimeReply extends AbstractReply implements IInternalMimeRep
 		return this.backingStream;
 	}
 
+	/**
+	 * Proxy PrinterWriter to bind the flushing with the AbstractMimeReply.
+	 * 
+	 * @author Maxime Bossard - 2013
+	 * 
+	 */
+	private class PrintWriterProxy extends PrintWriter {
+
+		/**
+		 * @param file
+		 * @param csn
+		 * @throws FileNotFoundException
+		 * @throws UnsupportedEncodingException
+		 */
+		public PrintWriterProxy(final File file, final String csn) throws FileNotFoundException,
+				UnsupportedEncodingException {
+			super(file, csn);
+		}
+
+		/**
+		 * @param file
+		 * @throws FileNotFoundException
+		 */
+		public PrintWriterProxy(final File file) throws FileNotFoundException {
+			super(file);
+		}
+
+		/**
+		 * @param out
+		 * @param autoFlush
+		 */
+		public PrintWriterProxy(final OutputStream out, final boolean autoFlush) {
+			super(out, autoFlush);
+		}
+
+		/**
+		 * @param out
+		 */
+		public PrintWriterProxy(final OutputStream out) {
+			super(out);
+		}
+
+		/**
+		 * @param fileName
+		 * @param csn
+		 * @throws FileNotFoundException
+		 * @throws UnsupportedEncodingException
+		 */
+		public PrintWriterProxy(final String fileName, final String csn) throws FileNotFoundException,
+				UnsupportedEncodingException {
+			super(fileName, csn);
+		}
+
+		/**
+		 * @param fileName
+		 * @throws FileNotFoundException
+		 */
+		public PrintWriterProxy(final String fileName) throws FileNotFoundException {
+			super(fileName);
+		}
+
+		/**
+		 * @param out
+		 * @param autoFlush
+		 */
+		public PrintWriterProxy(final Writer out, final boolean autoFlush) {
+			super(out, autoFlush);
+		}
+
+		/**
+		 * @param out
+		 */
+		public PrintWriterProxy(final Writer out) {
+			super(out);
+		}
+
+		@Override
+		public void flush() {
+			super.flush();
+			try {
+				AbstractMimeReply.this.flushBuffer();
+			} catch (final IOException e) {
+				AbstractMimeReply.LOG.error("Error while flushing AbstractMimeReply buffer.", e);
+			}
+			super.flush();
+		}
+
+		@Override
+		public void close() {
+			Assert.state(false, "close() call is forbidden on IMimeReply PrintWriter !");
+		}
+
+	}
+
+	/**
+	 * Proxy OutputStream to bind the flushing with the AbstractMimeReply.
+	 * 
+	 * @author Maxime Bossard - 2013
+	 * 
+	 */
 	private class OutputStreamProxy extends OutputStream {
 
 		@Override
