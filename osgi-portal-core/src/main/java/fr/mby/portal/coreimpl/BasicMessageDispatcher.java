@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.coreimpl.message;
+package fr.mby.portal.coreimpl;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

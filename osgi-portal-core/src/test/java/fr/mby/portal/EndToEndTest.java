@@ -16,9 +16,9 @@
 
 package fr.mby.portal;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Cookie;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,9 +47,28 @@ public class EndToEndTest {
 	 */
 	@Test
 	public void testDispatch() throws Exception {
-		final HttpServletRequest request = new MockHttpServletRequest();
-		final HttpServletResponse response = new MockHttpServletResponse();
+		final MockHttpServletRequest request = new MockHttpServletRequest();
+		final MockHttpServletResponse response = new MockHttpServletResponse();
 
 		this.userActionDispatcher.dispatch(request, response);
+
+		// Test headers
+		final String actionHeader1 = response.getHeader("actionProp1");
+		final String renderHeader1 = response.getHeader("renderProp1");
+		Assert.assertEquals("Bad action header value !", "actionVal1", actionHeader1);
+		Assert.assertEquals("Bad render header value !", "renderVal1", renderHeader1);
+
+		final Cookie actionCookie1 = response.getCookie("actionCookie1");
+		final Cookie renderCookie1 = response.getCookie("renderCookie1");
+		Assert.assertNotNull("Action cookie is null !", actionCookie1);
+		Assert.assertNotNull("Render cookie is null !", renderCookie1);
+		Assert.assertEquals("Bad action cookie value !", "actionCookieVal1", actionCookie1.getValue());
+		Assert.assertEquals("Bad render cookie value !", "renderCookieVal1", renderCookie1.getValue());
+
+		// Test response
+		response.flushBuffer();
+		final String reponseOutputStream = response.getContentAsString();
+		Assert.assertEquals("Bad response output stream !", "<html><body><h1>Test</h1></body></html>",
+				reponseOutputStream);
 	}
 }

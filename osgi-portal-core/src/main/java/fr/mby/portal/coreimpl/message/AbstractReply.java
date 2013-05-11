@@ -23,13 +23,15 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
-import fr.mby.portal.message.IReply;
+import org.springframework.util.Assert;
+
+import fr.mby.portal.core.message.IInternalReply;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public abstract class AbstractReply implements IReply {
+public abstract class AbstractReply implements IInternalReply {
 
 	private final Map<String, String> properties;
 
@@ -45,6 +47,7 @@ public abstract class AbstractReply implements IReply {
 
 	@Override
 	public void setProperty(final String key, final String value) throws IllegalArgumentException {
+		Assert.notNull(key, "Key provided is null !");
 		this.properties.put(key, value);
 	}
 
@@ -56,7 +59,17 @@ public abstract class AbstractReply implements IReply {
 
 	@Override
 	public void addProperty(final Cookie cookie) throws IllegalArgumentException {
+		Assert.notNull(cookie, "Cookie provided is null !");
 		this.cookies.add(cookie);
 	}
 
+	@Override
+	public Map<String, String> getHeaders() {
+		return this.properties;
+	}
+
+	@Override
+	public Collection<Cookie> getCookies() {
+		return this.cookies;
+	}
 }

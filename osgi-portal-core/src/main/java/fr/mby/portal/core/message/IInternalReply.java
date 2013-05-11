@@ -16,19 +16,21 @@
 
 package fr.mby.portal.core.message;
 
-import fr.mby.portal.message.IRenderReply;
+import java.util.Collection;
+import java.util.Map;
+
+import javax.servlet.http.Cookie;
+
+import fr.mby.portal.message.IReply;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IInternalRenderReply extends IInternalMimeReply, IRenderReply {
+public interface IInternalReply extends IReply {
 
-	/**
-	 * This method gets the title of the portlet. The value can be a text String
-	 * 
-	 * @return portlet title as text String or resource URI
-	 */
-	String getTitle();
+	Map<String, String> getHeaders();
+
+	Collection<Cookie> getCookies();
 
 }

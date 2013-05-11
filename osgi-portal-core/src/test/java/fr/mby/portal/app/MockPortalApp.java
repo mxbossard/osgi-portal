@@ -16,6 +16,11 @@
 
 package fr.mby.portal.app;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.http.Cookie;
+
 import fr.mby.portal.message.IActionMessage;
 import fr.mby.portal.message.IActionReply;
 import fr.mby.portal.message.IEventMessage;
@@ -36,25 +41,44 @@ public class MockPortalApp implements IPortalApp, IEventApp {
 	}
 
 	@Override
-	public void init(IAppConfig config) {
+	public void init(final IAppConfig config) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void processAction(IActionMessage request, IActionReply response) {
-		// TODO Auto-generated method stub
-
+	public void processAction(final IActionMessage request, final IActionReply response) {
+		response.setProperty("actionProp1", "actionVal1");
+		response.addProperty(new Cookie("actionCookie1", "actionCookieVal1"));
 	}
 
 	@Override
-	public void render(IRenderMessage request, IRenderReply response) {
-		// TODO Auto-generated method stub
+	public void render(final IRenderMessage request, final IRenderReply response) {
+		response.setProperty("renderProp1", "renderVal1");
+		response.addProperty(new Cookie("renderCookie1", "renderCookieVal1"));
 
+		try {
+			final PrintWriter writer = response.getWriter();
+
+			writer.append("<html>");
+			writer.append("<body>");
+			writer.append("<h1>Test</h1>");
+			writer.append("</body>");
+			writer.append("</html>");
+
+			writer.flush();
+
+		} catch (final IllegalStateException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (final IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	@Override
-	public void processEvent(IEventMessage request, IEventReply response) {
+	public void processEvent(final IEventMessage request, final IEventReply response) {
 		// TODO Auto-generated method stub
 
 	}

@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.message;
+package fr.mby.portal.core.aggregator;
 
-import fr.mby.portal.message.IRenderReply;
+import javax.servlet.http.HttpServletResponse;
+
+import fr.mby.portal.message.IReply;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IInternalRenderReply extends IInternalMimeReply, IRenderReply {
+public interface IReplyAggregator<T extends IReply> {
 
-	/**
-	 * This method gets the title of the portlet. The value can be a text String
-	 * 
-	 * @return portlet title as text String or resource URI
-	 */
-	String getTitle();
+	boolean supportsReplyType(Class<? extends IReply> replyType);
 
+	void aggregate(HttpServletResponse response, T reply);
 }

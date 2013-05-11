@@ -108,7 +108,7 @@ public class AbstractMimeReply extends AbstractReply implements IInternalMimeRep
 	@Override
 	public void flushBuffer() throws IOException {
 		this.commited = true;
-		this.outputStream.flush();
+		this.backingStream.flush();
 	}
 
 	@Override
