@@ -16,12 +16,36 @@
 
 package fr.mby.portal.coreimpl.message;
 
-import fr.mby.portal.message.IRenderReply;
+import java.io.ByteArrayOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
+import fr.mby.portal.core.message.IInternalRenderReply;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class BasicRenderReply extends AbstractReply implements IRenderReply {
+public class BasicRenderReply extends AbstractMimeReply implements IInternalRenderReply {
+
+	/**
+	 * @param response
+	 * @param backingStream
+	 */
+	public BasicRenderReply(final HttpServletResponse response) {
+		super(response, new ByteArrayOutputStream(2048));
+	}
+
+	private String title;
+
+	@Override
+	public void setTitle(final String title) {
+		this.title = title;
+	}
+
+	@Override
+	public String getTitle() {
+		return this.title;
+	}
 
 }

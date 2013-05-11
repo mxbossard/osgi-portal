@@ -16,10 +16,14 @@
 
 package fr.mby.portal.coreimpl;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
-import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.core.IUserActionDispatcher;
 import fr.mby.portal.core.message.IMessageFactory;
 import fr.mby.portal.core.message.IReplyFactory;
@@ -33,7 +37,7 @@ import fr.mby.portal.message.IReply;
  * 
  */
 @Service
-public class BasicUserActionDispatcher implements IUserActionDispatcher {
+public class BasicUserActionDispatcher implements IUserActionDispatcher, InitializingBean {
 
 	@Autowired
 	private IMessageFactory messageFactory;
@@ -45,14 +49,22 @@ public class BasicUserActionDispatcher implements IUserActionDispatcher {
 	private IMessageDispatcher messageDispatcher;
 
 	@Override
-	public void dispatch(final IUserAction userAction) {
-		this.internalDispatch(userAction, MessageType.ACTION);
-		this.internalDispatch(userAction, MessageType.RENDER);
+	public void dispatch(final HttpServletRequest request, final HttpServletResponse response) {
+		this.internalDispatch(request, response, MessageType.ACTION);
+		this.internalDispatch(request, response, MessageType.RENDER);
 	}
 
-	protected void internalDispatch(final IUserAction userAction, final MessageType messageType) {
-		final IMessage message = this.messageFactory.build(userAction, messageType);
-		final IReply reply = this.replyFactory.build(userAction, messageType);
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.messageFactory, "No IMessageFactory configured");
+		Assert.notNull(this.replyFactory, "No IReplyFactory configured");
+		Assert.notNull(this.messageDispatcher, "No IMessageDispatcher configured");
+	}
+
+	protected void internalDispatch(final HttpServletRequest request, final HttpServletResponse response,
+			final MessageType messageType) {
+		final IMessage message = this.messageFactory.build(request, messageType);
+		final IReply reply = this.replyFactory.build(response, messageType);
 
 		this.internalDispatch(message, reply);
 	}
@@ -61,4 +73,5 @@ public class BasicUserActionDispatcher implements IUserActionDispatcher {
 
 		this.messageDispatcher.dispatch(message, reply);
 	}
+
 }

@@ -53,19 +53,23 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 	public void dispatch(final IMessage message, final IReply reply) {
 		final Iterable<IPortalApp> portalApps = this.portalAppResolver.resolve(message.getUserAction());
 
+		boolean disptached = false;
+
 		if (portalApps != null) {
-			for (IPortalApp portalApp : portalApps) {
-				this.dispatchToPortalApp(portalApp, message, reply);
+			for (final IPortalApp portalApp : portalApps) {
+				disptached = disptached || this.dispatchToPortalApp(portalApp, message, reply);
 			}
 		}
 
 		final Iterable<IEventApp> eventApps = this.eventAppResolver.resolve(message.getUserAction());
 
 		if (eventApps != null) {
-			for (IEventApp eventApp : eventApps) {
-				this.dispatchToEventApp(eventApp, message, reply);
+			for (final IEventApp eventApp : eventApps) {
+				disptached = disptached || this.dispatchToEventApp(eventApp, message, reply);
 			}
 		}
+
+		Assert.state(disptached, "Fail to dispatch IMessage to IPortalApp.");
 	}
 
 	@Override
@@ -79,16 +83,18 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 	 * @param message
 	 * @param reply
 	 */
-	protected void dispatchToPortalApp(final IPortalApp portalApp, final IMessage message, final IReply reply) {
+	protected boolean dispatchToPortalApp(final IPortalApp portalApp, final IMessage message, final IReply reply) {
 		if (portalApp != null) {
 			if (this.isActionMessage(message, reply)) {
 				portalApp.processAction((IActionMessage) message, (IActionReply) reply);
+				return true;
 			} else if (this.isRenderMessage(message, reply)) {
 				portalApp.render((IRenderMessage) message, (IRenderReply) reply);
-			} else {
-				throw new IllegalStateException("Fail to dispatch IMessages to IPortalApp.");
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	/**
@@ -96,14 +102,15 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 	 * @param message
 	 * @param reply
 	 */
-	protected void dispatchToEventApp(final IEventApp eventApp, final IMessage message, final IReply reply) {
+	protected boolean dispatchToEventApp(final IEventApp eventApp, final IMessage message, final IReply reply) {
 		if (eventApp != null) {
 			if (this.isEventMessage(message, reply)) {
 				eventApp.processEvent((IEventMessage) message, (IEventReply) reply);
-			} else {
-				throw new IllegalStateException("Fail to dispatch IMessages to IEventApp.");
+				return true;
 			}
 		}
+
+		return false;
 	}
 
 	protected boolean isActionMessage(final IMessage message, final IReply reply) {

@@ -16,9 +16,10 @@
 
 package fr.mby.portal.core.message;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.message.IReply;
+import javax.servlet.http.HttpServletResponse;
+
 import fr.mby.portal.message.IMessage.MessageType;
+import fr.mby.portal.message.IReply;
 
 /**
  * @author Maxime Bossard - 2013
@@ -26,6 +27,6 @@ import fr.mby.portal.message.IMessage.MessageType;
  */
 public interface IReplyFactory {
 
-	IReply build(IUserAction userAction, MessageType messageType) throws IllegalArgumentException;
+	IReply build(HttpServletResponse response, MessageType messageType) throws IllegalArgumentException;
 
 }

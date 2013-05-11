@@ -16,17 +16,19 @@
 
 package fr.mby.portal.core.message;
 
-import javax.servlet.http.HttpServletRequest;
-
-import fr.mby.portal.message.IMessage;
-import fr.mby.portal.message.IMessage.MessageType;
+import fr.mby.portal.message.IRenderReply;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IMessageFactory {
+public interface IInternalRenderReply extends IRenderReply {
 
-	IMessage build(HttpServletRequest request, MessageType messageType) throws IllegalArgumentException;
+	/**
+	 * This method gets the title of the portlet. The value can be a text String
+	 * 
+	 * @return portlet title as text String or resource URI
+	 */
+	String getTitle();
 
 }

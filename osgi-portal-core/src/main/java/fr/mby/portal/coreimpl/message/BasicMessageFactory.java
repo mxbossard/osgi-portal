@@ -16,6 +16,8 @@
 
 package fr.mby.portal.coreimpl.message;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +26,7 @@ import org.springframework.util.Assert;
 import fr.mby.portal.action.IUserAction;
 import fr.mby.portal.app.IAppContext;
 import fr.mby.portal.app.IAppPreferences;
+import fr.mby.portal.core.action.IUserActionFactory;
 import fr.mby.portal.core.context.IAppContextResolver;
 import fr.mby.portal.core.event.IEventFactory;
 import fr.mby.portal.core.message.IMessageFactory;
@@ -52,11 +55,15 @@ public class BasicMessageFactory implements IMessageFactory, InitializingBean {
 	@Autowired
 	private IEventFactory eventFactory;
 
+	@Autowired
+	private IUserActionFactory userActionFactory;
+
 	@Override
-	public IMessage build(final IUserAction userAction, final MessageType messageType) {
-		Assert.notNull(userAction, "No IUserAction provided !");
+	public IMessage build(final HttpServletRequest request, final MessageType messageType) {
+		Assert.notNull(request, "No HttpServletRequest provided !");
 		Assert.notNull(messageType, "No MessageType provided !");
 
+		final IUserAction userAction = this.userActionFactory.build(request);
 		final IAppContext appContext = this.appContextResolver.resolve(userAction);
 		final IAppPreferences appPrefs = this.appPreferencesResolver.resolve(userAction);
 
@@ -86,6 +93,7 @@ public class BasicMessageFactory implements IMessageFactory, InitializingBean {
 		Assert.notNull(this.appPreferencesResolver, "No IAppPreferencesResolver provided !");
 		Assert.notNull(this.sessionManager, "No ISessionManager provided !");
 		Assert.notNull(this.eventFactory, "No IEventFactory provided !");
+		Assert.notNull(this.userActionFactory, "No IUserActionFactory configured");
 	}
 
 }

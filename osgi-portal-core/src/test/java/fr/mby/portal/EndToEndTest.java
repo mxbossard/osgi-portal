@@ -27,7 +27,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import fr.mby.portal.core.IPortalManager;
+import fr.mby.portal.core.IUserActionDispatcher;
 
 /**
  * @author Maxime Bossard - 2013
@@ -38,7 +38,7 @@ import fr.mby.portal.core.IPortalManager;
 public class EndToEndTest {
 
 	@Autowired
-	private IPortalManager basicPortalManager;
+	private IUserActionDispatcher userActionDispatcher;
 
 	/**
 	 * End to end test.
@@ -47,9 +47,9 @@ public class EndToEndTest {
 	 */
 	@Test
 	public void testDispatch() throws Exception {
-		HttpServletRequest request = new MockHttpServletRequest();
-		HttpServletResponse response = new MockHttpServletResponse();
+		final HttpServletRequest request = new MockHttpServletRequest();
+		final HttpServletResponse response = new MockHttpServletResponse();
 
-		this.basicPortalManager.dispatchUserAction(request, response);
+		this.userActionDispatcher.dispatch(request, response);
 	}
 }

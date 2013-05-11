@@ -16,9 +16,11 @@
 
 package fr.mby.portal.coreimpl.message;
 
-import org.springframework.stereotype.Service;
+import javax.servlet.http.HttpServletResponse;
 
-import fr.mby.portal.action.IUserAction;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
 import fr.mby.portal.core.message.IReplyFactory;
 import fr.mby.portal.message.IMessage.MessageType;
 import fr.mby.portal.message.IReply;
@@ -31,7 +33,10 @@ import fr.mby.portal.message.IReply;
 public class BasicReplyFactory implements IReplyFactory {
 
 	@Override
-	public IReply build(final IUserAction userAction, final MessageType messageType) {
+	public IReply build(final HttpServletResponse response, final MessageType messageType) {
+		Assert.notNull(response, "No HttpServletResponse provided !");
+		Assert.notNull(messageType, "No MessageType provided !");
+
 		final IReply reply;
 
 		switch (messageType) {
@@ -39,7 +44,7 @@ public class BasicReplyFactory implements IReplyFactory {
 				reply = new BasicActionReply();
 				break;
 			case RENDER :
-				reply = new BasicRenderReply();
+				reply = new BasicRenderReply(response);
 				break;
 			case EVENT :
 				reply = new BasicEventReply();

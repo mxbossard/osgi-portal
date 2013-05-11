@@ -16,17 +16,16 @@
 
 package fr.mby.portal.core.message;
 
-import javax.servlet.http.HttpServletRequest;
+import java.io.OutputStream;
 
-import fr.mby.portal.message.IMessage;
-import fr.mby.portal.message.IMessage.MessageType;
+import fr.mby.portal.message.IMimeReply;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IMessageFactory {
+public interface IInternalMimeReply extends IMimeReply {
 
-	IMessage build(HttpServletRequest request, MessageType messageType) throws IllegalArgumentException;
+	OutputStream getBackingOutputStream();
 
 }

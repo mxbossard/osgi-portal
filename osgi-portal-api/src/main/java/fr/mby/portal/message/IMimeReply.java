@@ -65,7 +65,7 @@ public interface IMimeReply extends IReply {
 	 * @throws IOException
 	 *             if an input or output exception occurred
 	 * @throws IllegalStateException
-	 *             if the getPortletOutputStream method has been called on this response
+	 *             if the getOutputStream method has been called on this response
 	 */
 	PrintWriter getWriter() throws IOException, IllegalStateException;
 

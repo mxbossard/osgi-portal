@@ -13,17 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.core;
+package fr.mby.portal.core.message;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import fr.mby.portal.message.IEventReply;
+
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public interface IPortalManager {
+public interface IInternalEventReply extends IEventReply {
 
-	void dispatchUserAction(HttpServletRequest request, HttpServletResponse response);
-	
 }
