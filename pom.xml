@@ -1,9 +1,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>fr.mby.maven</groupId>
+		<artifactId>basic-bundle-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
 	<groupId>fr.mby.osgi-portal</groupId>
 	<artifactId>osgi-portal</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 	<name>OSGi Portal</name>
 	<description>A Portal for OSGi</description>
@@ -16,13 +21,13 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<Bundle-Version>0.0.1</Bundle-Version>
-		<spring.version>3.2.2.RELEASE</spring.version>
+		<spring.version>3.2.1.RELEASE</spring.version>
 		<spring-security.version>3.1.4.RELEASE</spring-security.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
 		<gemini-blueprint.version>1.0.0.RELEASE</gemini-blueprint.version>
 		<bundlor.version>1.1.2.RELEASE</bundlor.version>
 		<junit.version>4.11</junit.version>
-		<log4j.version>2.0-beta4</log4j.version>
+		<log4j2.version>2.0-beta4</log4j2.version>
 	</properties>
 
 	<dependencies>
@@ -32,125 +37,5 @@
 			<version>2.5</version>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version>
-				<configuration>
-					<verbose>true</verbose>
-					<fork>true</fork>
-					<compilerVersion>1.6</compilerVersion>
-					<source>1.6</source>
-					<target>1.6</target>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<archive>
-						<manifestFile>target/classes/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-				</configuration>
-			</plugin>
-
-			<plugin>
-				<groupId>org.eclipse.virgo.bundlor</groupId>
-				<artifactId>org.eclipse.virgo.bundlor.maven</artifactId>
-				<version>${bundlor.version}</version>
-				<configuration>
-					<manifestTemplatePath>src/main/resources/META-INF/template.mf</manifestTemplatePath>
-					<outputPath>${basedir}/src/main/resources/</outputPath>
-					<manifestTemplate>
-Bundle-ManifestVersion: 2 
-Bundle-Name: ${project.artifactId} 
-Bundle-SymbolicName: ${project.groupId}_${project.artifactId}_${Bundle-Version}
-Bundle-Version: ${Bundle-Version} 
-Bundle-Vendor: ${project.groupId}
-Bundle-Classpath: . 
-Import-Package: org.eclipse.gemini.blueprint.blueprint.config
-					</manifestTemplate>
-				</configuration>
-				<executions>
-					<execution>
-						<id>bundlor-auto</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>bundlor</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.eclipse.virgo.bundlor</groupId>
-										<artifactId>org.eclipse.virgo.bundlor.maven</artifactId>
-										<versionRange>[1.1.2.RELEASE,)</versionRange>
-										<goals>
-											<goal>bundlor</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute>
-											<runOnIncremental>false</runOnIncremental>
-										</execute>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-	<!-- ================================================ -->
-	<!-- Repository Configuration -->
-	<!-- ================================================ -->
-	<pluginRepositories>
-		<pluginRepository>
-			<id>eclipse.virgo.build.bundles.release</id>
-			<name>Eclipse Virgo Build</name>
-			<url>http://build.eclipse.org/rt/virgo/maven/bundles/release</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>com.springsource.repository.bundles.external</id>
-			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/external</url>
-		</pluginRepository>
-	</pluginRepositories>
-	<repositories>
-		<repository>
-			<id>eclipse.virgo.build.bundles.release</id>
-			<name>Eclipse Virgo Build</name>
-			<url>http://build.eclipse.org/rt/virgo/maven/bundles/release</url>
-		</repository>
-		<repository>
-			<id>com.springsource.repository.bundles.release</id>
-			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/release</url>
-		</repository>
-		<repository>
-			<id>com.springsource.repository.bundles.external</id>
-			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/external</url>
-		</repository>
-	</repositories>
 
 </project>
