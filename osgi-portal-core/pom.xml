@@ -113,6 +113,12 @@
 			</exclusions>
 		</dependency>
 
+		<dependency>
+			<groupId>fr.mby.utils</groupId>
+			<artifactId>spring-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 	</dependencies>
 
 	<repositories>
