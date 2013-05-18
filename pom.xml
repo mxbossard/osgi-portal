@@ -1,11 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>fr.mby.maven</groupId>
-		<artifactId>basic-bundle-parent</artifactId>
-		<version>0.0.1-SNAPSHOT</version>
-	</parent>
 	<groupId>fr.mby.osgi-portal</groupId>
 	<artifactId>osgi-portal</artifactId>
 	<version>0.0.2-SNAPSHOT</version>
@@ -17,25 +12,5 @@
 		<module>osgi-portal-core</module>
 		<module>osgi-portal-web</module>
 	</modules>
-
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<Bundle-Version>0.0.1</Bundle-Version>
-		<spring.version>3.2.1.RELEASE</spring.version>
-		<spring-security.version>3.1.4.RELEASE</spring-security.version>
-		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
-		<gemini-blueprint.version>1.0.0.RELEASE</gemini-blueprint.version>
-		<bundlor.version>1.1.2.RELEASE</bundlor.version>
-		<junit.version>4.11</junit.version>
-		<log4j2.version>2.0-beta4</log4j2.version>
-	</properties>
-
-	<dependencies>
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>servlet-api</artifactId>
-			<version>2.5</version>
-		</dependency>
-	</dependencies>
 
 </project>

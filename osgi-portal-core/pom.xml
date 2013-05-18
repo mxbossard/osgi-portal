@@ -2,19 +2,35 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>fr.mby.osgi-portal</groupId>
-		<artifactId>osgi-portal</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<groupId>fr.mby.maven</groupId>
+		<artifactId>basic-bundle-parent</artifactId>
+		<version>0.0.1.BASIC_PARENT-SNAPSHOT</version>
 	</parent>
 	<artifactId>osgi-portal-core</artifactId>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<Bundle-Version>0.0.1</Bundle-Version>
+		<spring.version>3.2.1.RELEASE</spring.version>
+		<spring-security.version>3.1.4.RELEASE</spring-security.version>
+	</properties>
+
 	<dependencies>
+		
 		<!-- OSGi portal API -->
 		<dependency>
 			<groupId>fr.mby.osgi-portal</groupId>
 			<artifactId>osgi-portal-api</artifactId>
-			<version>${project.version}</version>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
+		
+		<!-- Max utils -->
+		<dependency>
+			<groupId>fr.mby.utils</groupId>
+			<artifactId>spring-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		
 		<!-- Spring 3 -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -51,82 +67,5 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Gemini-blueprint -->
-		<dependency>
-			<groupId>org.eclipse.gemini</groupId>
-			<artifactId>org.eclipse.gemini.blueprint.extender</artifactId>
-			<version>${gemini-blueprint.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.springframework.core</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.context</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.beans</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.gemini</groupId>
-			<artifactId>org.eclipse.gemini.blueprint.core</artifactId>
-			<version>${gemini-blueprint.version}</version>
-
-			<exclusions>
-				<exclusion>
-					<artifactId>org.springframework.core</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.context</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>
-						org.springframework.context.support
-					</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.beans</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>org.springframework.aop</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>org.eclipse.gemini</groupId>
-			<artifactId>org.eclipse.gemini.blueprint.io</artifactId>
-			<version>${gemini-blueprint.version}</version>
-			<exclusions>
-				<exclusion>
-					<artifactId>org.springframework.core</artifactId>
-					<groupId>org.springframework</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<dependency>
-			<groupId>fr.mby.utils</groupId>
-			<artifactId>spring-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
-		
 	</dependencies>
-
-	<repositories>
-		<repository>
-			<id>com.springsource.repository.bundle.external</id>
-			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/external</url>
-		</repository>
-	</repositories>
-
 </project>

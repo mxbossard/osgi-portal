@@ -2,31 +2,30 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>fr.mby.osgi-portal</groupId>
-		<artifactId>osgi-portal</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<groupId>fr.mby.maven</groupId>
+		<version>0.0.1.BASIC_PARENT-SNAPSHOT</version>
+		<artifactId>web-bundle-parent</artifactId>
 	</parent>
 	<artifactId>osgi-portal-web</artifactId>
 	<packaging>war</packaging>
 
-	<build>
-		<resources>
-			<resource>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<directory>src/main/webapp/WEB-INF</directory>
-			</resource>
-		</resources>
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-			</testResource>
-		</testResources>
-	</build>
+	<properties>
+		<Bundle-Version>0.0.1</Bundle-Version>
+		<Web-ContextPath>/portal</Web-ContextPath>
+		
+		<spring.version>3.2.1.RELEASE</spring.version>
+		<spring-security.version>3.1.4.RELEASE</spring-security.version>
+		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
+	</properties>
 
 	<dependencies>
-	
+		<dependency>
+			<groupId>fr.mby.utils</groupId>
+			<artifactId>web-utils</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		
 		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -49,4 +48,6 @@
 			<version>${spring-webflow.version}</version>
 		</dependency>
 	</dependencies>
+	<version>0.0.1-SNAPSHOT</version>
+	<groupId>fr.mby.osgi-portal</groupId>
 </project>
