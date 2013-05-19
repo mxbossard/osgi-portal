@@ -4,6 +4,8 @@
 */.settings
 *.class
 *.springBeans
+*MANIFEST.MF
+*build.properties
 
 # Package Files #
 *.jar
