@@ -20,8 +20,8 @@ import java.io.Serializable;
 
 import org.springframework.stereotype.Service;
 
+import fr.mby.portal.api.event.IEvent;
 import fr.mby.portal.core.event.IEventFactory;
-import fr.mby.portal.event.IEvent;
 
 /**
  * @author Maxime Bossard - 2013

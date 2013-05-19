@@ -13,19 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.app;
+
+package fr.mby.portal.api.event;
+
+import java.io.Serializable;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
-public interface IAppConfig {
+public interface IEvent {
 
-	/**
-	 * Returns the IAppContext of the application.
-	 * 
-	 * @return the IAppContext of the application
-	 */
-	IAppContext getAppContext();
-	
+	String getName();
+
+	Serializable getValue();
+
 }

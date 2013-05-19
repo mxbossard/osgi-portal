@@ -13,17 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.app;
-
-import fr.mby.portal.message.IEventReply;
-import fr.mby.portal.message.IEventMessage;
+package fr.mby.portal.api.message;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public interface IEventApp {
+public interface IEventReply extends IReply {
 
-	void processEvent(IEventMessage request, IEventReply response);
-	
 }

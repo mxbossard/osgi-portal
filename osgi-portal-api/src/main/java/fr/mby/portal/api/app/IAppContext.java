@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.app;
+package fr.mby.portal.api.app;
 
 /**
  * The IAppContext interface makes resources available to the App. Using the context, a App can access the app log, and obtain URL references to resources.

@@ -16,11 +16,11 @@
 
 package fr.mby.portal.coreimpl.message;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IAppContext;
-import fr.mby.portal.app.IAppPreferences;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IAppContext;
+import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.message.IActionMessage;
 import fr.mby.portal.core.session.ISessionManager;
-import fr.mby.portal.message.IActionMessage;
 
 /**
  * @author Maxime Bossard - 2013

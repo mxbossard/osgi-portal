@@ -26,14 +26,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import fr.mby.portal.api.message.IMessage;
+import fr.mby.portal.api.message.IMessageDispatcher;
+import fr.mby.portal.api.message.IReply;
+import fr.mby.portal.api.message.IMessage.MessageType;
 import fr.mby.portal.core.IUserActionDispatcher;
 import fr.mby.portal.core.aggregator.IReplyAggregator;
 import fr.mby.portal.core.message.IMessageFactory;
 import fr.mby.portal.core.message.IReplyFactory;
-import fr.mby.portal.message.IMessage;
-import fr.mby.portal.message.IMessage.MessageType;
-import fr.mby.portal.message.IMessageDispatcher;
-import fr.mby.portal.message.IReply;
 
 /**
  * @author Maxime Bossard - 2013

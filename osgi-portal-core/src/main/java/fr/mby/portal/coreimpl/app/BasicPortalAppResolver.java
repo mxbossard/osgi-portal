@@ -21,8 +21,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IPortalApp;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.app.IPortalAppResolver;
 
 /**

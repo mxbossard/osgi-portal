@@ -21,7 +21,7 @@ import java.util.Map;
 
 import javax.servlet.http.Cookie;
 
-import fr.mby.portal.message.IReply;
+import fr.mby.portal.api.message.IReply;
 
 /**
  * @author Maxime Bossard - 2013

@@ -22,8 +22,8 @@ import java.util.Map;
 
 import org.springframework.util.Assert;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.context.IPortalContext;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.context.IPortalContext;
 
 /**
  * @author Maxime Bossard - 2013

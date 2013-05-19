@@ -19,8 +19,8 @@ package fr.mby.portal.coreimpl.context;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IAppContext;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.core.context.IAppContextResolver;
 
 /**

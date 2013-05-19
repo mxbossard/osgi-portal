@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.action;
+package fr.mby.portal.api.action;
 
 import java.security.Principal;
 import java.util.Map;
 
-import fr.mby.portal.context.IPortalContext;
+import fr.mby.portal.api.context.IPortalContext;
 
 /**
  * Represents an action sent by the client to the portal.

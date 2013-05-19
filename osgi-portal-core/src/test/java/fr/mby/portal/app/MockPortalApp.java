@@ -21,12 +21,15 @@ import java.io.PrintWriter;
 
 import javax.servlet.http.Cookie;
 
-import fr.mby.portal.message.IActionMessage;
-import fr.mby.portal.message.IActionReply;
-import fr.mby.portal.message.IEventMessage;
-import fr.mby.portal.message.IEventReply;
-import fr.mby.portal.message.IRenderMessage;
-import fr.mby.portal.message.IRenderReply;
+import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.api.app.IEventApp;
+import fr.mby.portal.api.app.IPortalApp;
+import fr.mby.portal.api.message.IActionMessage;
+import fr.mby.portal.api.message.IActionReply;
+import fr.mby.portal.api.message.IEventMessage;
+import fr.mby.portal.api.message.IEventReply;
+import fr.mby.portal.api.message.IRenderMessage;
+import fr.mby.portal.api.message.IRenderReply;
 
 /**
  * @author Maxime Bossard - 2013

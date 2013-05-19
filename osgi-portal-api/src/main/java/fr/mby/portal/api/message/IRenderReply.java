@@ -14,22 +14,20 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.app;
-
-import java.util.Map;
+package fr.mby.portal.api.message;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAppPreferences {
+public interface IRenderReply extends IMimeReply {
 
-	Map<String, String[]> getMap();
-
-	Iterable<String> getNames();
-
-	String getValue(String name, String def);
-
-	String[] getValues(String name, String[] def);
+	/**
+	 * This method sets the title of the portlet. The value can be a text String
+	 * 
+	 * @param title
+	 *            portlet title as text String or resource URI
+	 */
+	void setTitle(String title);
 
 }

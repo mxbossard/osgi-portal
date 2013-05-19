@@ -15,7 +15,7 @@
  */
 package fr.mby.portal.core.message;
 
-import fr.mby.portal.message.IActionReply;
+import fr.mby.portal.api.message.IActionReply;
 
 
 /**

@@ -20,7 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import fr.mby.portal.app.IAppPreferences;
+import fr.mby.portal.api.app.IAppPreferences;
 
 /**
  * @author Maxime Bossard - 2013

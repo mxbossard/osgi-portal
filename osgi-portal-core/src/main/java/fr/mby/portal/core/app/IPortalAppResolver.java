@@ -16,7 +16,7 @@
 
 package fr.mby.portal.core.app;
 
-import fr.mby.portal.app.IPortalApp;
+import fr.mby.portal.api.app.IPortalApp;
 
 /**
  * @author Maxime Bossard - 2013

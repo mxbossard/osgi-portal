@@ -21,20 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IEventApp;
-import fr.mby.portal.app.IPortalApp;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IEventApp;
+import fr.mby.portal.api.app.IPortalApp;
+import fr.mby.portal.api.message.IActionMessage;
+import fr.mby.portal.api.message.IActionReply;
+import fr.mby.portal.api.message.IEventMessage;
+import fr.mby.portal.api.message.IEventReply;
+import fr.mby.portal.api.message.IMessage;
+import fr.mby.portal.api.message.IMessageDispatcher;
+import fr.mby.portal.api.message.IRenderMessage;
+import fr.mby.portal.api.message.IRenderReply;
+import fr.mby.portal.api.message.IReply;
 import fr.mby.portal.core.app.IEventAppResolver;
 import fr.mby.portal.core.app.IPortalAppResolver;
-import fr.mby.portal.message.IActionMessage;
-import fr.mby.portal.message.IActionReply;
-import fr.mby.portal.message.IEventMessage;
-import fr.mby.portal.message.IEventReply;
-import fr.mby.portal.message.IMessage;
-import fr.mby.portal.message.IMessageDispatcher;
-import fr.mby.portal.message.IRenderMessage;
-import fr.mby.portal.message.IRenderReply;
-import fr.mby.portal.message.IReply;
 
 /**
  * @author Maxime Bossard - 2013

@@ -19,8 +19,8 @@ package fr.mby.portal.coreimpl.aggregator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.mby.portal.api.message.IReply;
 import fr.mby.portal.core.aggregator.IReplyAggregator;
-import fr.mby.portal.message.IReply;
 import fr.mby.utils.spring.aop.support.AopHelper;
 
 /**

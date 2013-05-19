@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.message;
+package fr.mby.portal.api.message;
 
 import java.io.IOException;
 import java.io.OutputStream;

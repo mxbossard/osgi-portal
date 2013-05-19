@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.message;
+package fr.mby.portal.api.message;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public interface IActionReply extends IReply {
+public interface IRenderMessage extends IMessage {
 
 }

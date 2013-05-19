@@ -23,18 +23,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IAppContext;
-import fr.mby.portal.app.IAppPreferences;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IAppContext;
+import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.event.IEvent;
+import fr.mby.portal.api.message.IMessage;
+import fr.mby.portal.api.message.IMessage.MessageType;
 import fr.mby.portal.core.action.IUserActionFactory;
 import fr.mby.portal.core.context.IAppContextResolver;
 import fr.mby.portal.core.event.IEventFactory;
 import fr.mby.portal.core.message.IMessageFactory;
 import fr.mby.portal.core.preferences.IAppPreferencesResolver;
 import fr.mby.portal.core.session.ISessionManager;
-import fr.mby.portal.event.IEvent;
-import fr.mby.portal.message.IMessage;
-import fr.mby.portal.message.IMessage.MessageType;
 
 /**
  * @author Maxime Bossard - 2013

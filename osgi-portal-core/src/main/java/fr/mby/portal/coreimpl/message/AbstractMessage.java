@@ -18,12 +18,12 @@ package fr.mby.portal.coreimpl.message;
 
 import org.springframework.util.Assert;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IAppContext;
-import fr.mby.portal.app.IAppPreferences;
-import fr.mby.portal.app.ISession;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IAppContext;
+import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.app.ISession;
+import fr.mby.portal.api.message.IMessage;
 import fr.mby.portal.core.session.ISessionManager;
-import fr.mby.portal.message.IMessage;
 
 /**
  * @author Maxime Bossard - 2013

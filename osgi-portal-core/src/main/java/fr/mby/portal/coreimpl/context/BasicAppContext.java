@@ -16,7 +16,7 @@
 
 package fr.mby.portal.coreimpl.context;
 
-import fr.mby.portal.app.IAppContext;
+import fr.mby.portal.api.app.IAppContext;
 
 /**
  * @author Maxime Bossard - 2013

@@ -18,7 +18,7 @@ package fr.mby.portal.core.event;
 
 import java.io.Serializable;
 
-import fr.mby.portal.event.IEvent;
+import fr.mby.portal.api.event.IEvent;
 
 /**
  * @author Maxime Bossard - 2013

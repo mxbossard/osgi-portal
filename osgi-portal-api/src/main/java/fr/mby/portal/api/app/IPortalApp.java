@@ -13,19 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.message;
+package fr.mby.portal.api.app;
 
+import fr.mby.portal.api.message.IActionMessage;
+import fr.mby.portal.api.message.IActionReply;
+import fr.mby.portal.api.message.IRenderMessage;
+import fr.mby.portal.api.message.IRenderReply;
 
 
 /**
- * The IMessageDispatcher define an object which receive messages 
- * and sends them through the portal environment.
- * 
  * @author Maxime Bossard - 2013
  *
  */
-public interface IMessageDispatcher {
+public interface IPortalApp {
 
-	void dispatch(IMessage message, IReply reply);
+	void destory();
 	
+	void init(IAppConfig config);
+	
+	void processAction(IActionMessage request, IActionReply response);
+	
+	void render(IRenderMessage request, IRenderReply response);
 }

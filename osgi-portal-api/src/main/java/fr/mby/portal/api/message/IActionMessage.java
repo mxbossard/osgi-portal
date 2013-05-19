@@ -13,25 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.app;
-
-import fr.mby.portal.message.IActionReply;
-import fr.mby.portal.message.IActionMessage;
-import fr.mby.portal.message.IRenderReply;
-import fr.mby.portal.message.IRenderMessage;
-
+package fr.mby.portal.api.message;
 
 /**
  * @author Maxime Bossard - 2013
  *
  */
-public interface IPortalApp {
+public interface IActionMessage extends IMessage {
 
-	void destory();
-	
-	void init(IAppConfig config);
-	
-	void processAction(IActionMessage request, IActionReply response);
-	
-	void render(IRenderMessage request, IRenderReply response);
 }

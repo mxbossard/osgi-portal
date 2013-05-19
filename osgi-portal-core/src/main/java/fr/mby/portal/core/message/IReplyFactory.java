@@ -18,8 +18,8 @@ package fr.mby.portal.core.message;
 
 import javax.servlet.http.HttpServletResponse;
 
-import fr.mby.portal.message.IMessage.MessageType;
-import fr.mby.portal.message.IReply;
+import fr.mby.portal.api.message.IReply;
+import fr.mby.portal.api.message.IMessage.MessageType;
 
 /**
  * @author Maxime Bossard - 2013

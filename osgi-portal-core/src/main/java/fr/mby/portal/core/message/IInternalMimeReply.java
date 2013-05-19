@@ -18,7 +18,7 @@ package fr.mby.portal.core.message;
 
 import java.io.OutputStream;
 
-import fr.mby.portal.message.IMimeReply;
+import fr.mby.portal.api.message.IMimeReply;
 
 /**
  * @author Maxime Bossard - 2013

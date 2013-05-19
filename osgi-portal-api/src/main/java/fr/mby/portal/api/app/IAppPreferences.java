@@ -13,17 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.app;
+
+package fr.mby.portal.api.app;
+
+import java.util.Map;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
-public interface ISession {
+public interface IAppPreferences {
 
-	Object getAttribute(String name) throws IllegalArgumentException;
-	
-	void setAttribute(String name, Object value) throws IllegalArgumentException;
-	
-	Object removeAttribute(String name) throws IllegalArgumentException;
+	Map<String, String[]> getMap();
+
+	Iterable<String> getNames();
+
+	String getValue(String name, String def);
+
+	String[] getValues(String name, String[] def);
+
 }

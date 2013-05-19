@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package fr.mby.portal.event;
-
-import java.io.Serializable;
+package fr.mby.portal.api.context;
 
 /**
  * @author Maxime Bossard - 2013
- * 
+ *
  */
-public interface IEvent {
-
-	String getName();
-
-	Serializable getValue();
+public interface IPortalContext {
 
 }

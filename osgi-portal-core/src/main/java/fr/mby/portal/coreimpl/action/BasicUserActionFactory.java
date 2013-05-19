@@ -28,8 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.context.IPortalContext;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.context.IPortalContext;
 import fr.mby.portal.core.action.IUserActionFactory;
 import fr.mby.portal.core.context.IPortalContextResolver;
 import fr.mby.portal.core.properties.IRequestPropertiesResolver;

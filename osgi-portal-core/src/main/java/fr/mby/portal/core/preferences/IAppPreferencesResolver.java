@@ -16,7 +16,7 @@
 
 package fr.mby.portal.core.preferences;
 
-import fr.mby.portal.app.IAppPreferences;
+import fr.mby.portal.api.app.IAppPreferences;
 
 /**
  * @author Maxime Bossard - 2013

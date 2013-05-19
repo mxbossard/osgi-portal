@@ -16,7 +16,7 @@
 
 package fr.mby.portal.core.message;
 
-import fr.mby.portal.message.IRenderReply;
+import fr.mby.portal.api.message.IRenderReply;
 
 /**
  * @author Maxime Bossard - 2013

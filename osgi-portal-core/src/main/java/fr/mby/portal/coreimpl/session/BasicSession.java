@@ -21,7 +21,7 @@ import java.util.Map;
 
 import org.springframework.util.Assert;
 
-import fr.mby.portal.app.ISession;
+import fr.mby.portal.api.app.ISession;
 
 /**
  * @author Maxime Bossard - 2013

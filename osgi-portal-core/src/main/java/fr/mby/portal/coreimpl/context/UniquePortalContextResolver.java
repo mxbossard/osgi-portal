@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import fr.mby.portal.context.IPortalContext;
+import fr.mby.portal.api.context.IPortalContext;
 import fr.mby.portal.core.context.IPortalContextResolver;
 
 /**

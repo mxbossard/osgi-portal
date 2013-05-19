@@ -21,9 +21,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import fr.mby.portal.api.message.IReply;
+import fr.mby.portal.api.message.IMessage.MessageType;
 import fr.mby.portal.core.message.IReplyFactory;
-import fr.mby.portal.message.IMessage.MessageType;
-import fr.mby.portal.message.IReply;
 
 /**
  * @author Maxime Bossard - 2013

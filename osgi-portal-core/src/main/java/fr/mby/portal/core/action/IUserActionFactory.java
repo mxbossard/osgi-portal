@@ -18,7 +18,7 @@ package fr.mby.portal.core.action;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fr.mby.portal.action.IUserAction;
+import fr.mby.portal.api.action.IUserAction;
 
 /**
  * @author Maxime Bossard - 2013

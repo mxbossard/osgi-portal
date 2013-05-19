@@ -13,21 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-package fr.mby.portal.message;
+package fr.mby.portal.api.app;
 
 /**
  * @author Maxime Bossard - 2013
- * 
+ *
  */
-public interface IRenderReply extends IMimeReply {
+public interface IAppConfig {
 
 	/**
-	 * This method sets the title of the portlet. The value can be a text String
+	 * Returns the IAppContext of the application.
 	 * 
-	 * @param title
-	 *            portlet title as text String or resource URI
+	 * @return the IAppContext of the application
 	 */
-	void setTitle(String title);
-
+	IAppContext getAppContext();
+	
 }

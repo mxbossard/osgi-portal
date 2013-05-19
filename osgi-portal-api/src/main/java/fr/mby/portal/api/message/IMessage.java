@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.mby.portal.message;
+package fr.mby.portal.api.message;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IAppContext;
-import fr.mby.portal.app.IAppPreferences;
-import fr.mby.portal.app.ISession;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IAppContext;
+import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.app.ISession;
 
 /**
  * @author Maxime Bossard - 2013

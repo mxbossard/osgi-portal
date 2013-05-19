@@ -19,8 +19,8 @@ package fr.mby.portal.coreimpl.preferences;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 
-import fr.mby.portal.action.IUserAction;
-import fr.mby.portal.app.IAppPreferences;
+import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IAppPreferences;
 import fr.mby.portal.core.preferences.IAppPreferencesResolver;
 
 /**
