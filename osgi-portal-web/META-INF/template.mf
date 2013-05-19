@@ -1,0 +1,25 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ${bundle.symbolicName}
+Bundle-Name: ${bundle.name}		
+Bundle-Version: ${bundle.version}
+Bundle-ClassPath: ${bundlor.template.classPath}
+Web-ContextPath: ${bundlor.template.webContextPath}
+Webapp-Context: ${bundlor.template.webAppContext}
+Excluded-Exports: fr.mby.*
+Excluded-Imports: 
+Export-Template: 
+Ignored-Existing-Headers: 
+Import-Template: 
+ fr.mby.portal.api.*;version="${osgi-portal-api.version:medium-range}",
+ fr.mby.utils.*;version="[0.0.1, 2.0.0)",
+ org.osgi.framework;version="${osgi.version:major-range}",
+ org.apache.logging.log4j;version="[${log4j2.version}, 3.0.0)",
+ javax.servlet.*;version="${servlet.version}",
+ org.eclipse.gemini.blueprint.*;version="${blueprint.version:major-range}",
+ org.springframework.*;version="${spring.version:major-range}",
+ org.springframework.webflow.*;version="${spring-webflow.version:major-range}",
+ org.springframework.security.*;version="${spring-security.version:major-range}"
+Version-Patterns: 
+ major-range;pattern="[=.=.=.=, +1.0.0.=)",
+ medium-range;pattern="[=.=.=.=, =.+1.0.=)",
+ exact-range;pattern="[=.=.=, =.=.=]"

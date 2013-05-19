@@ -1,36 +1,43 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.mby.osgi-portal</groupId>
+	<artifactId>osgi-portal-core</artifactId>
+	<version>0.0.1.SNAPSHOT</version>
+	<name>OSGi Portal API</name>
+	<packaging>jar</packaging>
+	
 	<parent>
 		<groupId>fr.mby.maven</groupId>
-		<artifactId>basic-bundle-parent</artifactId>
-		<version>0.0.1.BASIC_PARENT-SNAPSHOT</version>
+		<artifactId>spring-basic-bundle</artifactId>
+		<version>1.0.0.PARENT</version>
 	</parent>
-	<artifactId>osgi-portal-core</artifactId>
 
 	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<Bundle-Version>0.0.1</Bundle-Version>
+		
+		<servlet.version>2.5</servlet.version>
+		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
 		<spring.version>3.2.1.RELEASE</spring.version>
 		<spring-security.version>3.1.4.RELEASE</spring-security.version>
 	</properties>
 
 	<dependencies>
-		
+
 		<!-- OSGi portal API -->
 		<dependency>
 			<groupId>fr.mby.osgi-portal</groupId>
 			<artifactId>osgi-portal-api</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>${osgi-portal-api.version}</version>
 		</dependency>
-		
+
 		<!-- Max utils -->
 		<dependency>
 			<groupId>fr.mby.utils</groupId>
 			<artifactId>spring-utils</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-		
+
 		<!-- Spring 3 -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -68,4 +75,16 @@
 		</dependency>
 
 	</dependencies>
+
+	<build>
+		<plugins>
+
+		</plugins>
+		<pluginManagement>
+			<plugins>
+
+			</plugins>
+		</pluginManagement>
+	</build>
+
 </project>

@@ -1,20 +1,24 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.mby.osgi-portal</groupId>
+	<artifactId>osgi-portal-web</artifactId>
+	<version>0.0.1.SNAPSHOT</version>
+	<name>OSGi portal Wab</name>
+	<packaging>jar</packaging>
+	
 	<parent>
 		<groupId>fr.mby.maven</groupId>
-		<version>0.0.1.BASIC_PARENT-SNAPSHOT</version>
-		<artifactId>web-bundle-parent</artifactId>
+		<version>1.0.0.PARENT</version>
+		<artifactId>spring-basic-bundle-web</artifactId>
 	</parent>
-	<artifactId>osgi-portal-web</artifactId>
-	<packaging>war</packaging>
 
 	<properties>
-		<Bundle-Version>0.0.1</Bundle-Version>
-		<Web-ContextPath>/portal</Web-ContextPath>
-		
+		<bundlor.template.webContextPath>/portal</bundlor.template.webContextPath>
+
+		<servlet.version>2.5</servlet.version>
+		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
 		<spring.version>3.2.1.RELEASE</spring.version>
-		<spring-security.version>3.1.4.RELEASE</spring-security.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
 	</properties>
 
@@ -25,7 +29,7 @@
 			<version>0.0.1-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
-		
+
 		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -41,13 +45,12 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
-		</dependency>		
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.webflow</groupId>
 			<artifactId>spring-webflow</artifactId>
 			<version>${spring-webflow.version}</version>
 		</dependency>
 	</dependencies>
-	<version>0.0.1-SNAPSHOT</version>
-	<groupId>fr.mby.osgi-portal</groupId>
+
 </project>

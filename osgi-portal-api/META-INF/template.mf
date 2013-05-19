@@ -1,0 +1,17 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ${bundle.symbolicName}
+Bundle-Name: ${bundle.name}		
+Bundle-Version: ${bundle.version}
+Bundle-ClassPath: ${bundlor.template.classPath}
+Excluded-Exports: 
+Excluded-Imports: 
+Export-Template: 
+Ignored-Existing-Headers: 
+Import-Template: 
+ org.osgi.framework;version="${osgi.version:major-range}",
+ org.apache.logging.log4j;version="${log4j2.version}",
+ javax.servlet.*;version="${servlet.version}"
+Version-Patterns: 
+ major-range;pattern="[=.=.=, +1.0.0)",
+ medium-range;pattern="[=.=.=, =.+1.0)",
+ exact-range;pattern="[=.=.=, =.=.=]"
