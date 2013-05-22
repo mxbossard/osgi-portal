@@ -32,7 +32,7 @@ import fr.mby.portal.core.app.IPortalAppResolver;
 @Service
 public class BasicPortalAppResolver implements IPortalAppResolver<IUserAction> {
 
-	@Autowired
+	@Autowired(required = false)
 	private List<IPortalApp> portalApplications;
 
 	@Override

@@ -32,7 +32,7 @@ import fr.mby.portal.core.app.IEventAppResolver;
 @Service
 public class BasicEventAppResolver implements IEventAppResolver<IUserAction> {
 
-	@Autowired
+	@Autowired(required = false)
 	private List<IEventApp> portalEventApplications;
 
 	@Override
