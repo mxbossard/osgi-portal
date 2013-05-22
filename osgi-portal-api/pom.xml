@@ -15,8 +15,6 @@
 	</parent>
 
 	<properties>
-		<bundle.version>0.0.1</bundle.version>
-		
 		<servlet.version>2.5</servlet.version>
 	</properties>
 
