@@ -5,7 +5,8 @@ Bundle-Version: ${bundle.version}
 Bundle-ClassPath: ${bundlor.template.classPath}
 Web-ContextPath: ${bundlor.template.webContextPath}
 Webapp-Context: ${bundlor.template.webAppContext}
-Import-Package: javax.servlet,
+Import-Package: fr.mby.portal.core,
+ javax.servlet,
  javax.servlet.http,
  javax.servlet.resources,
  javax.servlet.jsp,
@@ -28,28 +29,27 @@ Excluded-Imports:
 Export-Template: 
 Ignored-Existing-Headers: 
 Import-Template: 
- fr.mby.portal.api*;version="${osgi-portal-api.version:medium-range}",
- fr.mby.utils*;version="[0.0.1, 2.0.0)",
- javax.servlet*;version="${servlet.version:[=.=.=, +1.0.0)}",
- javax.servlet.jsp*;version="[2.2.0, 3.0.0)",
- javax.servlet.jsp.jstl*;version="[1.2.0, 2.0.0)",
- org.osgi.framework*,
- org.eclipse.gemini.blueprint.*;version="${blueprint.version:major-range}",
- org.eclipse.virgo.web.dm*;version="[3.0.0,4.0.0)",
- org.apache.logging.log4j*;version="[2.0.0, 3.0.0)",
- org.springframework.stereotype*;version="${spring.version:major-range}",
- org.springframework.core.*;version="${spring.version:major-range}",
+ fr.mby.portal.core.*;version="${osgi-portal-api.version:medium-range}",
+ fr.mby.utils.web.*;version="[0.0.1, 2.0.0)",
+ javax.servlet.*;version="${servlet.version:[=.=.=, +1.0.0)}",
+ javax.servlet.jsp.*;version="[2.2.0,3.0.0)",
+ javax.servlet.jsp.jstl.*;version="[1.2.0,2.0.0)",
+ org.eclipse.gemini.blueprint.blueprint.config.*;version="${blueprint.version:major-range}",
+ org.eclipse.virgo.web.dm.*;version="[3.0,4)",
+ org.apache.logging.log4j.*;version="[2.0.0,3.0.0)",
+ org.springframework.aop.*;version="${spring.version:major-range}",
+ org.springframework.aspects.*;version="${spring.version:major-range}",
  org.springframework.beans.*;version="${spring.version:major-range}",
  org.springframework.context.*;version="${spring.version:major-range}",
- org.springframework.aop.*;version="${spring.version:major-range}",
- org.springframework.web.*;version="${spring.version:major-range}", 
- org.springframework.web.servlet.*;version="${spring.version:major-range}",
- org.springframework.webflow.*;verion="${spring-webflow.version:major-range}",
  org.springframework.context.support.*;version="${spring.version:major-range}",
- org.springframework.aspects.*;version="${spring.version:major-range}",
- org.springframework.webflow.*;version="${spring-webflow.version:major-range}",
+ org.springframework.core.*;version="${spring.version:major-range}",
+ org.springframework.stereotype.*;version="${spring.version:major-range}",
+ org.springframework.web.*;version="${spring.version:major-range}",
+ org.springframework.web.servlet.*;version="${spring.version:major-range}",
+ org.springframework.web.servlet.mvc.*;version="${spring.version:major-range}",
+ org.springframework.web.servlet.tags.*;version="${spring.version:major-range}",
  org.springframework.security.*;version="${spring-security.version:major-range}",
- org.springframework*
+ org.springframework.webflow.*;version="${spring-webflow.version:major-range}"
 Version-Patterns: 
  major-range;pattern="[=.=.=.=, +1.0.0.=)",
  medium-range;pattern="[=.=.=.=, =.+1.0.=)",

@@ -15,20 +15,27 @@
 	</parent>
 
 	<properties>
+		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
+		
 		<bundle.symbolicName>fr.mby.osgi-portal.osgi-portal-web</bundle.symbolicName>
 		<bundlor.template.webContextPath>/portal</bundlor.template.webContextPath>
 
 		<servlet.version>2.5</servlet.version>
-		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
-		<spring.version>3.2.1.RELEASE</spring.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
 	</properties>
 
 	<dependencies>
 		<dependency>
+			<groupId>fr.mby.osgi-portal</groupId>
+			<artifactId>osgi-portal-core</artifactId>
+			<version>${osgi-portal-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
 			<groupId>fr.mby.utils</groupId>
 			<artifactId>web-utils</artifactId>
-			<version>0.0.1-SNAPSHOT</version>
+			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -67,35 +74,7 @@
 
 	<build>
 		<plugins>
-			<!-- <plugin>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
-				<executions>
-					<execution>
-						<id>default-war</id>
-						<phase>package</phase>
-						<goals>
-							<goal>war</goal>
-						</goals>
-						<configuration>
-							<packagingExcludes>WEB-INF/web.xml, WEB-INF/lib/*</packagingExcludes>
-							<archive>
-								<manifestFile>F:\workspage\osgi-portal\osgi-portal\osgi-portal-web/META-INF/MANIFEST.MF</manifestFile>
-							</archive>
-							<failOnMissingWebXml>true</failOnMissingWebXml>
-							<webXml>F:\workspage\osgi-portal\osgi-portal\osgi-portal-web/WEB-INF/web.xml</webXml>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<packagingExcludes>WEB-INF/web.xml, WEB-INF/lib/*</packagingExcludes>
-					<archive>
-						<manifestFile>F:\workspage\osgi-portal\osgi-portal\osgi-portal-web/META-INF/MANIFEST.MF</manifestFile>
-					</archive>
-					<failOnMissingWebXml>true</failOnMissingWebXml>
-					<webXml>F:\workspage\osgi-portal\osgi-portal\osgi-portal-web/WEB-INF/web.xml</webXml>
-				</configuration>
-			</plugin> -->
+		
 		</plugins>
 	</build>
 </project>

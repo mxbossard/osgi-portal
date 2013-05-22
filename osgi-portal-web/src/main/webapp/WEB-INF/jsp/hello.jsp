@@ -8,5 +8,6 @@
 </head>
 <body>
 	<h1>Message : ${message}</h1>	
+	<p>userActionDispatcherCount : ${userActionDispatcherCount}</p>
 </body>
 </html>

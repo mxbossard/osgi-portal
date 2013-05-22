@@ -16,10 +16,15 @@
 
 package fr.mby.portal.web.controller;
 
+import java.util.Collection;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+
+import fr.mby.portal.core.IUserActionDispatcher;
 
 /**
  * @author Maxime Bossard - 2013
@@ -30,12 +35,41 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @RequestMapping("/hello")
 public class HelloController {
 
+	@Autowired
+	private Collection<IUserActionDispatcher> userActionDispatchers;
+
 	@RequestMapping(method = RequestMethod.GET)
 	public String hello(final Model model) {
 
 		model.addAttribute("message", "Spring 3 MVC Hello World !");
+
+		if (this.userActionDispatchers == null) {
+			model.addAttribute("userActionDispatcherCount", "null");
+		} else {
+			model.addAttribute("userActionDispatcherCount", this.userActionDispatchers.size());
+		}
+
 		return "hello";
 
+	}
+
+	/**
+	 * Getter of userActionDispatchers.
+	 * 
+	 * @return the userActionDispatchers
+	 */
+	public Collection<IUserActionDispatcher> getUserActionDispatchers() {
+		return this.userActionDispatchers;
+	}
+
+	/**
+	 * Setter of userActionDispatchers.
+	 * 
+	 * @param userActionDispatchers
+	 *            the userActionDispatchers to set
+	 */
+	public void setUserActionDispatchers(final Collection<IUserActionDispatcher> userActionDispatchers) {
+		this.userActionDispatchers = userActionDispatchers;
 	}
 
 }
