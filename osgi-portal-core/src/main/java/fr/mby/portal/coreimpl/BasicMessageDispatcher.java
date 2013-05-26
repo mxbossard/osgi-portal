@@ -16,6 +16,8 @@
 
 package fr.mby.portal.coreimpl;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +37,7 @@ import fr.mby.portal.api.message.IRenderReply;
 import fr.mby.portal.api.message.IReply;
 import fr.mby.portal.core.app.IEventAppResolver;
 import fr.mby.portal.core.app.IPortalAppResolver;
+import fr.mby.portal.core.configuration.IConfigurationManager;
 
 /**
  * @author Maxime Bossard - 2013
@@ -48,6 +51,11 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 
 	@Autowired
 	private IEventAppResolver<IUserAction> eventAppResolver;
+
+	@Autowired
+	private IConfigurationManager configManager;
+
+	private Configuration configuration;
 
 	@Override
 	public void dispatch(final IMessage message, final IReply reply) {
@@ -76,6 +84,17 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.portalAppResolver, "No IPortalAppResolver configured !");
 		Assert.notNull(this.eventAppResolver, "No IEventAppResolver configured !");
+		Assert.notNull(this.configManager, "No IConfigurationManager configured !");
+
+		this.initConfiguration();
+	}
+
+	/**
+	 * @throws ConfigurationException
+	 */
+	protected void initConfiguration() throws ConfigurationException {
+		this.configuration = this.configManager.initConfiguration(this.getClass().getName(), String.class,
+				IConfigurationManager.CORE_TAG);
 	}
 
 	/**

@@ -29,7 +29,7 @@ import org.apache.commons.configuration.ConfigurationException;
  */
 public interface IConfigurationManager {
 
-	static final String ROOT_TAG = "ROOT_TAG";
+	static final String CORE_TAG = "core";
 
 	/**
 	 * Initialize a config element.

@@ -8,5 +8,7 @@
 	<context:component-scan base-package="fr.mby.portal.coreimpl*" />
 
 	<bean id="userActionDispatcher" class="fr.mby.portal.coreimpl.BasicUserActionDispatcher" />
+	
+	<bean id="configManager" class="fr.mby.portal.coreimpl.configuration.PropertiesConfigurationManager" />
 
 </beans>
