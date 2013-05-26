@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.portal;
+package fr.mby.portal.coreimpl;
 
 import javax.servlet.http.Cookie;
 

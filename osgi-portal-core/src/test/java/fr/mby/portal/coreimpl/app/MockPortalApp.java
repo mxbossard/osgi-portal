@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.app;
+package fr.mby.portal.coreimpl.app;
 
 import java.io.IOException;
 import java.io.PrintWriter;
