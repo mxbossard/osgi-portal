@@ -57,7 +57,7 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 
 		if (portalApps != null) {
 			for (final IPortalApp portalApp : portalApps) {
-				disptached = disptached || this.dispatchToPortalApp(portalApp, message, reply);
+				disptached = this.dispatchToPortalApp(portalApp, message, reply) || disptached;
 			}
 		}
 
@@ -65,7 +65,7 @@ public class BasicMessageDispatcher implements IMessageDispatcher, InitializingB
 
 		if (eventApps != null) {
 			for (final IEventApp eventApp : eventApps) {
-				disptached = disptached || this.dispatchToEventApp(eventApp, message, reply);
+				disptached = this.dispatchToEventApp(eventApp, message, reply) || disptached;
 			}
 		}
 
