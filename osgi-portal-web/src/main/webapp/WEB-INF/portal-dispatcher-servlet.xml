@@ -11,16 +11,19 @@
 		@Controller. - On définit ici dans quel package le post processor doit chercher 
 		ces beans éventuellement annotés. 	-->
 	<!-- <context:component-scan base-package="fr.mby.portal.web.controller" /> -->
-
+	
 	<!--  	
  	<bean class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
  	 -->
+ 	 
+ 	 <import resource="classpath:*context.xml" />
  	
  	<!-- the mvc resources tag does the magic -->
  	<mvc:resources mapping="/resources/**" location="/resources/" />
- 
+	<!--  
  	<mvc:view-controller path="/" view-name="index"/>
- 
+  	-->
+  	
 	<!-- - Les controlleurs de cette application fournissent une annotation 
 		@RequestMapping - Qui peuvent être déclaré de deux manière différentes : 
 		- Au niveau de la classe par exemple : - @RequestMapping("/addVisit.html") 
@@ -51,4 +54,8 @@
 		<property name="userActionDispatchers" ref="userActionDispatchers" />
 	</bean>
 
+	<bean id="portalController" class="fr.mby.portal.web.controller.PortalController">
+	
+	</bean> 
+	
 </beans>

@@ -11,7 +11,7 @@
     
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/portal-dispatcher-servlet.xml, classpath:blueprint-osgi-context.xml</param-value>
+		<param-value>classpath:OSGI-INF/*.xml, /WEB-INF/portal-dispatcher-servlet.xml</param-value>
 	</context-param>
     
 	<listener>
@@ -30,11 +30,12 @@
 
 	<servlet-mapping>
 		<servlet-name>portal-dispatcher</servlet-name>
-		<url-pattern>/mvc/*</url-pattern>
+		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+<!-- 	
 	<welcome-file-list>
 		<welcome-file>/WEB-INF/jsp/index.jsp</welcome-file>
 	</welcome-file-list>
-
+ -->
 </web-app>
