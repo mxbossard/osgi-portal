@@ -16,6 +16,8 @@
 
 package fr.mby.portal.web.controller;
 
+import java.util.Collection;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -23,6 +25,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
+
+import fr.mby.portal.core.IPortalRenderer;
 
 /**
  * @author Maxime Bossard - 2013
@@ -33,12 +37,36 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/")
 public class PortalController {
 
+	private Collection<IPortalRenderer> portalRenderers;
+
 	@RequestMapping(method = RequestMethod.GET)
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-		final String viewName = "portal";
 
-		return new ModelAndView(viewName);
+		if (this.portalRenderers != null && this.portalRenderers.size() > 0) {
+			this.portalRenderers.iterator().next().render(request, response);
+			return null;
+		}
 
+		return new ModelAndView("portal");
+	}
+
+	/**
+	 * Getter of portalRenderers.
+	 * 
+	 * @return the portalRenderers
+	 */
+	public Collection<IPortalRenderer> getPortalRenderers() {
+		return this.portalRenderers;
+	}
+
+	/**
+	 * Setter of portalRenderers.
+	 * 
+	 * @param portalRenderers
+	 *            the portalRenderers to set
+	 */
+	public void setPortalRenderers(final Collection<IPortalRenderer> portalRenderers) {
+		this.portalRenderers = portalRenderers;
 	}
 
 }

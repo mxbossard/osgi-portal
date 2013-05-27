@@ -5,7 +5,9 @@
 
     
 	<reference-list id="userActionDispatchers" interface="fr.mby.portal.core.IUserActionDispatcher" availability="mandatory">
-		
+	</reference-list>
+	
+	<reference-list id="portalRenderers" interface="fr.mby.portal.core.IPortalRenderer" availability="mandatory">
 	</reference-list>
 	
 </blueprint>

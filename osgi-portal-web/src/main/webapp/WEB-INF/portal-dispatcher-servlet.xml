@@ -55,7 +55,7 @@
 	</bean>
 
 	<bean id="portalController" class="fr.mby.portal.web.controller.PortalController">
-	
+		<property name="portalRenderers" ref="portalRenderers" />
 	</bean> 
 	
 </beans>
