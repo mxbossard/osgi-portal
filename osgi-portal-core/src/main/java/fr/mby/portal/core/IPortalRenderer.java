@@ -20,14 +20,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
- * The IUserActionDispatcher define an object which receive actions from the client and sends them through the portal
- * environment.
+ * IPortalRenderer implementation is in charge of rendering the portal.
  * 
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IUserActionDispatcher {
+public interface IPortalRenderer {
 
-	void dispatch(HttpServletRequest request, HttpServletResponse response) throws Exception;
+	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.coreimpl;
+package fr.mby.portal.coreimpl.message;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;

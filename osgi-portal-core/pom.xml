@@ -6,7 +6,7 @@
 	<version>0.0.1.SNAPSHOT</version>
 	<name>OSGi Portal Core</name>
 	<packaging>jar</packaging>
-	
+
 	<parent>
 		<groupId>fr.mby.maven</groupId>
 		<artifactId>spring-basic-bundle</artifactId>
@@ -16,7 +16,7 @@
 
 	<properties>
 		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
-		
+
 		<servlet.version>2.5</servlet.version>
 		<spring-security.version>3.1.4.RELEASE</spring-security.version>
 	</properties>
@@ -80,7 +80,13 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
 		</dependency>
-		
+
+		<dependency>
+			<groupId>org.springframework.osgi</groupId>
+			<artifactId>spring-osgi-mock</artifactId>
+			<version>2.0.0.M1</version>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -94,4 +100,15 @@
 		</pluginManagement>
 	</build>
 
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+			<name>Springframework Milestones Maven Artifacts Repository</name>
+			<url>http://maven.springframework.org/milestone</url>
+		</repository>
+	</repositories>
+	
 </project>

@@ -27,9 +27,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.message.IMessage;
+import fr.mby.portal.api.message.IMessage.MessageType;
 import fr.mby.portal.api.message.IMessageDispatcher;
 import fr.mby.portal.api.message.IReply;
-import fr.mby.portal.api.message.IMessage.MessageType;
 import fr.mby.portal.core.IUserActionDispatcher;
 import fr.mby.portal.core.aggregator.IReplyAggregator;
 import fr.mby.portal.core.message.IMessageFactory;
@@ -55,7 +55,7 @@ public class BasicUserActionDispatcher implements IUserActionDispatcher, Initial
 	private List<IReplyAggregator<IReply>> replyAggregators;
 
 	@Override
-	public void dispatch(final HttpServletRequest request, final HttpServletResponse response) {
+	public void dispatch(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		this.doActionDispatch(request, response);
 		this.doRenderDispatch(request, response);
 	}
