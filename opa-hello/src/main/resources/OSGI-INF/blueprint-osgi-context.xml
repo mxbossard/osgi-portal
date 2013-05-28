@@ -4,6 +4,6 @@
            default-activation="eager">
 
     
-	<service id="helloAppService" ref="helloApp" interface="fr.mby.portal.api.app.IPortalApp" />
+	<service id="helloAppService" ref="helloController" interface="fr.mby.portal.api.app.IPortalApp" activation="eager" />
 
 </blueprint>

@@ -17,8 +17,7 @@
 	<properties>
 		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
 		
-		<bundle.symbolicName>fr.mby.osgi-portal.osgi-portal-web</bundle.symbolicName>
-		<bundlor.template.webContextPath>/portal</bundlor.template.webContextPath>
+		<bundlor.template.webContextPath>/hello</bundlor.template.webContextPath>
 
 		<servlet.version>2.5</servlet.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>

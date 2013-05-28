@@ -24,6 +24,12 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.api.app.IPortalApp;
+import fr.mby.portal.api.message.IActionMessage;
+import fr.mby.portal.api.message.IActionReply;
+import fr.mby.portal.api.message.IRenderMessage;
+import fr.mby.portal.api.message.IRenderReply;
 import fr.mby.portal.core.IUserActionDispatcher;
 
 /**
@@ -33,7 +39,7 @@ import fr.mby.portal.core.IUserActionDispatcher;
 
 @Controller
 @RequestMapping("/")
-public class HelloController {
+public class HelloController implements IPortalApp {
 
 	@Autowired
 	private Collection<IUserActionDispatcher> userActionDispatchers;
@@ -70,6 +76,52 @@ public class HelloController {
 	 */
 	public void setUserActionDispatchers(final Collection<IUserActionDispatcher> userActionDispatchers) {
 		this.userActionDispatchers = userActionDispatchers;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see fr.mby.portal.api.app.IPortalApp#destory()
+	 */
+	@Override
+	public void destory() {
+		// TODO Auto-generated method stub
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see fr.mby.portal.api.app.IPortalApp#init(fr.mby.portal.api.app.IAppConfig)
+	 */
+	@Override
+	public void init(final IAppConfig config) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see fr.mby.portal.api.app.IPortalApp#processAction(fr.mby.portal.api.message.IActionMessage,
+	 * fr.mby.portal.api.message.IActionReply)
+	 */
+	@Override
+	public void processAction(final IActionMessage request, final IActionReply response) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see fr.mby.portal.api.app.IPortalApp#render(fr.mby.portal.api.message.IRenderMessage,
+	 * fr.mby.portal.api.message.IRenderReply)
+	 */
+	@Override
+	public void render(final IRenderMessage request, final IRenderReply response) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
