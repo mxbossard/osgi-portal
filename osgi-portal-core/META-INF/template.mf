@@ -31,6 +31,7 @@ Import-Template:
  org.springframework.security.*;version="${spring-security.version:major-range}",
  org.springframework.security.core.*;version="${spring-security.version:major-range}"
 Version-Patterns: 
+ apache;pattern="[=.=.=, +1.0.0)",
  major-range;pattern="[=.=.=.=, +1.0.0.=)",
  medium-range;pattern="[=.=.=.=, =.+1.0.=)",
  exact-range;pattern="[=.=.=, =.=.=]"

@@ -2,7 +2,7 @@
 <blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
            default-activation="lazy">
-
+           
 	<!-- UserActionDispatcher -->
 	<service id="portalRendererService" ref="portalRenderer"
 		 interface="fr.mby.portal.core.IPortalRenderer" />
@@ -14,8 +14,26 @@
 	<!-- ConfigurationManager -->
 	<service id="configManagerService" ref="configManager"
 		 interface="fr.mby.portal.core.configuration.IConfigurationManager" />
-		 
-	<!-- IPortalApp installed -->
-	<reference-list id="portalAppReferences" interface="fr.mby.portal.api.app.IPortalApp" />
 
+	<bean id="portalAppReferenceListener" class="fr.mby.portal.coreimpl.app.PortalAppReferenceListener" />
+<!-- 	
+	<service ref="portalAppReferenceListener" interface="org.osgi.service.event.EventHandler">
+		<service-properties>
+            <entry key="event.topics" value="*"/>
+        </service-properties>
+	</service>
+ -->
+	 
+	<!-- IPortalApp installed -->
+	<reference-list id="portalAppReferences" interface="fr.mby.portal.api.app.IPortalApp" availability="optional">
+		<reference-listener ref="portalAppReferenceListener" bind-method="onBind" unbind-method="onUnbind" />
+	</reference-list>
+	
+<!-- 	
+	<reference id="portalAppReferences" interface="fr.mby.portal.api.app.IPortalApp" availability="optional">
+		<reference-listener ref="portalAppReferenceListener" bind-method="onBind" unbind-method="onUnbind" />
+	</reference>
+ -->
+	
+	
 </blueprint>

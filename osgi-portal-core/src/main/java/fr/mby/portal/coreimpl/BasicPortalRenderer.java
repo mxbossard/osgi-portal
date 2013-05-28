@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
+import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
 
 /**
  * @author Maxime Bossard - 2013
@@ -38,18 +39,27 @@ public class BasicPortalRenderer implements IPortalRenderer {
 	public static final Object WEB_CONTEXT_PATH_BUNDLE_HEADER = "Web-ContextPath";
 
 	/** All IAppReferences. */
-	private Collection<ServiceReference<IPortalApp>> portalAppReferences;
+	private Collection<IPortalApp> portalApps;
+
+	private PortalAppReferenceListener portalAppReferenceListener;
 
 	@Override
 	public void render(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 
 		final PrintWriter writer = response.getWriter();
 
+		if (this.portalApps != null) {
+			for (final IPortalApp portalApp : this.portalApps) {
+				// Nothing
+				portalApp.processAction(null, null);
+			}
+		}
+
 		writer.append("<!doctype html>\n<html>\n<head>\n</head>\n<body>\n");
 		writer.append("<h1>OSGi Portal !</h1>\n");
 
-		if (this.portalAppReferences != null) {
-			for (final ServiceReference<IPortalApp> appRef : this.portalAppReferences) {
+		if (this.portalAppReferenceListener != null) {
+			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
 				final Bundle bundle = appRef.getBundle();
 
 				this.renderWebAppBundle(writer, bundle);
@@ -57,6 +67,7 @@ public class BasicPortalRenderer implements IPortalRenderer {
 		}
 
 		writer.append("</body>\n</html>\n");
+		writer.flush();
 	}
 
 	/**
@@ -79,7 +90,7 @@ public class BasicPortalRenderer implements IPortalRenderer {
 
 			writer.append("<iframe src=\"");
 			writer.append(webBundlePath);
-			writer.append("\" />\n");
+			writer.append("\" style=\"width: 100%; height: 400px;\" />\n");
 
 			writer.append("</div>\n");
 		}
@@ -90,29 +101,49 @@ public class BasicPortalRenderer implements IPortalRenderer {
 	 * @return
 	 */
 	protected String buildWebAppBundlePath(final Bundle bundle) {
-		final String webContextPathHeader = bundle.getHeaders().get(BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER);
+		final String webContextPathHeader = (String) bundle.getHeaders().get(
+				BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER);
 		final String webBundlePath = "/".concat(webContextPathHeader.replaceAll("[\\/\\\\]+", ""));
 
 		return webBundlePath;
 	}
 
 	/**
-	 * Getter of portalAppReferences.
+	 * Getter of portalApps.
 	 * 
-	 * @return the portalAppReferences
+	 * @return the portalApps
 	 */
-	public Collection<ServiceReference<IPortalApp>> getPortalAppReferences() {
-		return this.portalAppReferences;
+	public Collection<IPortalApp> getPortalApps() {
+		return this.portalApps;
 	}
 
 	/**
-	 * Setter of portalAppReferences.
+	 * Setter of portalApps.
 	 * 
-	 * @param portalAppReferences
-	 *            the portalAppReferences to set
+	 * @param portalApps
+	 *            the portalApps to set
 	 */
-	public void setPortalAppReferences(final Collection<ServiceReference<IPortalApp>> portalAppReferences) {
-		this.portalAppReferences = portalAppReferences;
+	public void setPortalApps(final Collection<IPortalApp> portalApps) {
+		this.portalApps = portalApps;
+	}
+
+	/**
+	 * Getter of portalAppReferenceListener.
+	 * 
+	 * @return the portalAppReferenceListener
+	 */
+	public PortalAppReferenceListener getPortalAppReferenceListener() {
+		return this.portalAppReferenceListener;
+	}
+
+	/**
+	 * Setter of portalAppReferenceListener.
+	 * 
+	 * @param portalAppReferenceListener
+	 *            the portalAppReferenceListener to set
+	 */
+	public void setPortalAppReferenceListener(final PortalAppReferenceListener portalAppReferenceListener) {
+		this.portalAppReferenceListener = portalAppReferenceListener;
 	}
 
 }

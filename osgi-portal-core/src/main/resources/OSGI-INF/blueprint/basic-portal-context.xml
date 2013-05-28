@@ -12,7 +12,8 @@
 	<bean id="configManager" class="fr.mby.portal.coreimpl.configuration.PropertiesConfigurationManager" />
 
 	<bean id="portalRenderer" class="fr.mby.portal.coreimpl.BasicPortalRenderer">
-		<property name="portalAppReferences" ref="portalAppReferences" />
+		<property name="portalApps" ref="portalAppReferences" />
+		<property name="portalAppReferenceListener" ref="portalAppReferenceListener" />
 	</bean>
 	
 </beans>
