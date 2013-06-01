@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <script data-require="jquery@2.0.1" data-semver="2.0.1" src="http://code.jquery.com/jquery-2.0.1.min.js"></script>
+    <script src="iframe.js"></script>
+  </head>
+
+  <body>
+    <h1>Iframe</h1>
+    <input type="text" id="msg" value="test 42 !" />
+    <a href="javascript:void(0)" onclick="appClient.alert($('#msg').val());">alert</a>
+    
+    <a href="javascript:void(0)" onclick="appClient.doAction('someAction', $('#msg').val());">action</a>
+    
+    <a href="javascript:void(0)" onclick="appClient.doAction('hookedAlert', $('#msg').val());">action with hook</a>
+  
+    <div id="hookedReplyAlert">Start</div>
+    
+  </body>
+
+</html>
