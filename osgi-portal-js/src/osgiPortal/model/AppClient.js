@@ -8,6 +8,10 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 	var Tools = MbyUtils.Tools;
 
+	var Event = MbyUtils.event.Event;
+
+	var Action = OsgiPortal.model.Action;
+
 	/**
 	 * AppClient builder. A Portal App Client, the link between the osgiPortal and the Portal App.
 	 */
@@ -69,26 +73,14 @@ window.OsgiPortal = window.OsgiPortal || {};
 		this.replyHooks[type] = hook;
 	};
 
-	/** Call the Hook associated to the Reply. */
-	AppClient.prototype.fireReply = function(reply) {
-		var hook = this.replyHooks[reply.type];
-
-		if (hook) {
-			// Call hook
-			hook(reply);
-		} else {
-			console.log("No Hook registered for incoming " + reply + " to " + this + ".");
-		}
+	/** Fire a generic event. */
+	AppClient.prototype.fireEvent = function(topic, properties) {
+		this.osgiPortal.fireEventFromAppClient(this, new Event(topic, properties));
 	};
 
 	/** Do an Action on the portal. */
 	AppClient.prototype.doAction = function(type, properties) {
 		this.osgiPortal.doActionFromAppClient(this, new Action(type, properties, this));
-	};
-
-	/** Fire a generic event. */
-	AppClient.prototype.fireEvent = function(topic, properties) {
-		this.osgiPortal.fireEventFromAppClient(this, new Event(topic, properties));
 	};
 
 	/** Fire an Alert event. */

@@ -160,7 +160,7 @@ describe("OsgiPortal.model.AppClient unit test.", function() {
 
 	});
 
-	it("registerReplyHook() test with not function callback", function() {
+	it("registerReplyHook() test with callback not a function", function() {
 
 		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, appMock, 'testAppClientSignature');
 
@@ -173,44 +173,41 @@ describe("OsgiPortal.model.AppClient unit test.", function() {
 	it("fireEvent() test", function() {
 		var fireEventCount = 0;
 		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, appMock, 'testAppClientSignature');
-		osgiPortalMock.fireEventFromAppClient = function(appClient, event) {
+		osgiPortalMock.fireEventFromAppClient = function(client, event) {
 			fireEventCount++;
+
+			expect(client).toBe(appClient);
+			expect(event.topic).toBe('testEvent');
 		};
 
-		appClient.fireEvent(appClient, null);
+		appClient.fireEvent('testEvent', null);
 
 		expect(fireEventCount).toBe(1);
 
-		appClient.fireEvent(appClient, null);
-		appClient.fireEvent(appClient, null);
+		appClient.fireEvent('testEvent', null);
+		appClient.fireEvent('testEvent', null);
 
 		expect(fireEventCount).toBe(3);
 	});
 
-	it("fireReply() test", function() {
+	it("doAction() test", function() {
+		var doActionCount = 0;
 		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, appMock, 'testAppClientSignature');
+		osgiPortalMock.doActionFromAppClient = function(client, action) {
+			doActionCount++;
 
-		var fireReplyCount = 0;
-		var replyHookCallback = function() {
-			fireReplyCount++;
+			expect(client).toBe(appClient);
+			expect(action.type).toBe('refresh');
 		};
-		appClient.registerReplyHook('userAction', replyHookCallback);
 
-		var reply1Mock = {
-			type : 'userAction'
-		};
-		var reply2Mock = {
-			type : 'otherAction'
-		};
-		appClient.fireReply(reply1Mock);
+		appClient.doAction('refresh', null);
 
-		expect(fireReplyCount).toBe(1);
+		expect(doActionCount).toBe(1);
 
-		appClient.fireReply(reply2Mock);
-		appClient.fireReply(reply1Mock);
+		appClient.doAction('refresh', null);
+		appClient.doAction('refresh', null);
 
-		expect(fireReplyCount).toBe(2);
-
+		expect(doActionCount).toBe(3);
 	});
 
 });

@@ -4,6 +4,11 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 (function(OsgiPortal, undefined) {
 
+	var Tools = MbyUtils.Tools;
+
+	var EventTarget = MbyUtils.event.EventTarget;
+	var EventListener = MbyUtils.event.EventListener;
+
 	/**
 	 * PortalContext builder. The OSGi Portal context.
 	 */
@@ -45,6 +50,10 @@ window.OsgiPortal = window.OsgiPortal || {};
 	PortalContext.prototype.getRegisteredAppById = function(appId) {
 		var app = this.registeredApps[appId];
 
+		if (!app) {
+			return null;
+		}
+
 		return app;
 	};
 
@@ -64,10 +73,14 @@ window.OsgiPortal = window.OsgiPortal || {};
 	PortalContext.prototype.getRegisteredAppClientById = function(appId) {
 		var appClient = this.registeredAppClients[appId];
 
+		if (!appClient) {
+			return null;
+		}
+
 		return appClient;
 	};
 
-	/** Retrieve an App EventTarget. */
+	/** Retrieve an App EventTarget by App id. */
 	PortalContext.prototype.getAppEventTarget = function(appId) {
 		var eventTarget = this.appEventTargets[appId];
 
@@ -77,12 +90,6 @@ window.OsgiPortal = window.OsgiPortal || {};
 		}
 
 		return eventTarget;
-	};
-
-	/** Fire an event from an App. */
-	PortalContext.prototype.fireEventFromApp = function(appId, event) {
-		var appEventTarget = this.getAppEventTarget(appId);
-		appEventTarget.fireEvent(event);
 	};
 
 	/** Add an App and its Client in the context. */
@@ -165,20 +172,29 @@ window.OsgiPortal = window.OsgiPortal || {};
 	};
 
 	/** Remove an App from context. */
-	PortalContext.prototype.unregisterAppById = function(appId) {
-		var removed = this.registeredApps.remove(appId);
+	PortalContext.prototype.unregisterApp = function(app) {
+		var removed = this.registeredApps[app.id];
 		if (removed) {
-			console.log("App#" + appId + " unregistered.");
+			this.registeredApps[app.id] = null;
+			console.log(app + " unregistered.");
 		} else {
-			throw "App#" + appId + " wasn't previously registered !";
+			throw app + " wasn't previously registered !";
 		}
 
-		removed = this.registeredAppClients.remove(appId);
+		var appClient = this.getRegisteredAppClientById(app.id);
+		removed = this.registeredAppClients[appClient];
 		if (removed) {
-			console.log("AppClient#" + appId + " unregistered.");
+			this.registeredAppClients[appClient] = null;
+			console.log(appClient + " unregistered.");
 		} else {
-			throw "AppClient#" + appId + " wasn't previously registered !";
+			throw appClient + " wasn't previously registered !";
 		}
+	};
+
+	/** Remove an App from context by Id. */
+	PortalContext.prototype.unregisterAppById = function(appId) {
+		var app = this.getRegisteredAppById(appId);
+		this.unregisterApp(app);
 	};
 
 	/**
@@ -207,7 +223,13 @@ window.OsgiPortal = window.OsgiPortal || {};
 		return registeredApp;
 	};
 
-	/** Do an Action on the Portal. */
+	/** Fire an event from an App. */
+	PortalContext.prototype.fireEventFromApp = function(appId, event) {
+		var appEventTarget = this.getAppEventTarget(appId);
+		appEventTarget.fireEvent(event);
+	};
+
+	/** Do an Action on the Portal form an AppClient. */
 	PortalContext.prototype.doActionFromAppClient = function(appClient, action) {
 		// Check AppClient validity
 		var registeredApp = this.checkAppClientValidity(appClient);
@@ -258,6 +280,19 @@ window.OsgiPortal = window.OsgiPortal || {};
 			});
 		}
 
+	};
+
+	/** Call the Hook associated to the Reply on the AppClient. */
+	PortalContext.prototype.sendReplyToAppClient = function(appId, reply) {
+		var appClient = this.getRegisteredAppClientById(appId);
+		var hook = appClient.replyHooks[reply.type];
+
+		if (hook) {
+			// Call hook
+			hook(reply);
+		} else {
+			console.log("No Hook registered for incoming " + reply + " to " + this + ".");
+		}
 	};
 
 	OsgiPortal.model = OsgiPortal.model || {};
