@@ -11,8 +11,13 @@ window.OsgiPortal = window.OsgiPortal || {};
 		if (!type) {
 			throw "OsgiPortal.model.Action builder need a type !";
 		}
+
+		if (properties && typeof properties !== 'object') {
+			throw "Action properties need to be an Object !";
+		}
+
 		this.type = type;
-		this.properties = properties;
+		this.properties = properties || {};
 		this.appClient = appClient;
 	};
 

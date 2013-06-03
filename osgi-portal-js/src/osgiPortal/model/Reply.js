@@ -11,8 +11,13 @@ window.OsgiPortal = window.OsgiPortal || {};
 		if (!type) {
 			throw "OsgiPortal.model.Reply builder need a type !";
 		}
+
+		if (properties && typeof properties !== 'object') {
+			throw "Reply properties need to be an Object !";
+		}
+
 		this.type = type;
-		this.properties = properties;
+		this.properties = properties || {};
 	};
 
 	Reply.prototype.isType = function(type) {

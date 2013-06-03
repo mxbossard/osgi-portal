@@ -18,30 +18,30 @@ window.OsgiPortal = window.OsgiPortal || {};
 			throw "No configuration supplied to PortalContext !";
 		}
 
-		/** Event Hooks configuration. */
-		this.portalEventHooks = [];
+		/** Event Hooks configuration. Map(topic => EventHook) */
+		this.portalEventHooks = {};
 
-		/** Action Hooks configuration. */
-		this.portalActionHooks = [];
+		/** Action Hooks configuration. Map(type => ActionHook) */
+		this.portalActionHooks = {};
 
-		/** Registered Apps. */
-		this.registeredApps = [];
+		/** Registered Apps Map(appId => App). */
+		this.registeredApps = {};
 
-		/** Registered AppClients. */
-		this.registeredAppClients = [];
+		/** Registered AppClients Map(appId => App). */
+		this.registeredAppClients = {};
 
-		/** List of each App EventTarget wich allow the App to fire Events. */
-		this.appEventTargets = [];
+		/** List of each App EventTarget wich allow the App to fire Events. Map(appId => EventTarget) */
+		this.appEventTargets = {};
 
 		var eventHooks = configuration.eventHooks;
 		if (!eventHooks) {
-			eventHooks = [];
+			eventHooks = {};
 		}
 		this.portalEventHooks = eventHooks;
 
 		var actionHooks = configuration.actionHooks;
 		if (!actionHooks) {
-			actionHooks = [];
+			actionHooks = {};
 		}
 		this.portalActionHooks = actionHooks;
 	};
@@ -59,10 +59,12 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 	/** Retrieve an App by its Id. */
 	PortalContext.prototype.getRegisteredAppBySymbolicName = function(symbolicName) {
-		for ( var k = 0; k < this.registeredApps.length; ++k) {
-			var app = this.registeredApps[k];
-			if (app && app.symbolicName === symbolicName) {
-				return app;
+		for ( var appId in this.registeredApps) {
+			if (this.registeredApps.hasOwnProperty(appId)) {
+				var app = this.registeredApps[appId];
+				if (app && app.symbolicName === symbolicName) {
+					return app;
+				}
 			}
 		}
 
@@ -173,19 +175,19 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 	/** Remove an App from context. */
 	PortalContext.prototype.unregisterApp = function(app) {
-		var removed = this.registeredApps[app.id];
-		if (removed) {
-			this.registeredApps[app.id] = null;
-			console.log(app + " unregistered.");
+		var appId = app.id;
+		var removedApp = this.getRegisteredAppClientById(appId);
+		if (removedApp) {
+			this.registeredApps[appId] = null;
+			console.log(removedApp + " unregistered.");
 		} else {
 			throw app + " wasn't previously registered !";
 		}
 
-		var appClient = this.getRegisteredAppClientById(app.id);
-		removed = this.registeredAppClients[appClient];
-		if (removed) {
-			this.registeredAppClients[appClient] = null;
-			console.log(appClient + " unregistered.");
+		var removedClient = this.getRegisteredAppClientById(appId);
+		if (removedClient) {
+			this.registeredAppClients[appId] = null;
+			console.log(removedClient + " unregistered.");
 		} else {
 			throw appClient + " wasn't previously registered !";
 		}
@@ -197,87 +199,41 @@ window.OsgiPortal = window.OsgiPortal || {};
 		this.unregisterApp(app);
 	};
 
-	/**
-	 * Check the validity of an AppClient (do we built it ?).
-	 * 
-	 * @return corresponding registered App
-	 */
-	PortalContext.prototype.checkAppClientValidity = function(appClient) {
-		if (!appClient) {
-			throw "AppClient is null or undefined !";
-		}
+	/** Fire an event from an AppClient. */
+	PortalContext.prototype.fireEventFromAppClient = function(appClient, event) {
+		// Check the validity of the client
+		checkAppClientValidity(this, appClient);
 
-		var appId = appClient.appId;
-		var registeredAppClient = this.getRegisteredAppClientById(appId);
-		if (!registeredAppClient) {
-			throw "No AppClient registered with Id: " + appId + " !";
-		}
-		if (registeredAppClient !== appClient) {
-			throw "AppClient was not built by the OsgiPortal !";
-		}
-		var registeredApp = this.getRegisteredAppById(appId);
-		if (!registeredApp) {
-			throw "AppClient refer to an unknown App !";
-		}
+		var app = this.getRegisteredAppById(appClient.appId);
 
-		return registeredApp;
-	};
+		event.properties.sourceSymbolicName = app.symbolicName;
+		event.properties.sourceVersion = app.version;
 
-	/** Fire an event from an App. */
-	PortalContext.prototype.fireEventFromApp = function(appId, event) {
-		var appEventTarget = this.getAppEventTarget(appId);
+		var appEventTarget = this.getAppEventTarget(appClient.appId);
 		appEventTarget.fireEvent(event);
 	};
 
 	/** Do an Action on the Portal form an AppClient. */
 	PortalContext.prototype.doActionFromAppClient = function(appClient, action) {
 		// Check AppClient validity
-		var registeredApp = this.checkAppClientValidity(appClient);
+		checkAppClientValidity(this, appClient);
 
 		console.log(appClient + " doing " + action + " ...");
 
 		var actionType = action.type;
 		var actionHook = this.portalActionHooks[actionType];
+		var app = this.getRegisteredAppById(appClient.appId);
+
+		action.properties.sourceSymbolicName = app.symbolicName;
+		action.properties.sourceVersion = app.version;
 
 		if (actionHook) {
 			if (!Tools.isFunction(actionHook)) {
-				throw "Configured Portal Action Hook for type " + actionType + " is not a function !";
+				throw "Configured Portal Action hook for type " + actionType + " is not a function !";
 			}
 
-			// Call Action Hook passing the callback for the Reply
-			actionHook(action, function(replyValue, targetClientIds) {
-				if (!replyValue) {
-					console.log("Action Hook callback for Action type " + actionType + " did not return a value !");
-				} else {
-					// We have a Reply value
-					var reply = new Reply(action.type, replyValue);
-
-					if (targetClientIds) {
-						if (!Tools.isArray(targetClientIds)) {
-							throw "Action Hook callback for Action type " + actionType
-									+ " was not passed an array for targetClientIds parameter !";
-						}
-						// Send the reply to multiple clients
-						for ( var k = 0; k < targetClientIds.length; ++k) {
-							var targetClientId = targetClientIds[k];
-							if (targetClientId) {
-								var targetAppClient = this.getRegisteredAppClientById(targetClientId);
-								if (targetAppClient) {
-									targetAppClient.fireReply(reply);
-								} else {
-									throw "Unable to send Replies cause no AppClient registered with Id: "
-											+ targetClientId + " !";
-								}
-							} else {
-								throw "Unable to determine targetClientId: " + targetClientId + " !";
-							}
-						}
-					} else {
-						// Send the Reply to the client which did the Action
-						appClient.fireReply(reply);
-					}
-				}
-			});
+			// Call Action Hook passing the action and the App
+			actionHook(action, app);
 		}
 
 	};
@@ -285,13 +241,45 @@ window.OsgiPortal = window.OsgiPortal || {};
 	/** Call the Hook associated to the Reply on the AppClient. */
 	PortalContext.prototype.sendReplyToAppClient = function(appId, reply) {
 		var appClient = this.getRegisteredAppClientById(appId);
-		var hook = appClient.replyHooks[reply.type];
+		if (!appClient) {
+			throw "No AppClient found for appId#" + appId + " to send a reply to !";
+		}
 
-		if (hook) {
-			// Call hook
-			hook(reply);
+		var replyType = reply.type;
+		var clientReplyHook = appClient.replyHooks[replyType];
+
+		if (clientReplyHook) {
+			if (!Tools.isFunction(clientReplyHook)) {
+				throw "Configured " + appClient + " Reply hook for type " + replyType + " is not a function !";
+			}
+
+			console.log("Calling Reply hook for type " + replyType + " on " + appClient + " ...");
+			// Call client reply hook
+			clientReplyHook(reply);
 		} else {
 			console.log("No Hook registered for incoming " + reply + " to " + this + ".");
+		}
+	};
+
+	/**
+	 * Check the validity of an AppClient (do we built it ?).
+	 */
+	var checkAppClientValidity = function(portalContext, appClient) {
+		if (!appClient) {
+			throw "AppClient is null or undefined !";
+		}
+
+		var appId = appClient.appId;
+		var registeredAppClient = portalContext.getRegisteredAppClientById(appId);
+		if (!registeredAppClient) {
+			throw "No AppClient registered with Id: " + appId + " !";
+		}
+		if (registeredAppClient !== appClient) {
+			throw "AppClient was not built by the OsgiPortal !";
+		}
+		var registeredApp = portalContext.getRegisteredAppById(appId);
+		if (!registeredApp) {
+			throw "AppClient refer to an unknown App !";
 		}
 	};
 

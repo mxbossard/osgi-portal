@@ -15,7 +15,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 		this.symbolicName = symbolicName;
 		this.version = version;
 
-		/** List of (eventType => appId) this App will Listen. */
+		/** Map of (eventType => appId) this App will Listen. */
 		this.eventWiring = [];
 	};
 

@@ -85,7 +85,9 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 	/** Fire an Alert event. */
 	AppClient.prototype.alert = function(message) {
-		this.osgiPortal.fireEventFromAppClient(this, new Event("alert", message));
+		this.osgiPortal.fireEventFromAppClient(this, new Event("alert", {
+			message : message
+		}));
 	};
 
 	AppClient.prototype.toString = function() {

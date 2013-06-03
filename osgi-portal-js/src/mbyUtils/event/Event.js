@@ -11,8 +11,13 @@ window.MbyUtils = window.MbyUtils || {};
 		if (!topic) {
 			throw "MbyUtils.event.Event builder need a topic !";
 		}
+
+		if (properties && typeof properties !== 'object') {
+			throw "Event properties need to be an Object !";
+		}
+
 		this.topic = topic;
-		this.properties = properties;
+		this.properties = properties || {};
 	};
 
 	Event.prototype.toString = function() {

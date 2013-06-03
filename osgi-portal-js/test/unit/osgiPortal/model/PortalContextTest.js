@@ -1,10 +1,5 @@
 describe("OsgiPortal.model.PortalContext unit test.", function() {
 
-	var osgiPortalMock = {};
-	var appMock = {
-		id : 'appMockId'
-	};
-
 	it("Builder test", function() {
 		var configuration = {};
 		var a = new OsgiPortal.model.PortalContext(configuration);
@@ -20,11 +15,12 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 	});
 
 	it("registerApp() test", function() {
+		var osgiPortalMock = {};
 		var configuration = {};
 		var context = new OsgiPortal.model.PortalContext(configuration);
 
 		var app = new OsgiPortal.model.App('id', 'symbolicName', 'version');
-		var appClient = new OsgiPortal.model.AppClient(appMock, app, 'signature');
+		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, app, 'signature');
 		context.registerApp(app, appClient);
 	});
 
@@ -50,10 +46,11 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 	});
 
 	it("registerApp() test with App and AppClient not synchronized", function() {
+		var osgiPortalMock = {};
 		var configuration = {};
 		var context = new OsgiPortal.model.PortalContext(configuration);
 		var app = new OsgiPortal.model.App('id', 'symbolicName', 'version');
-		var appClient = new OsgiPortal.model.AppClient(appMock, app, 'signature');
+		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, app, 'signature');
 		appClient.appId = "anotherId";
 
 		expect(function() {
@@ -63,12 +60,13 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 	});
 
 	it("getRegisteredAppById() test", function() {
+		var osgiPortalMock = {};
 		var configuration = {};
 		var context = new OsgiPortal.model.PortalContext(configuration);
 
 		var appId = 42;
 		var app = new OsgiPortal.model.App(appId, 'symbolicName', 'version');
-		var appClient = new OsgiPortal.model.AppClient(appMock, app, 'signature');
+		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, app, 'signature');
 
 		var retrievedApp = context.getRegisteredAppById(appId);
 		expect(retrievedApp).toBeNull();
@@ -80,12 +78,13 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 	});
 
 	it("getRegisteredAppBySymbolicName() test", function() {
+		var osgiPortalMock = {};
 		var configuration = {};
 		var context = new OsgiPortal.model.PortalContext(configuration);
 
 		var symbolicName = 'symbolic42';
 		var app = new OsgiPortal.model.App(12, symbolicName, 'version');
-		var appClient = new OsgiPortal.model.AppClient(appMock, app, 'signature');
+		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, app, 'signature');
 
 		var retrievedApp = context.getRegisteredAppBySymbolicName(symbolicName);
 		expect(retrievedApp).toBeNull();
@@ -97,12 +96,13 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 	});
 
 	it("getRegisteredAppClientById() test", function() {
+		var osgiPortalMock = {};
 		var configuration = {};
 		var context = new OsgiPortal.model.PortalContext(configuration);
 
 		var appId = 42;
 		var app = new OsgiPortal.model.App(appId, 'symbolicName', 'version');
-		var appClient = new OsgiPortal.model.AppClient(appMock, app, 'signature');
+		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, app, 'signature');
 
 		var retrievedAppClient = context.getRegisteredAppClientById(appId);
 		expect(retrievedAppClient).toBeNull();
@@ -132,11 +132,12 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 	});
 
 	it("unregisterApp() test", function() {
+		var osgiPortalMock = {};
 		var configuration = {};
 		var context = new OsgiPortal.model.PortalContext(configuration);
 
 		var app = new OsgiPortal.model.App('id', 'symbolicName', 'version');
-		var appClient = new OsgiPortal.model.AppClient(appMock, app, 'signature');
+		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, app, 'signature');
 		context.registerApp(app, appClient);
 
 		var retrievedApp = context.getRegisteredAppById('id');
@@ -152,6 +153,139 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 
 		var retrievedAppClient2 = context.getRegisteredAppClientById('id');
 		expect(retrievedAppClient2).toBeNull();
+	});
+
+	it("unregisterAppById() test", function() {
+		var osgiPortalMock = {};
+		var configuration = {};
+		var context = new OsgiPortal.model.PortalContext(configuration);
+
+		var app = new OsgiPortal.model.App('id', 'symbolicName', 'version');
+		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, app, 'signature');
+		context.registerApp(app, appClient);
+
+		var retrievedApp = context.getRegisteredAppById('id');
+		expect(retrievedApp).toBe(app);
+
+		var retrievedAppClient = context.getRegisteredAppClientById('id');
+		expect(retrievedAppClient).toBe(appClient);
+
+		context.unregisterAppById('id');
+
+		var retrievedApp2 = context.getRegisteredAppById('id');
+		expect(retrievedApp2).toBeNull();
+
+		var retrievedAppClient2 = context.getRegisteredAppClientById('id');
+		expect(retrievedAppClient2).toBeNull();
+	});
+
+	it("fireEventFromAppClient() test", function() {
+		var hookCount = 0;
+
+		var osgiPortalMock = {};
+		var configuration = {
+			eventHooks : {
+				'testEventTopic' : function(event) {
+					expect(event.topic).toBe('testEventTopic');
+					expect(event.properties.sourceSymbolicName).toBe('symbolicName1');
+					expect(event.properties.sourceVersion).toBe('version1');
+					expect(event.properties.val).toBe('testPropsVal');
+					expect(event.properties.val).toBe('testPropsVal');
+					console.log("test Event listened by Portal Event hook");
+					hookCount++;
+				}
+			}
+		};
+		var context = new OsgiPortal.model.PortalContext(configuration);
+
+		var app1 = new OsgiPortal.model.App('id1', 'symbolicName1', 'version1');
+		var appClient1 = new OsgiPortal.model.AppClient(osgiPortalMock, app1, 'signature1');
+		context.registerApp(app1, appClient1);
+
+		// Configure App2 to listen testEventTopic of App1
+		var app2 = new OsgiPortal.model.App('id2', 'symbolicName2', 'version2');
+		app2.eventWiring = [{
+			symbolicName : 'symbolicName1',
+			topic : 'testEventTopic'
+		}];
+		var appClient2 = new OsgiPortal.model.AppClient(osgiPortalMock, app2, 'signature2');
+		context.registerApp(app2, appClient2);
+		appClient2.registerAppEventHook('symbolicName1', 'testEventTopic', function(event) {
+			expect(event.topic).toBe('testEventTopic');
+			expect(event.properties.sourceSymbolicName).toBe('symbolicName1');
+			expect(event.properties.sourceVersion).toBe('version1');
+			expect(event.properties.val).toBe('testPropsVal');
+			console.log("test Event listened by App2 Event hook");
+			hookCount++;
+		});
+
+		var event = new MbyUtils.event.Event('testEventTopic', {
+			val : 'testPropsVal'
+		});
+		context.fireEventFromAppClient(appClient1, event);
+
+		// 2 Hooks need to be called
+		expect(hookCount).toBe(2);
+	});
+
+	it("doActionFromAppClient() test", function() {
+		var hookCount = 0;
+
+		var osgiPortalMock = {};
+		var configuration = {
+			actionHooks : {
+				'testActionType' : function(action) {
+					expect(action.type).toBe('testActionType');
+					expect(action.properties.sourceSymbolicName).toBe('symbolicName1');
+					expect(action.properties.sourceVersion).toBe('version1');
+					expect(action.properties.val).toBe('testPropsVal42');
+					console.log("test Action listened by Portal Action hook");
+					hookCount++;
+				}
+			}
+		};
+		var context = new OsgiPortal.model.PortalContext(configuration);
+
+		var app1 = new OsgiPortal.model.App('id1', 'symbolicName1', 'version1');
+		var appClient1 = new OsgiPortal.model.AppClient(osgiPortalMock, app1, 'signature1');
+		context.registerApp(app1, appClient1);
+
+		var action = new OsgiPortal.model.Action('testActionType', {
+			val : 'testPropsVal42'
+		});
+
+		context.doActionFromAppClient(appClient1, action);
+
+		// 1 Hook need to be called
+		expect(hookCount).toBe(1);
+	});
+
+	it("sendReplyToAppClient() test", function() {
+		var hookCount = 0;
+
+		var osgiPortalMock = {};
+		var configuration = {};
+		var context = new OsgiPortal.model.PortalContext(configuration);
+
+		var app1 = new OsgiPortal.model.App('id1', 'symbolicName1', 'version1');
+		var appClient1 = new OsgiPortal.model.AppClient(osgiPortalMock, app1, 'signature1');
+		context.registerApp(app1, appClient1);
+
+		appClient1.registerReplyHook('testReplyType', function(reply) {
+			expect(reply.type).toBe('testReplyType');
+			expect(reply.properties.val).toBe('testPropsVal17');
+			console.log("test Reply listened by AppClient Reply hook");
+			hookCount++;
+		});
+
+		var reply = new OsgiPortal.model.Reply('testReplyType', {
+			val : 'testPropsVal17'
+		});
+
+		context.sendReplyToAppClient(appClient1.appId, reply);
+
+		// 1 Hook need to be called
+		expect(hookCount).toBe(1);
 	});
 
 });
