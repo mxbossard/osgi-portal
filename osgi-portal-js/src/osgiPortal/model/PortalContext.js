@@ -9,6 +9,8 @@ window.OsgiPortal = window.OsgiPortal || {};
 	var EventTarget = MbyUtils.event.EventTarget;
 	var EventListener = MbyUtils.event.EventListener;
 
+	var Reply = OsgiPortal.model.Reply;
+
 	/**
 	 * PortalContext builder. The OSGi Portal context.
 	 */
@@ -203,8 +205,10 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 	/** Fire an event from an AppClient. */
 	PortalContext.prototype.fireEventFromAppClient = function(appClient, event) {
+		var portalContext = this;
+
 		// Check the validity of the client
-		checkAppClientValidity(this, appClient);
+		checkAppClientValidity(portalContext, appClient);
 
 		var app = this.getRegisteredAppById(appClient.appId);
 		var appSn = app.symbolicName;
@@ -218,8 +222,10 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 	/** Do an Action on the Portal form an AppClient. */
 	PortalContext.prototype.doActionFromAppClient = function(appClient, action) {
-		// Check AppClient validity
-		checkAppClientValidity(this, appClient);
+		var portalContext = this;
+
+		// Check the validity of the client
+		checkAppClientValidity(portalContext, appClient);
 
 		console.log(appClient + " doing " + action + " ...");
 
@@ -235,15 +241,24 @@ window.OsgiPortal = window.OsgiPortal || {};
 				throw "Configured Portal Action hook for type " + actionType + " is not a function !";
 			}
 
+			// By default appId is the source of the Action
+			var defaultAppId = appClient.appId;
+
 			// Call Action Hook passing the action and the App
-			actionHook(action, app);
+			var replyCallback = function(replyType, properties, appId) {
+				appId = appId || defaultAppId;
+
+				sendReplyToAppClient(portalContext, appId, new Reply(replyType, properties));
+			};
+
+			actionHook(action, replyCallback);
 		}
 
 	};
 
 	/** Call the Hook associated to the Reply on the AppClient. */
-	PortalContext.prototype.sendReplyToAppClient = function(appId, reply) {
-		var appClient = this.getRegisteredAppClientById(appId);
+	function sendReplyToAppClient(portalContext, appId, reply) {
+		var appClient = portalContext.getRegisteredAppClientById(appId);
 		if (!appClient) {
 			throw "No AppClient found for appId#" + appId + " to send a reply to !";
 		}
@@ -260,14 +275,14 @@ window.OsgiPortal = window.OsgiPortal || {};
 			// Call client reply hook
 			clientReplyHook(reply);
 		} else {
-			console.log("No Hook registered for incoming " + reply + " to " + this + ".");
+			console.log("No Hook registered for incoming " + reply + " to " + appClient + ".");
 		}
 	};
 
 	/**
 	 * Check the validity of an AppClient (do we built it ?).
 	 */
-	var checkAppClientValidity = function(portalContext, appClient) {
+	function checkAppClientValidity(portalContext, appClient) {
 		if (!appClient) {
 			throw "AppClient is null or undefined !";
 		}

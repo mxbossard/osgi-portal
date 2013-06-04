@@ -234,12 +234,15 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 		var osgiPortalMock = {};
 		var configuration = {
 			actionHooks : {
-				'testActionType' : function(action) {
+				'testActionType' : function(action, replyCallback) {
 					expect(action.type).toBe('testActionType');
 					expect(action.properties.sourceSymbolicName).toBe('symbolicName1');
 					expect(action.properties.sourceVersion).toBe('version1');
 					expect(action.properties.val).toBe('testPropsVal42');
-					console.log("test Action listened by Portal Action hook");
+
+					expect(replyCallback).not.toBeNull();
+					expect(replyCallback).not.toBeUndefined();
+
 					hookCount++;
 				}
 			}
@@ -260,32 +263,63 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 		expect(hookCount).toBe(1);
 	});
 
-	it("sendReplyToAppClient() test", function() {
+	it("send Reply to AppClient test", function() {
 		var hookCount = 0;
 
 		var osgiPortalMock = {};
-		var configuration = {};
+		var configuration = {
+			actionHooks : {
+				'testActionType' : function(action, replyCallback) {
+					expect(action.type).toBe('testActionType');
+					expect(action.properties.sourceSymbolicName).toBe('symbolicName1');
+					expect(action.properties.sourceVersion).toBe('version1');
+					expect(action.properties.val).toBe('testPropsVal42');
+
+					expect(replyCallback).not.toBeNull();
+					expect(replyCallback).not.toBeUndefined();
+
+					hookCount++;
+
+					// Use the replyCallback to send Reply to client
+					replyCallback('replyType', {
+						val : 'replyVal'
+					});
+
+					replyCallback('replyType', {
+						val : 'replyVal'
+					}, 'id1');
+
+					expect(function() {
+						replyCallback('replyType', {
+							val : 'replyVal'
+						}, 'badId');
+					}).toThrow();
+				}
+			}
+		};
 		var context = new OsgiPortal.model.PortalContext(configuration);
 
 		var app1 = new OsgiPortal.model.App('id1', 'symbolicName1', 'version1');
 		var appClient1 = new OsgiPortal.model.AppClient(osgiPortalMock, app1, 'signature1');
 		context.registerApp(app1, appClient1);
 
-		appClient1.registerReplyHook('testReplyType', function(reply) {
-			expect(reply.type).toBe('testReplyType');
-			expect(reply.properties.val).toBe('testPropsVal17');
-			console.log("test Reply listened by AppClient Reply hook");
-			hookCount++;
+		appClient1.registerReplyHook('replyType', function(reply) {
+			expect(reply).not.toBeNull();
+			expect(reply).not.toBeUndefined();
+			expect(reply.type).toBe('replyType');
+			expect(reply.properties.val).toBe('replyVal');
+
+			hookCount = hookCount + 2;
 		});
 
-		var reply = new OsgiPortal.model.Reply('testReplyType', {
-			val : 'testPropsVal17'
+		var action = new OsgiPortal.model.Action('testActionType', {
+			val : 'testPropsVal42'
 		});
 
-		context.sendReplyToAppClient(appClient1.appId, reply);
+		context.doActionFromAppClient(appClient1, action);
 
 		// 1 Hook need to be called
-		expect(hookCount).toBe(1);
+		expect(hookCount).toBe(5);
 	});
 
 });
