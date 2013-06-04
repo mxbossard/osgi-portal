@@ -60,6 +60,10 @@ window.OsgiPortal = window.OsgiPortal || {};
 		function loadAppBySignature(signature) {
 			var app = _appLoadingHook(signature);
 
+			if (!app) {
+				throw "App loading Hook didn't return an App !";
+			}
+
 			return app;
 		}
 

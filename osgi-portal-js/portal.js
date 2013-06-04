@@ -1,26 +1,24 @@
 // Code goes here
 
 var osgiPortal = OsgiPortal.getInstance({
-  eventHooks: {
-    alert: function( event ) { 
-      // On alert events open a jQuery dialog on #alert
-      $("#alert").html(event.properties);
-      $("#alert").dialog({modal: true});
-    }
+	appLoadingHook : function(signature) {
+		var app = new OsgiPortal.model.App('id:' + signature, 'sn:' + signature, 'ver:' + signature);
 
-  },
-  
-  actionHooks: {
-    hookedAlert: function( action, callback ) { 
-      // On hookedAlert action call callback with action value
-      callback(action.properties);
-    }
+		return app;
+	},
+	eventHooks : {
+		alert : function(event) {
+			// On alert events open a jQuery dialog on #alert
+			$("#alert").html(event.properties.message);
+		}
 
-  }
-  
+	},
+	actionHooks : {
+		hookedAlert : function(action) {
+			// On hookedAlert action call callback with action value
+			callback(action.properties.val);
+		}
+
+	}
+
 });
-
-var osgiPortal2 = OsgiPortal.getInstance();
-
-var test = osgiPortal == osgiPortal2;
-console.log("test: " + test);

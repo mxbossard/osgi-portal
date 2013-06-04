@@ -12,9 +12,9 @@
     <input type="text" id="msg" value="test 42 !" />
     <a href="javascript:void(0)" onclick="appClient.alert($('#msg').val());">alert</a>
     
-    <a href="javascript:void(0)" onclick="appClient.doAction('someAction', $('#msg').val());">action</a>
+    <a href="javascript:void(0)" onclick="appClient.doAction('someAction', {val: $('#msg').val()});">action</a>
     
-    <a href="javascript:void(0)" onclick="appClient.doAction('hookedAlert', $('#msg').val());">action with hook</a>
+    <a href="javascript:void(0)" onclick="appClient.doAction('hookedAlert', {val: $('#msg').val()});">action with hook</a>
   
     <div id="hookedReplyAlert">Start</div>
     
