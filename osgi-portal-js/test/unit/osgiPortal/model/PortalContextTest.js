@@ -216,7 +216,7 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 			expect(event.properties.sourceVersion).toBe('version1');
 			expect(event.properties.val).toBe('testPropsVal');
 			console.log("test Event listened by App2 Event hook");
-			hookCount++;
+			hookCount = hookCount + 2;
 		});
 
 		var event = new MbyUtils.event.Event('testEventTopic', {
@@ -225,7 +225,7 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 		context.fireEventFromAppClient(appClient1, event);
 
 		// 2 Hooks need to be called
-		expect(hookCount).toBe(2);
+		expect(hookCount).toBe(3);
 	});
 
 	it("doActionFromAppClient() test", function() {

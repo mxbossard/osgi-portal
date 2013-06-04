@@ -30,7 +30,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 		/** Registered AppClients Map(appId => App). */
 		this.registeredAppClients = {};
 
-		/** List of each App EventTarget wich allow the App to fire Events. Map(appId => EventTarget) */
+		/** List of each App EventTarget wich allow the App to fire Events. Map(app symbolic name => EventTarget) */
 		this.appEventTargets = {};
 
 		var eventHooks = configuration.eventHooks;
@@ -82,13 +82,13 @@ window.OsgiPortal = window.OsgiPortal || {};
 		return appClient;
 	};
 
-	/** Retrieve an App EventTarget by App id. */
-	PortalContext.prototype.getAppEventTarget = function(appId) {
-		var eventTarget = this.appEventTargets[appId];
+	/** Retrieve an App EventTarget by symbolicName. */
+	PortalContext.prototype.getAppEventTarget = function(symbolicName) {
+		var eventTarget = this.appEventTargets[symbolicName];
 
 		if (!eventTarget) {
-			eventTarget = new EventTarget("App#" + appId);
-			this.appEventTargets[appId] = eventTarget;
+			eventTarget = new EventTarget("App sn:[" + symbolicName + "]");
+			this.appEventTargets[symbolicName] = eventTarget;
 		}
 
 		return eventTarget;
@@ -112,7 +112,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 		this.registeredApps[app.id] = app;
 		console.log(app + " registered in PortalContext.");
 
-		var appEventTarget = this.getAppEventTarget(app.id);
+		var appEventTarget = this.getAppEventTarget(app.symbolicName);
 
 		// Register Portal EventHooks on App
 		for ( var eventTopic in this.portalEventHooks) {
@@ -146,29 +146,31 @@ window.OsgiPortal = window.OsgiPortal || {};
 			// Listener info
 			var topic = wire.topic;
 			var symbolicName = wire.symbolicName;
-			var appToListen = this.getRegisteredAppBySymbolicName(symbolicName);
 
-			if (appToListen) {
-				var appToListenEventTarget = this.getAppEventTarget(appToListen.id);
-				// Build a listener with a null callback for this wire.
-				var wireListener = new EventListener(topic, null);
-				appToListenEventTarget.addEventListener(wireListener);
-
-				// Add listener to AppClient
-				var clientListeners = appClient.appEventListeners;
-				if (!clientListeners) {
-					clientListeners = [];
-					appClient.appEventListeners = clientListeners;
-				}
-				if (!clientListeners[symbolicName]) {
-					clientListeners[symbolicName] = [];
-					appClient.appEventListeners[symbolicName] = clientListeners[symbolicName];
-				}
-
-				appClient.appEventListeners[symbolicName][topic] = wireListener;
-
-				console.log(app + " wiring configured to listen " + appToListen + " on topic: [" + topic + "].");
+			if (!topic || !symbolicName) {
+				throw "Event wiring need to contain a property 'symbolicName' and a property 'topic' !";
 			}
+
+			var appToListenEventTarget = this.getAppEventTarget(symbolicName);
+			// Build a listener with a null callback for this wire.
+			var wireListener = new EventListener(topic, null);
+			appToListenEventTarget.addEventListener(wireListener);
+
+			// Add listener to AppClient
+			var clientListeners = appClient.appEventListeners;
+			if (!clientListeners) {
+				clientListeners = [];
+				appClient.appEventListeners = clientListeners;
+			}
+			if (!clientListeners[symbolicName]) {
+				clientListeners[symbolicName] = [];
+				appClient.appEventListeners[symbolicName] = clientListeners[symbolicName];
+			}
+
+			appClient.appEventListeners[symbolicName][topic] = wireListener;
+
+			console.log(app + " wiring configured to listen App with sn: [" + symbolicName + "] on topic: [" + topic
+					+ "].");
 		}
 
 	};
@@ -205,11 +207,12 @@ window.OsgiPortal = window.OsgiPortal || {};
 		checkAppClientValidity(this, appClient);
 
 		var app = this.getRegisteredAppById(appClient.appId);
+		var appSn = app.symbolicName;
 
-		event.properties.sourceSymbolicName = app.symbolicName;
+		event.properties.sourceSymbolicName = appSn;
 		event.properties.sourceVersion = app.version;
 
-		var appEventTarget = this.getAppEventTarget(appClient.appId);
+		var appEventTarget = this.getAppEventTarget(appSn);
 		appEventTarget.fireEvent(event);
 	};
 

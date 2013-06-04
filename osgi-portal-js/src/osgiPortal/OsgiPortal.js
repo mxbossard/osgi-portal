@@ -2,10 +2,6 @@
 
 var Tools = window.MbyUtils.Tools;
 
-var App = OsgiPortal.model.App;
-var AppClient = OsgiPortal.model.AppClient;
-var PortalContext = OsgiPortal.model.PortalContext;
-
 window.OsgiPortal = window.OsgiPortal || {};
 
 /**
@@ -13,15 +9,21 @@ window.OsgiPortal = window.OsgiPortal || {};
  */
 (function(OsgiPortal, undefined) {
 
+	var AppClient = OsgiPortal.model.AppClient;
+	var PortalContext = OsgiPortal.model.PortalContext;
+
 	/** Instance stores a reference to the OSGi Portal Singleton. */
 	var _instance = null;
+
+	/** Hook in charge to load an App by its signature. */
+	var _appLoadingHook = null;
 
 	/** Get the Singleton instance if one exists or create one if it doesn't. */
 	function getInstance(portalConfiguration) {
 		if (!_instance && portalConfiguration) {
 			_instance = init(portalConfiguration);
 		} else if (portalConfiguration) {
-			throw "OsgiPortal is already configured !";
+			console.log("WARN: OsgiPortal is already configured !");
 		}
 
 		return _instance;
@@ -34,6 +36,13 @@ window.OsgiPortal = window.OsgiPortal || {};
 		if (!portalConfiguration) {
 			throw "No OSGi Portal configuration supplied for OsgiPortal initialization !";
 		}
+
+		var appLoadingHook = portalConfiguration.appLoadingHook;
+		if (!appLoadingHook || !Tools.isFunction(appLoadingHook)) {
+			throw "OSGi Portal configuration need an 'appLoadingHook' to be able to load App by signature !";
+		}
+
+		_appLoadingHook = appLoadingHook;
 
 		/** Event Hooks configuration. */
 		var _portalContext = new PortalContext(portalConfiguration);
@@ -49,12 +58,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 		}
 
 		function loadAppBySignature(signature) {
-			// TODO implement App loading by signature
-			var app = App(signature, signature, signature);
-			app.eventWiring = [{
-				appId : "signature42",
-				topic : "alert"
-			}];
+			var app = _appLoadingHook(signature);
 
 			return app;
 		}
@@ -63,7 +67,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 		function fireEventFromAppClient(appClient, event) {
 
 			// Pass the Event to the context
-			_portalContext.fireEventFromApp(appClient, event);
+			_portalContext.fireEventFromAppClient(appClient, event);
 		}
 
 		/** Do an Action on the Portal. */
