@@ -1,22 +1,20 @@
+'use strict';
+
+var Tools = window.MbyUtils.Tools;
+
+var App = OsgiPortal.model.App;
+var AppClient = OsgiPortal.model.AppClient;
+var PortalContext = OsgiPortal.model.PortalContext;
+
+window.OsgiPortal = window.OsgiPortal || {};
+
 /**
  * OSGi Portal builder.
  */
-;
-(function buildOsgiPortal(OsgiPortal, MbyUtils, undefined) {
-	"use strict";
+(function(OsgiPortal, undefined) {
 
 	/** Instance stores a reference to the OSGi Portal Singleton. */
 	var _instance = null;
-
-	/** Utils references. */
-	var Tools = MbyUtils.Tools;
-
-	var Event = MbyUtils.EventKit.Event;
-
-	/** Model references. */
-	var Reply = OsgiPortal.Model.Reply;
-	var App = OsgiPortal.Model.App;
-	var AppClient = OsgiPortal.Model.AppClient;
 
 	/** Get the Singleton instance if one exists or create one if it doesn't. */
 	function getInstance(portalConfiguration) {
@@ -34,11 +32,11 @@
 
 		/** OSGi Portal configuration. */
 		if (!portalConfiguration) {
-			throw "No OSGi Portal configuration supplied !";
+			throw "No OSGi Portal configuration supplied for OsgiPortal initialization !";
 		}
 
 		/** Event Hooks configuration. */
-		var _portalContext = new OsgiPortal.Model.PortalContext(portalConfiguration);
+		var _portalContext = new PortalContext(portalConfiguration);
 
 		/** Register a Portal Application and return the corresponding AppClient. */
 		function registerPortalApplication(signature) {
@@ -52,7 +50,7 @@
 
 		function loadAppBySignature(signature) {
 			// TODO implement App loading by signature
-			var app = new App(signature, signature, signature);
+			var app = App(signature, signature, signature);
 			app.eventWiring = [{
 				appId : "signature42",
 				topic : "alert"
@@ -62,19 +60,17 @@
 		}
 
 		/** Fire an event from an AppClient. */
-		function fireEventFromAppClient(event, appClient) {
-			// Check AppClient validity
-			var registeredApp = _portalContext.checkAppClientValidity(appClient);
+		function fireEventFromAppClient(appClient, event) {
 
-			console.log(appClient + " fired " + event + " ...");
-
-			// Fire event on the registered App
-			_portalContext.fireEventFromApp(registeredApp.id, event);
+			// Pass the Event to the context
+			_portalContext.fireEventFromApp(appClient, event);
 		}
 
 		/** Do an Action on the Portal. */
-		function doActionFromAppClient(action, appClient) {
-			_portalContext.doActionFromAppClient(action, appClient);
+		function doActionFromAppClient(appClient, action) {
+
+			// Pass the action to the context
+			_portalContext.doActionFromAppClient(appClient, action);
 		}
 
 		/** Public OsgiPortal API. */
@@ -89,13 +85,13 @@
 			},
 
 			/** Do an Action on the Portal. */
-			doActionFromAppClient : function(action, appClient) {
-				doActionFromAppClient(action, appClient);
+			doActionFromAppClient : function(appClient, action) {
+				doActionFromAppClient(appClient, action);
 			},
 
 			/** Fire an Event from a specific AppClient. */
-			fireEventFromAppClient : function(event, appClient) {
-				fireEventFromAppClient(event, appClient);
+			fireEventFromAppClient : function(appClient, event) {
+				fireEventFromAppClient(appClient, event);
 			}
 
 		};
@@ -105,4 +101,4 @@
 		return getInstance(portalConfiguration);
 	};
 
-})(window.OsgiPortal = window.OsgiPortal || {}, window.MbyUtils);
+})(window.OsgiPortal);
