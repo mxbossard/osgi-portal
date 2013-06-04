@@ -1,5 +1,7 @@
 'use strict';
 
+var Tools = window.MbyUtils.Tools;
+
 window.MbyUtils = window.MbyUtils || {};
 
 (function(MbyUtils, undefined) {
@@ -11,6 +13,11 @@ window.MbyUtils = window.MbyUtils || {};
 		if (!topic) {
 			throw "MbyUtils.event.EventListener builder need a topic !";
 		}
+
+		if (callback && !Tools.isFunction(callback)) {
+			throw "MbyUtils.event.EventListener builder need a function as callback !";
+		}
+
 		this.topic = topic;
 		this.callback = callback;
 

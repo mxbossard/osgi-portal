@@ -12,7 +12,7 @@ window.MbyUtils = window.MbyUtils || {};
 			throw "MbyUtils.event.Event builder need a topic !";
 		}
 
-		if (properties && typeof properties !== 'object') {
+		if (properties && (typeof properties !== 'object')) {
 			throw "Event properties need to be an Object !";
 		}
 

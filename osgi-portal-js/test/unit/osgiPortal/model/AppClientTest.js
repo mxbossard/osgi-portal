@@ -80,7 +80,8 @@ describe("OsgiPortal.model.AppClient unit test.", function() {
 		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, appMock, 'testAppClientSignature');
 		appClient.appEventListeners = [];
 		appClient.appEventListeners['otherAppSn'] = [];
-		var eventListener = new MbyUtils.event.EventListener('userAction', null);
+		var eventListener = new MbyUtils.event.EventListener('userAction', function() {
+		});
 		appClient.appEventListeners['otherAppSn']['userAction'] = eventListener;
 
 		var eventHookCallback = function() {

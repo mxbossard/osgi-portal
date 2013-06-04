@@ -24,4 +24,15 @@ describe("OsgiPortal.model.Action unit test.", function() {
 
 	});
 
+	it("Builder test with undefined properties", function() {
+		new OsgiPortal.model.Action('type');
+	});
+
+	it("Builder test with not object properties ", function() {
+		expect(function() {
+			var string = 'string';
+			new OsgiPortal.model.Action('type', string);
+		}).toThrow();
+
+	});
 });

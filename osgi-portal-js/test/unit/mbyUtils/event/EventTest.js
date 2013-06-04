@@ -17,9 +17,20 @@ describe("MbyUtils.event.Event unit test.", function() {
 
 	it("Builder test with undefined topic", function() {
 		expect(function() {
-			new MbyUtils.event.EventListener();
+			new MbyUtils.event.Event();
 		}).toThrow();
 
 	});
 
+	it("Builder test with undefined properties", function() {
+		new MbyUtils.event.Event('topic');
+	});
+
+	it("Builder test with not object properties ", function() {
+		expect(function() {
+			var string = 'string';
+			new MbyUtils.event.Event('topic', string);
+		}).toThrow();
+
+	});
 });

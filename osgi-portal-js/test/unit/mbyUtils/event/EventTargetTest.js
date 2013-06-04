@@ -19,7 +19,8 @@ describe("MbyUtils.event.EventTarget unit test.", function() {
 	it("addEventListener() test", function() {
 		var target = new MbyUtils.event.EventTarget('testEventTarget');
 
-		target.addEventListener(new MbyUtils.event.EventListener('incrementValue'));
+		target.addEventListener(new MbyUtils.event.EventListener('incrementValue', function() {
+		}));
 
 	});
 
