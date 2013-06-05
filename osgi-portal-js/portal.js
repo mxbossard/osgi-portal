@@ -14,9 +14,9 @@ var osgiPortal = OsgiPortal.getInstance({
 
 	},
 	actionHooks : {
-		hookedAlert : function(action) {
+		hookedAlert : function(action, replyCallback) {
 			// On hookedAlert action call callback with action value
-			callback(action.properties.val);
+			replyCallback(action.type, action.properties);
 		}
 
 	}
