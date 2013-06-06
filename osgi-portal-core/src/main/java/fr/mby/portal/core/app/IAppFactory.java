@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.api.app;
+package fr.mby.portal.core.app;
+
+import javax.servlet.http.HttpServletRequest;
+
+import fr.mby.portal.api.app.IApp;
+import fr.mby.portal.api.app.IAppConfig;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAppConfig {
+public interface IAppFactory {
 
-	/**
-	 * Returns the IAppContext of the application.
-	 * 
-	 * @return the IAppContext of the application
-	 */
-	IAppContext getAppContext();
-
-	String getSymbolicName();
-
-	String getVersion();
+	IApp build(HttpServletRequest request, IAppConfig appConfig);
 
 }

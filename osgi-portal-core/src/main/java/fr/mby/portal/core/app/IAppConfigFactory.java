@@ -14,23 +14,18 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.api.app;
+package fr.mby.portal.core.app;
+
+import org.osgi.framework.Bundle;
+
+import fr.mby.portal.api.app.IAppConfig;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAppConfig {
+public interface IAppConfigFactory {
 
-	/**
-	 * Returns the IAppContext of the application.
-	 * 
-	 * @return the IAppContext of the application
-	 */
-	IAppContext getAppContext();
-
-	String getSymbolicName();
-
-	String getVersion();
+	IAppConfig build(Bundle appBundle);
 
 }
