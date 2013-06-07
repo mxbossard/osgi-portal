@@ -1,0 +1,34 @@
+#portalAlert {
+	border: 1px dashed red;
+	margin: 5px;
+}
+
+#eventList {
+	border: 1px dashed blue;
+	margin: 5px;
+}
+
+#actionList {
+	border: 1px dashed orange;
+	margin: 5px;
+}
+
+.app {
+	float: left;
+	width: 400px;
+	height: 250px;
+	border: 1px dashed green;
+	margin: 5px;
+	overflow: hidden;
+}
+
+.app iframe {
+	width: 100%;
+	height: 100%;
+	border: none;
+	
+}
+
+.clearBoth {
+	clear: both;
+}

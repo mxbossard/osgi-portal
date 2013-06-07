@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <script data-require="jquery@2.0.1" data-semver="2.0.1" src="http://code.jquery.com/jquery-2.0.1.min.js"></script>
+    <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css" />
+    
+    <link rel="stylesheet" href="portal.css" />
+      
+	<script type="text/javascript" src="../src/mbyUtils/Tools.js"></script>
+  
+	<script type="text/javascript" src="../src/mbyUtils/event/Event.js"></script>
+	<script type="text/javascript" src="../src/mbyUtils/event/EventListener.js"></script>
+	<script type="text/javascript" src="../src/mbyUtils/event/EventTarget.js"></script>   
+	  
+	<script type="text/javascript" src="../src/osgiPortal/model/Action.js"></script>
+	<script type="text/javascript" src="../src/osgiPortal/model/Reply.js"></script>
+	<script type="text/javascript" src="../src/osgiPortal/model/App.js"></script>
+	<script type="text/javascript" src="../src/osgiPortal/model/AppClient.js"></script>
+	<script type="text/javascript" src="../src/osgiPortal/model/PortalContext.js"></script>
+	
+	<script type="text/javascript" src="../src/osgiPortal/OsgiPortal.js"></script>
+	
+	<script type="text/javascript" src="portal.js"></script>
+  </head>
+
+  <body>
+    <h1>
+    	Portal
+    	<input id="portalValue" type="text" value="portalValue" />
+    </h1>
+    
+    <div id="portalAlert">
+    	<h2>Alert Event : <span></span></h2>
+    </div>
+    
+    <div class="app" id="app1">
+    	<h2>App 1 :</h2>
+    	<iframe src="app1.html"></iframe>
+    
+    </div>
+    
+    <div class="app" id="app2">
+    	<h2>App 2 :</h2>
+    	<iframe src="app2.html"></iframe>
+    
+    </div>
+    
+    <div class="app" id="app3">
+    	<h2>App 3 :</h2>
+    	<iframe src="app3.html"></iframe>
+    
+    </div>
+    
+    <div class="app" id="app4">
+    	<h2>App 4 :</h2>
+    	<iframe src="app4.html"></iframe>
+    
+    </div>
+    
+    <div class="clearBoth"></div>
+    
+    <div id="eventList">
+    	<h2>Event List :</h2>
+    	<span></span>
+    </div>
+    
+    <div id="actionList">
+    	<h2>Action List :</h2>
+    	<span></span>
+    </div>
+    
+  </body>
+
+</html>
