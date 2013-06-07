@@ -43,7 +43,8 @@ public class PortalController {
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 
 		if (this.portalRenderers != null && this.portalRenderers.size() > 0) {
-			this.portalRenderers.iterator().next().render(request, response);
+			final IPortalRenderer firstPortalRenderer = this.portalRenderers.iterator().next();
+			firstPortalRenderer.render(request, response);
 			return null;
 		}
 

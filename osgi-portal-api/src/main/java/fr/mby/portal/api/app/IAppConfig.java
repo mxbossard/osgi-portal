@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.api.app;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public interface IAppConfig {
 
@@ -27,5 +28,9 @@ public interface IAppConfig {
 	 * @return the IAppContext of the application
 	 */
 	IAppContext getAppContext();
-	
+
+	String getSymbolicName();
+
+	String getVersion();
+
 }

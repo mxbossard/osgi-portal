@@ -17,7 +17,9 @@
 package fr.mby.portal.coreimpl;
 
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,8 +28,10 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.springframework.util.StringUtils;
 
+import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
+import fr.mby.portal.coreimpl.app.BasicApp;
 import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
 
 /**
@@ -68,6 +72,20 @@ public class BasicPortalRenderer implements IPortalRenderer {
 
 		writer.append("</body>\n</html>\n");
 		writer.flush();
+	}
+
+	@Override
+	public List<IApp> getAppToRender(final HttpServletRequest request) throws Exception {
+		final ArrayList<IApp> appsToRender = new ArrayList<IApp>(16);
+
+		if (this.portalApps != null) {
+			for (final IPortalApp portalApp : this.portalApps) {
+				final BasicApp app = new BasicApp();
+				appsToRender.add(app);
+			}
+		}
+
+		return appsToRender;
 	}
 
 	/**

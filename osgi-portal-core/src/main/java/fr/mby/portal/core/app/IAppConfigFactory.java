@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.api.app;
+package fr.mby.portal.core.app;
 
-import fr.mby.portal.api.message.IActionMessage;
-import fr.mby.portal.api.message.IActionReply;
-import fr.mby.portal.api.message.IRenderMessage;
-import fr.mby.portal.api.message.IRenderReply;
+import org.osgi.framework.Bundle;
+
+import fr.mby.portal.api.app.IAppConfig;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalApp {
+public interface IAppConfigFactory {
 
-	void destory();
-
-	void init(IAppConfig config);
-
-	void processAction(IActionMessage request, IActionReply response);
-
-	void render(IRenderMessage request, IRenderReply response);
+	IAppConfig build(Bundle appBundle);
 
 }

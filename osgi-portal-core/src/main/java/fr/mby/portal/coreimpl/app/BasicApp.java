@@ -13,49 +13,61 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package fr.mby.portal.coreimpl.app;
 
-package fr.mby.portal.coreimpl.context;
+import fr.mby.portal.api.app.IApp;
+import fr.mby.portal.api.app.IAppConfig;
 
-import fr.mby.portal.api.app.IAppContext;
 
 /**
  * @author Maxime Bossard - 2013
- * 
+ *
  */
-public class BasicAppContext implements IAppContext {
+public class BasicApp implements IApp {
 
-	@Override
-	public void log(final String message, final Object[]... objects) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void log(final String message, final Throwable throwable, final Object[]... objects) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.mby.portal.api.app.IAppContext#getBundleId()
+	/* (non-Javadoc)
+	 * @see fr.mby.portal.api.app.IApp#getNamespace()
 	 */
 	@Override
-	public int getBundleId() {
+	public String getNamespace() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.mby.portal.api.app.IApp#getSignature()
+	 */
+	@Override
+	public String getSignature() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.mby.portal.api.app.IApp#getAppConfig()
+	 */
+	@Override
+	public IAppConfig getAppConfig() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see fr.mby.portal.api.app.IApp#getWidth()
+	 */
+	@Override
+	public int getWidth() {
 		// TODO Auto-generated method stub
 		return 0;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see fr.mby.portal.api.app.IAppContext#getWebContextPath()
+	/* (non-Javadoc)
+	 * @see fr.mby.portal.api.app.IApp#getHeight()
 	 */
 	@Override
-	public String getWebContextPath() {
+	public int getHeight() {
 		// TODO Auto-generated method stub
-		return null;
+		return 0;
 	}
 
 }

@@ -16,8 +16,12 @@
 
 package fr.mby.portal.core;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import fr.mby.portal.api.app.IApp;
 
 /**
  * IPortalRenderer implementation is in charge of rendering the portal.
@@ -28,5 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 public interface IPortalRenderer {
 
 	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
+
+	List<IApp> getAppToRender(HttpServletRequest request) throws Exception;
 
 }
