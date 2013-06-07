@@ -32,7 +32,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 	/** Register an Event hook on an other App for a topic. */
 	AppClient.prototype.registerAppEventHook = function(appSymbolicName, topic, hook) {
 		if (!Tools.isFunction(hook)) {
-			throw "Cannot register Event Hook : supplied Hook is not a function !";
+			throw "Cannot register App Event Hook : supplied Hook is not a function !";
 		}
 
 		if (!this.appEventListeners) {
@@ -80,7 +80,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 	/** Do an Action on the portal. */
 	AppClient.prototype.doAction = function(type, properties) {
-		this.osgiPortal.doActionFromAppClient(this, new Action(type, properties, this));
+		this.osgiPortal.doActionFromAppClient(new Action(this, type, properties));
 	};
 
 	/** Fire an Alert event. */

@@ -7,7 +7,11 @@ window.OsgiPortal = window.OsgiPortal || {};
 	/**
 	 * Action builder. An Action on the portal.
 	 */
-	var Action = function(type, properties, appClient) {
+	var Action = function(appClient, type, properties) {
+		if (!appClient) {
+			throw "Action appClient need to be supplied !";
+		}
+		
 		if (!type) {
 			throw "OsgiPortal.model.Action builder need a type !";
 		}
