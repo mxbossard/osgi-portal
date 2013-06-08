@@ -25,6 +25,13 @@ package fr.mby.portal.api.app;
 public interface IApp {
 
 	/**
+	 * The IAppConfig of this IApp.
+	 * 
+	 * @return the IAppConfig
+	 */
+	IAppConfig getConfig();
+
+	/**
 	 * The namespace is an identifier which can be use to uniquely identify this IApp among others IApp rendered in the
 	 * portal.
 	 * 
@@ -38,13 +45,6 @@ public interface IApp {
 	 * @return the App signature
 	 */
 	String getSignature();
-
-	/**
-	 * The IAppConfig of this IApp.
-	 * 
-	 * @return the IAppConfig
-	 */
-	IAppConfig getAppConfig();
 
 	/**
 	 * The width of this IApp when rendered.

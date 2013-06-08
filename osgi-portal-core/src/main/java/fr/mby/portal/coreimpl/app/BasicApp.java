@@ -25,7 +25,7 @@ import fr.mby.portal.api.app.IAppConfig;
  */
 public class BasicApp implements IApp {
 
-	private final IAppConfig appConfig;
+	private final IAppConfig config;
 
 	private String namespace;
 
@@ -40,7 +40,7 @@ public class BasicApp implements IApp {
 	 */
 	protected BasicApp(final IAppConfig appConfig) {
 		super();
-		this.appConfig = appConfig;
+		this.config = appConfig;
 	}
 
 	/**
@@ -49,8 +49,8 @@ public class BasicApp implements IApp {
 	 * @return the appConfig
 	 */
 	@Override
-	public IAppConfig getAppConfig() {
-		return this.appConfig;
+	public IAppConfig getConfig() {
+		return this.config;
 	}
 
 	/**

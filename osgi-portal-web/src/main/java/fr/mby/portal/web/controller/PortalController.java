@@ -17,6 +17,7 @@
 package fr.mby.portal.web.controller;
 
 import java.util.Collection;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.core.IPortalRenderer;
 
 /**
@@ -37,18 +39,23 @@ import fr.mby.portal.core.IPortalRenderer;
 @RequestMapping("/")
 public class PortalController {
 
+	/** Name of view attribute for Apps to render. */
+	private static final String APPS_TO_RENDER = "appsToRender";
+
 	private Collection<IPortalRenderer> portalRenderers;
 
 	@RequestMapping(method = RequestMethod.GET)
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+		final ModelAndView view = new ModelAndView("portal");
 
 		if (this.portalRenderers != null && this.portalRenderers.size() > 0) {
 			final IPortalRenderer firstPortalRenderer = this.portalRenderers.iterator().next();
-			firstPortalRenderer.render(request, response);
-			return null;
+
+			final List<IApp> appsToRender = firstPortalRenderer.getAppsToRender(request);
+			view.addObject(PortalController.APPS_TO_RENDER, appsToRender);
 		}
 
-		return new ModelAndView("portal");
+		return view;
 	}
 
 	/**

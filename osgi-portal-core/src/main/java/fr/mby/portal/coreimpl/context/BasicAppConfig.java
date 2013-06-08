@@ -25,7 +25,7 @@ import fr.mby.portal.api.app.IAppContext;
  */
 public class BasicAppConfig implements IAppConfig {
 
-	private IAppContext appContext;
+	private IAppContext context;
 
 	private String symbolicName;
 
@@ -42,18 +42,18 @@ public class BasicAppConfig implements IAppConfig {
 	 * @return the appContext
 	 */
 	@Override
-	public IAppContext getAppContext() {
-		return this.appContext;
+	public IAppContext getContext() {
+		return this.context;
 	}
 
 	/**
 	 * Setter of appContext.
 	 * 
-	 * @param appContext
+	 * @param context
 	 *            the appContext to set
 	 */
-	public void setAppContext(final IAppContext appContext) {
-		this.appContext = appContext;
+	public void setContext(final IAppContext context) {
+		this.context = context;
 	}
 
 	/**

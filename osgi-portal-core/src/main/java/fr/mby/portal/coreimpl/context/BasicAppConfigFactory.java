@@ -45,7 +45,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 		appContext.setBundleId(appBundle.getBundleId());
 		appContext.setWebContextPath(this.buildWebAppBundlePath(appBundle));
 
-		appConfig.setAppContext(appContext);
+		appConfig.setContext(appContext);
 		return appConfig;
 	}
 

@@ -26,7 +26,7 @@ public class BasicAppContext implements IAppContext {
 
 	private long bundleId;
 
-	private String WebContextPath;
+	private String webContextPath;
 
 	/** Protected builder. */
 	protected BasicAppContext() {
@@ -73,7 +73,7 @@ public class BasicAppContext implements IAppContext {
 	 */
 	@Override
 	public String getWebContextPath() {
-		return this.WebContextPath;
+		return this.webContextPath;
 	}
 
 	/**
@@ -83,7 +83,7 @@ public class BasicAppContext implements IAppContext {
 	 *            the webContextPath to set
 	 */
 	public void setWebContextPath(final String webContextPath) {
-		this.WebContextPath = webContextPath;
+		this.webContextPath = webContextPath;
 	}
 
 }

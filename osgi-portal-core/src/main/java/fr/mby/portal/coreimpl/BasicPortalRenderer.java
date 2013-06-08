@@ -121,8 +121,8 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 	 * @param bundle
 	 */
 	protected void renderApp(final PrintWriter writer, final IApp app) {
-		final IAppConfig appConfig = app.getAppConfig();
-		final IAppContext appContext = appConfig.getAppContext();
+		final IAppConfig appConfig = app.getConfig();
+		final IAppContext appContext = appConfig.getContext();
 
 		final String webBundlePath = appContext.getWebContextPath();
 

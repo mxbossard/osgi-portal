@@ -27,7 +27,7 @@ public interface IAppConfig {
 	 * 
 	 * @return the IAppContext of the application
 	 */
-	IAppContext getAppContext();
+	IAppContext getContext();
 
 	String getSymbolicName();
 
