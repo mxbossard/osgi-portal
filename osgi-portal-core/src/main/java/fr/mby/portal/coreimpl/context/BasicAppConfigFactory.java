@@ -22,7 +22,6 @@ import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.core.app.IAppConfigFactory;
-import fr.mby.portal.coreimpl.BasicPortalRenderer;
 
 /**
  * @author Maxime Bossard - 2013
@@ -30,6 +29,8 @@ import fr.mby.portal.coreimpl.BasicPortalRenderer;
  */
 @Service
 public class BasicAppConfigFactory implements IAppConfigFactory {
+
+	public static final Object WEB_CONTEXT_PATH_BUNDLE_HEADER = "Web-ContextPath";
 
 	@Override
 	public IAppConfig build(final Bundle appBundle) {
@@ -54,7 +55,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 	 */
 	protected String buildWebAppBundlePath(final Bundle bundle) {
 		final String webContextPathHeader = (String) bundle.getHeaders().get(
-				BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER);
+				BasicAppConfigFactory.WEB_CONTEXT_PATH_BUNDLE_HEADER);
 		final String webBundlePath = "/".concat(webContextPathHeader.replaceAll("[\\/\\\\]+", ""));
 
 		return webBundlePath;

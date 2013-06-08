@@ -31,9 +31,9 @@ public class BasicApp implements IApp {
 
 	private String signature;
 
-	private int width;
+	private String width;
 
-	private int height;
+	private String height;
 
 	/**
 	 * @param appConfig
@@ -99,7 +99,7 @@ public class BasicApp implements IApp {
 	 * @return the width
 	 */
 	@Override
-	public int getWidth() {
+	public String getWidth() {
 		return this.width;
 	}
 
@@ -109,7 +109,7 @@ public class BasicApp implements IApp {
 	 * @param width
 	 *            the width to set
 	 */
-	public void setWidth(final int width) {
+	public void setWidth(final String width) {
 		this.width = width;
 	}
 
@@ -119,7 +119,7 @@ public class BasicApp implements IApp {
 	 * @return the height
 	 */
 	@Override
-	public int getHeight() {
+	public String getHeight() {
 		return this.height;
 	}
 
@@ -129,7 +129,7 @@ public class BasicApp implements IApp {
 	 * @param height
 	 *            the height to set
 	 */
-	public void setHeight(final int height) {
+	public void setHeight(final String height) {
 		this.height = height;
 	}
 

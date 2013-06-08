@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.coreimpl;
+package fr.mby.portal.coreimpl.context;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,20 +31,20 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * 
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:basicPortalRendererTestContext.xml")
+@ContextConfiguration(locations = "classpath:basicAppConfigFactoryTestContext.xml")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class BasicPortalRendererTest {
+public class BasicAppConfigFactoryTest {
 
 	@Autowired
-	private BasicPortalRenderer basicPortalRenderer;
+	private BasicAppConfigFactory basicAppConfigFactory;
 
 	@Test
 	@SuppressWarnings("unchecked")
 	public void testBuildWebAppBundlePath1() throws Exception {
 		final MockBundle bundle = new MockBundle();
-		bundle.getHeaders().put(BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER, "test");
+		bundle.getHeaders().put(BasicAppConfigFactory.WEB_CONTEXT_PATH_BUNDLE_HEADER, "test");
 
-		final String path = this.basicPortalRenderer.buildWebAppBundlePath(bundle);
+		final String path = this.basicAppConfigFactory.buildWebAppBundlePath(bundle);
 		Assert.assertEquals("Bad url path !", "/test", path);
 	}
 
@@ -52,9 +52,9 @@ public class BasicPortalRendererTest {
 	@SuppressWarnings("unchecked")
 	public void testBuildWebAppBundlePath2() throws Exception {
 		final MockBundle bundle = new MockBundle();
-		bundle.getHeaders().put(BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER, "\\test");
+		bundle.getHeaders().put(BasicAppConfigFactory.WEB_CONTEXT_PATH_BUNDLE_HEADER, "\\test");
 
-		final String path = this.basicPortalRenderer.buildWebAppBundlePath(bundle);
+		final String path = this.basicAppConfigFactory.buildWebAppBundlePath(bundle);
 		Assert.assertEquals("Bad url path !", "/test", path);
 	}
 
@@ -62,9 +62,9 @@ public class BasicPortalRendererTest {
 	@SuppressWarnings("unchecked")
 	public void testBuildWebAppBundlePath3() throws Exception {
 		final MockBundle bundle = new MockBundle();
-		bundle.getHeaders().put(BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER, "/test");
+		bundle.getHeaders().put(BasicAppConfigFactory.WEB_CONTEXT_PATH_BUNDLE_HEADER, "/test");
 
-		final String path = this.basicPortalRenderer.buildWebAppBundlePath(bundle);
+		final String path = this.basicAppConfigFactory.buildWebAppBundlePath(bundle);
 		Assert.assertEquals("Bad url path !", "/test", path);
 	}
 
@@ -72,9 +72,9 @@ public class BasicPortalRendererTest {
 	@SuppressWarnings("unchecked")
 	public void testBuildWebAppBundlePath4() throws Exception {
 		final MockBundle bundle = new MockBundle();
-		bundle.getHeaders().put(BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER, "/test/");
+		bundle.getHeaders().put(BasicAppConfigFactory.WEB_CONTEXT_PATH_BUNDLE_HEADER, "/test/");
 
-		final String path = this.basicPortalRenderer.buildWebAppBundlePath(bundle);
+		final String path = this.basicAppConfigFactory.buildWebAppBundlePath(bundle);
 		Assert.assertEquals("Bad url path !", "/test", path);
 	}
 

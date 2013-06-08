@@ -47,6 +47,10 @@ public class BasicAppFactory implements IAppFactory {
 		app.setNamespace(this.generateNamespace(request, appConfig));
 		app.setSignature(this.generateSignature(request, appConfig));
 
+		// Default
+		app.setWidth("400px");
+		app.setHeight("300px");
+
 		return app;
 	}
 

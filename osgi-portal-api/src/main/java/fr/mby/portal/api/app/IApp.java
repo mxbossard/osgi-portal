@@ -51,13 +51,13 @@ public interface IApp {
 	 * 
 	 * @return the IApp width
 	 */
-	int getWidth();
+	String getWidth();
 
 	/**
 	 * The height of this IApp when rendered.
 	 * 
 	 * @return the IApp height
 	 */
-	int getHeight();
+	String getHeight();
 
 }

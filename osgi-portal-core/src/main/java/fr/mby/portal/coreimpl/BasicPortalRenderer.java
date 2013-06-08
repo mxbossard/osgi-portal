@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppConfigFactory;
@@ -44,8 +45,6 @@ import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
  * 
  */
 public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
-
-	public static final Object WEB_CONTEXT_PATH_BUNDLE_HEADER = "Web-ContextPath";
 
 	/** All IAppReferences. */
 	private Collection<IPortalApp> portalApps;
@@ -76,8 +75,14 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 		if (this.portalAppReferenceListener != null) {
 			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
 				final Bundle bundle = appRef.getBundle();
+				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
 
-				this.renderWebAppBundle(writer, bundle);
+				// Each App is displayed 3 times
+				for (int k = 0; k < 3; k++) {
+					final IApp app = this.appFactory.build(request, appConfig);
+
+					this.renderApp(writer, app);
+				}
 			}
 		}
 
@@ -93,8 +98,12 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
 				final Bundle bundle = appRef.getBundle();
 				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
-				final IApp app = this.appFactory.build(request, appConfig);
-				appsToRender.add(app);
+
+				// Each App is displayed 3 times
+				for (int k = 0; k < 3; k++) {
+					final IApp app = this.appFactory.build(request, appConfig);
+					appsToRender.add(app);
+				}
 			}
 		}
 
@@ -111,38 +120,32 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 	 * @param writer
 	 * @param bundle
 	 */
-	protected void renderWebAppBundle(final PrintWriter writer, final Bundle bundle) {
-		final String webBundlePath = this.buildWebAppBundlePath(bundle);
+	protected void renderApp(final PrintWriter writer, final IApp app) {
+		final IAppConfig appConfig = app.getAppConfig();
+		final IAppContext appContext = appConfig.getAppContext();
+
+		final String webBundlePath = appContext.getWebContextPath();
 
 		if (StringUtils.hasText(webBundlePath)) {
-			final long bundleId = bundle.getBundleId();
-			writer.append("<div id=\"bundle");
-			writer.append(String.valueOf(bundleId));
+			writer.append("<div id=\"");
+			writer.append(app.getNamespace());
 			writer.append("\">\n");
 
-			final String symbolicName = bundle.getSymbolicName();
+			final String symbolicName = appConfig.getSymbolicName();
 			writer.append("<h2>");
 			writer.append(symbolicName);
 			writer.append("</h2>\n");
 
 			writer.append("<iframe src=\"");
 			writer.append(webBundlePath);
-			writer.append("\" style=\"width: 100%; height: 400px;\" />\n");
+			writer.append("\" style=\"width: ");
+			writer.append(app.getWidth());
+			writer.append("; height: ");
+			writer.append(app.getHeight());
+			writer.append("\"></iframe>\n");
 
 			writer.append("</div>\n");
 		}
-	}
-
-	/**
-	 * @param webContextPathHeader
-	 * @return
-	 */
-	protected String buildWebAppBundlePath(final Bundle bundle) {
-		final String webContextPathHeader = (String) bundle.getHeaders().get(
-				BasicPortalRenderer.WEB_CONTEXT_PATH_BUNDLE_HEADER);
-		final String webBundlePath = "/".concat(webContextPathHeader.replaceAll("[\\/\\\\]+", ""));
-
-		return webBundlePath;
 	}
 
 	/**
