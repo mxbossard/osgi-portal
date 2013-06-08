@@ -13,61 +13,124 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.coreimpl.app;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 
-
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public class BasicApp implements IApp {
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.api.app.IApp#getNamespace()
+	private final IAppConfig appConfig;
+
+	private String namespace;
+
+	private String signature;
+
+	private int width;
+
+	private int height;
+
+	/**
+	 * @param appConfig
 	 */
-	@Override
-	public String getNamespace() {
-		// TODO Auto-generated method stub
-		return null;
+	protected BasicApp(final IAppConfig appConfig) {
+		super();
+		this.appConfig = appConfig;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.api.app.IApp#getSignature()
-	 */
-	@Override
-	public String getSignature() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.api.app.IApp#getAppConfig()
+	/**
+	 * Getter of appConfig.
+	 * 
+	 * @return the appConfig
 	 */
 	@Override
 	public IAppConfig getAppConfig() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.appConfig;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.api.app.IApp#getWidth()
+	/**
+	 * Getter of namespace.
+	 * 
+	 * @return the namespace
+	 */
+	@Override
+	public String getNamespace() {
+		return this.namespace;
+	}
+
+	/**
+	 * Setter of namespace.
+	 * 
+	 * @param namespace
+	 *            the namespace to set
+	 */
+	public void setNamespace(final String namespace) {
+		this.namespace = namespace;
+	}
+
+	/**
+	 * Getter of signature.
+	 * 
+	 * @return the signature
+	 */
+	@Override
+	public String getSignature() {
+		return this.signature;
+	}
+
+	/**
+	 * Setter of signature.
+	 * 
+	 * @param signature
+	 *            the signature to set
+	 */
+	public void setSignature(final String signature) {
+		this.signature = signature;
+	}
+
+	/**
+	 * Getter of width.
+	 * 
+	 * @return the width
 	 */
 	@Override
 	public int getWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.width;
 	}
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.api.app.IApp#getHeight()
+	/**
+	 * Setter of width.
+	 * 
+	 * @param width
+	 *            the width to set
+	 */
+	public void setWidth(final int width) {
+		this.width = width;
+	}
+
+	/**
+	 * Getter of height.
+	 * 
+	 * @return the height
 	 */
 	@Override
 	public int getHeight() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.height;
+	}
+
+	/**
+	 * Setter of height.
+	 * 
+	 * @param height
+	 *            the height to set
+	 */
+	public void setHeight(final int height) {
+		this.height = height;
 	}
 
 }

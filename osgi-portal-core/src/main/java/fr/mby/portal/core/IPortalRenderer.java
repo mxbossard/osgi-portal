@@ -33,6 +33,6 @@ public interface IPortalRenderer {
 
 	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
-	List<IApp> getAppToRender(HttpServletRequest request) throws Exception;
+	List<IApp> getAppsToRender(HttpServletRequest request) throws Exception;
 
 }

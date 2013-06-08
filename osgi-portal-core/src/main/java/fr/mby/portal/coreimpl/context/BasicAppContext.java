@@ -24,6 +24,16 @@ import fr.mby.portal.api.app.IAppContext;
  */
 public class BasicAppContext implements IAppContext {
 
+	private long bundleId;
+
+	private String WebContextPath;
+
+	/** Protected builder. */
+	protected BasicAppContext() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
 	@Override
 	public void log(final String message, final Object[]... objects) {
 		// TODO Auto-generated method stub
@@ -36,26 +46,44 @@ public class BasicAppContext implements IAppContext {
 
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Getter of bundleId.
 	 * 
-	 * @see fr.mby.portal.api.app.IAppContext#getBundleId()
+	 * @return the bundleId
 	 */
 	@Override
-	public int getBundleId() {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getBundleId() {
+		return this.bundleId;
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Setter of bundleId.
 	 * 
-	 * @see fr.mby.portal.api.app.IAppContext#getWebContextPath()
+	 * @param bundleId
+	 *            the bundleId to set
+	 */
+	public void setBundleId(final long bundleId) {
+		this.bundleId = bundleId;
+	}
+
+	/**
+	 * Getter of webContextPath.
+	 * 
+	 * @return the webContextPath
 	 */
 	@Override
 	public String getWebContextPath() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.WebContextPath;
+	}
+
+	/**
+	 * Setter of webContextPath.
+	 * 
+	 * @param webContextPath
+	 *            the webContextPath to set
+	 */
+	public void setWebContextPath(final String webContextPath) {
+		this.WebContextPath = webContextPath;
 	}
 
 }

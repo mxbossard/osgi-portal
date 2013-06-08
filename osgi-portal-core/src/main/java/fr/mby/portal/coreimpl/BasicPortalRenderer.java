@@ -26,19 +26,24 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import fr.mby.portal.api.app.IApp;
+import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
-import fr.mby.portal.coreimpl.app.BasicApp;
+import fr.mby.portal.core.app.IAppConfigFactory;
+import fr.mby.portal.core.app.IAppFactory;
 import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class BasicPortalRenderer implements IPortalRenderer {
+public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 
 	public static final Object WEB_CONTEXT_PATH_BUNDLE_HEADER = "Web-ContextPath";
 
@@ -46,6 +51,12 @@ public class BasicPortalRenderer implements IPortalRenderer {
 	private Collection<IPortalApp> portalApps;
 
 	private PortalAppReferenceListener portalAppReferenceListener;
+
+	@Autowired
+	private IAppConfigFactory appConfigFactory;
+
+	@Autowired
+	private IAppFactory appFactory;
 
 	@Override
 	public void render(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -75,17 +86,25 @@ public class BasicPortalRenderer implements IPortalRenderer {
 	}
 
 	@Override
-	public List<IApp> getAppToRender(final HttpServletRequest request) throws Exception {
+	public List<IApp> getAppsToRender(final HttpServletRequest request) throws Exception {
 		final ArrayList<IApp> appsToRender = new ArrayList<IApp>(16);
 
-		if (this.portalApps != null) {
-			for (final IPortalApp portalApp : this.portalApps) {
-				final BasicApp app = new BasicApp();
+		if (this.portalAppReferenceListener != null) {
+			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
+				final Bundle bundle = appRef.getBundle();
+				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
+				final IApp app = this.appFactory.build(request, appConfig);
 				appsToRender.add(app);
 			}
 		}
 
 		return appsToRender;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.appConfigFactory, "No IAppConfigFactory configured !");
+		Assert.notNull(this.appFactory, "No IAppFactory configured !");
 	}
 
 	/**

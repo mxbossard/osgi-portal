@@ -35,7 +35,7 @@ public interface IAppContext {
 
 	void log(String message, Throwable throwable, Object[]... objects);
 
-	int getBundleId();
+	long getBundleId();
 
 	String getWebContextPath();
 
