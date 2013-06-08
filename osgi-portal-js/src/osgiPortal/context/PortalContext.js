@@ -5,7 +5,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 (function(OsgiPortal, undefined) {
 
 	var Tools = MbyUtils.Tools;
-	
+
 	var Event = MbyUtils.event.Event;
 	var EventTarget = MbyUtils.event.EventTarget;
 	var EventListener = MbyUtils.event.EventListener;
@@ -46,19 +46,19 @@ window.OsgiPortal = window.OsgiPortal || {};
 		if (!actionHooks) {
 			actionHooks = {};
 		}
-		
-		for (var actionType in actionHooks) {
+
+		for ( var actionType in actionHooks) {
 			if (actionHooks.hasOwnProperty(actionType)) {
 				// Configured portal Action hook
 				var actionHook = actionHooks[actionType];
-				
+
 				if (!Tools.isFunction(actionHook)) {
 					throw "Configured Portal Action hook for type " + actionType + " is not a function !";
 				}
-				
+
 				registerActionHook(this, actionType, actionHook);
 			}
-			
+
 		}
 	};
 
@@ -239,19 +239,20 @@ window.OsgiPortal = window.OsgiPortal || {};
 		var portalContext = this;
 
 		var appClient = action.appClient;
-		
+
 		// Check the validity of the client
 		checkAppClientValidity(portalContext, appClient);
 
 		console.log(action + " in progress ...");
 
 		var app = this.getRegisteredAppById(appClient.appId);
-		
+
 		action.properties.sourceSymbolicName = app.symbolicName;
 		action.properties.sourceVersion = app.version;
-		
-		var actionType = action.type;
-		var actionEvent = new Event(action.type, {action: action});
+
+		var actionEvent = new Event(action.type, {
+			action : action
+		});
 		this.portalActionHooks.fireEvent(actionEvent);
 
 	};
@@ -307,7 +308,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 		// callback in charge to call the Action hook
 		var actionListener = new EventListener(actionType, function(actionEvent) {
 			var props = actionEvent.properties;
-			
+
 			// Action done
 			var action = props.action;
 
@@ -320,14 +321,14 @@ window.OsgiPortal = window.OsgiPortal || {};
 
 				sendReplyToAppClient(portalContext, appId, new Reply(replyType, properties));
 			};
-			
+
 			console.log("calling Action hook for type: " + actionType);
 			actionHook(action, replyCallback);
 		});
-		
+
 		portalContext.portalActionHooks.addEventListener(actionListener);
 	};
-	
+
 	OsgiPortal.model = OsgiPortal.model || {};
 	OsgiPortal.model.PortalContext = PortalContext;
 
