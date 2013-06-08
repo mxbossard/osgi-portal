@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+
+<html>
+
+  <head>
+    <script data-require="jquery@2.0.1" data-semver="2.0.1" src="http://code.jquery.com/jquery-2.0.1.min.js"></script>
+    <script src="app3.js"></script>
+  </head>
+
+  <body>
+    <p>
+	    Type text
+	    <input type="text" id="text" value="" onkeyup="appClient.fireEvent('keyUp', {text: this.value});" />
+	    
+    </p>
+
+  </body>
+
+</html>

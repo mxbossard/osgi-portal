@@ -164,7 +164,7 @@ describe("OsgiPortal integration test.", function() {
 		var appClient = _appClient;
 
 		// Fire event from portal
-		portal.doActionFromAppClient(appClient, new OsgiPortal.model.Action('type99', {
+		portal.doActionFromAppClient(new OsgiPortal.model.Action(appClient, 'type99', {
 			val : 'val99_'
 		}));
 

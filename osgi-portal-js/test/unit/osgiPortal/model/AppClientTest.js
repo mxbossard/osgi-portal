@@ -194,10 +194,10 @@ describe("OsgiPortal.model.AppClient unit test.", function() {
 	it("doAction() test", function() {
 		var doActionCount = 0;
 		var appClient = new OsgiPortal.model.AppClient(osgiPortalMock, appMock, 'testAppClientSignature');
-		osgiPortalMock.doActionFromAppClient = function(client, action) {
+		osgiPortalMock.doActionFromAppClient = function(action) {
 			doActionCount++;
 
-			expect(client).toBe(appClient);
+			expect(action.appClient).toBe(appClient);
 			expect(action.type).toBe('refresh');
 		};
 

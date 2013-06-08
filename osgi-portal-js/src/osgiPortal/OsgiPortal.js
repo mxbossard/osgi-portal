@@ -75,10 +75,10 @@ window.OsgiPortal = window.OsgiPortal || {};
 		}
 
 		/** Do an Action on the Portal. */
-		function doActionFromAppClient(appClient, action) {
+		function doActionFromAppClient(action) {
 
 			// Pass the action to the context
-			_portalContext.doActionFromAppClient(appClient, action);
+			_portalContext.doActionFromAppClient(action);
 		}
 
 		/** Public OsgiPortal API. */
@@ -93,8 +93,8 @@ window.OsgiPortal = window.OsgiPortal || {};
 			},
 
 			/** Do an Action on the Portal. */
-			doActionFromAppClient : function(appClient, action) {
-				doActionFromAppClient(appClient, action);
+			doActionFromAppClient : function(action) {
+				doActionFromAppClient(action);
 			},
 
 			/** Fire an Event from a specific AppClient. */

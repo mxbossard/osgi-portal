@@ -5,7 +5,8 @@ window.OsgiPortal = window.OsgiPortal || {};
 (function(OsgiPortal, undefined) {
 
 	var Tools = MbyUtils.Tools;
-
+	
+	var Event = MbyUtils.event.Event;
 	var EventTarget = MbyUtils.event.EventTarget;
 	var EventListener = MbyUtils.event.EventListener;
 
@@ -24,7 +25,7 @@ window.OsgiPortal = window.OsgiPortal || {};
 		this.portalEventHooks = {};
 
 		/** Action Hooks configuration. Map(type => ActionHook) */
-		this.portalActionHooks = {};
+		this.portalActionHooks = new EventTarget('Portal Action hooks');
 
 		/** Registered Apps Map(appId => App). */
 		this.registeredApps = {};
@@ -45,7 +46,20 @@ window.OsgiPortal = window.OsgiPortal || {};
 		if (!actionHooks) {
 			actionHooks = {};
 		}
-		this.portalActionHooks = actionHooks;
+		
+		for (var actionType in actionHooks) {
+			if (actionHooks.hasOwnProperty(actionType)) {
+				// Configured portal Action hook
+				var actionHook = actionHooks[actionType];
+				
+				if (!Tools.isFunction(actionHook)) {
+					throw "Configured Portal Action hook for type " + actionType + " is not a function !";
+				}
+				
+				registerActionHook(this, actionType, actionHook);
+			}
+			
+		}
 	};
 
 	/** Retrieve an App by its Id. */
@@ -221,38 +235,24 @@ window.OsgiPortal = window.OsgiPortal || {};
 	};
 
 	/** Do an Action on the Portal form an AppClient. */
-	PortalContext.prototype.doActionFromAppClient = function(appClient, action) {
+	PortalContext.prototype.doActionFromAppClient = function(action) {
 		var portalContext = this;
 
+		var appClient = action.appClient;
+		
 		// Check the validity of the client
 		checkAppClientValidity(portalContext, appClient);
 
-		console.log(appClient + " doing " + action + " ...");
+		console.log(action + " in progress ...");
 
-		var actionType = action.type;
-		var actionHook = this.portalActionHooks[actionType];
 		var app = this.getRegisteredAppById(appClient.appId);
-
+		
 		action.properties.sourceSymbolicName = app.symbolicName;
 		action.properties.sourceVersion = app.version;
-
-		if (actionHook) {
-			if (!Tools.isFunction(actionHook)) {
-				throw "Configured Portal Action hook for type " + actionType + " is not a function !";
-			}
-
-			// By default appId is the source of the Action
-			var defaultAppId = appClient.appId;
-
-			// Call Action Hook passing the action and the App
-			var replyCallback = function(replyType, properties, appId) {
-				appId = appId || defaultAppId;
-
-				sendReplyToAppClient(portalContext, appId, new Reply(replyType, properties));
-			};
-
-			actionHook(action, replyCallback);
-		}
+		
+		var actionType = action.type;
+		var actionEvent = new Event(action.type, {action: action});
+		this.portalActionHooks.fireEvent(actionEvent);
 
 	};
 
@@ -301,6 +301,33 @@ window.OsgiPortal = window.OsgiPortal || {};
 		}
 	};
 
+	function registerActionHook(portalContext, actionType, actionHook) {
+		console.log("Registering Action hook for type: " + actionType + " ...");
+
+		// callback in charge to call the Action hook
+		var actionListener = new EventListener(actionType, function(actionEvent) {
+			var props = actionEvent.properties;
+			
+			// Action done
+			var action = props.action;
+
+			// By default appId is the source of the Action
+			var defaultAppId = action.appClient.appId;
+
+			// Call Action Hook passing the action and the Reply callback
+			var replyCallback = function(replyType, properties, appId) {
+				appId = appId || defaultAppId;
+
+				sendReplyToAppClient(portalContext, appId, new Reply(replyType, properties));
+			};
+			
+			console.log("calling Action hook for type: " + actionType);
+			actionHook(action, replyCallback);
+		});
+		
+		portalContext.portalActionHooks.addEventListener(actionListener);
+	};
+	
 	OsgiPortal.model = OsgiPortal.model || {};
 	OsgiPortal.model.PortalContext = PortalContext;
 

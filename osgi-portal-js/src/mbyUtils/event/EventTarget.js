@@ -14,7 +14,7 @@ window.MbyUtils = window.MbyUtils || {};
 			throw "MbyUtils.event.EventTarget builder need a name !";
 		}
 		this.name = name;
-		this.listenersByTopic = [];
+		this.listenersByTopic = {};
 
 	};
 
@@ -65,20 +65,41 @@ window.MbyUtils = window.MbyUtils || {};
 		}
 
 		var topic = event.topic;
+		// Listeners for exact topic
 		var topicListeners = this.listenersByTopic[topic];
 
-		if (topicListeners) {
+		fireEventOnListeners(this, event, topicListeners);
+
+		// Search listeners on regexp topic
+		var regexpListeners = [];
+		for (var currentTopic in this.listenersByTopic) {
+		    if (currentTopic !== topic) {
+		    	// It's not the regular topic
+		    	var pattern = new RegExp(currentTopic);
+		    	if (pattern.test(topic)) {
+		    		// If currentTopic is a regexp mathing the Event topic
+		    		regexpListeners = regexpListeners.concat(this.listenersByTopic[currentTopic]);
+		    	}
+		    }
+		}
+		
+		fireEventOnListeners(this, event, regexpListeners);
+		
+	};
+	
+	function fireEventOnListeners(target, event, listeners) {
+		if (listeners) {
 			// Call each listener registered
-			for ( var k = 0; k < topicListeners.length; ++k) {
-				var listener = topicListeners[k];
+			for ( var k = 0; k < listeners.length; ++k) {
+				var listener = listeners[k];
 				if (listener && Tools.isFunction(listener.callback)) {
 					// Call listener
+					console.debug(target + " firing " + event + " on " + listener + ".");
 					listener.callback(event);
 				}
 			}
 		}
-
-	};
+	}
 
 	EventTarget.prototype.toString = function() {
 		return "[EventTarget#" + this.name + "]";

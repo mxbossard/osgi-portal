@@ -8,7 +8,7 @@ describe("OsgiPortal.model.Action unit test.", function() {
 		var client = {
 			client : 'client'
 		};
-		var a = new OsgiPortal.model.Action('testAction', props, client);
+		var a = new OsgiPortal.model.Action(client, 'testAction', props);
 
 		expect(a).not.toBeUndefined();
 		expect(a).not.toBeNull();
@@ -17,21 +17,28 @@ describe("OsgiPortal.model.Action unit test.", function() {
 		expect(a.appClient).toBe(client);
 	});
 
-	it("Builder test with undefined type", function() {
+	it("Builder test with undefined appClient", function() {
 		expect(function() {
 			new OsgiPortal.model.Action();
 		}).toThrow();
 
 	});
+	
+	it("Builder test with undefined type", function() {
+		expect(function() {
+			new OsgiPortal.model.Action({});
+		}).toThrow();
+
+	});
 
 	it("Builder test with undefined properties", function() {
-		new OsgiPortal.model.Action('type');
+		new OsgiPortal.model.Action({}, 'type');
 	});
 
 	it("Builder test with not object properties ", function() {
 		expect(function() {
 			var string = 'string';
-			new OsgiPortal.model.Action('type', string);
+			new OsgiPortal.model.Action({}, 'type', string);
 		}).toThrow();
 
 	});

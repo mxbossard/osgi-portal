@@ -253,11 +253,11 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 		var appClient1 = new OsgiPortal.model.AppClient(osgiPortalMock, app1, 'signature1');
 		context.registerApp(app1, appClient1);
 
-		var action = new OsgiPortal.model.Action('testActionType', {
+		var action = new OsgiPortal.model.Action(appClient1, 'testActionType', {
 			val : 'testPropsVal42'
 		});
 
-		context.doActionFromAppClient(appClient1, action);
+		context.doActionFromAppClient(action);
 
 		// 1 Hook need to be called
 		expect(hookCount).toBe(1);
@@ -312,11 +312,11 @@ describe("OsgiPortal.model.PortalContext unit test.", function() {
 			hookCount = hookCount + 2;
 		});
 
-		var action = new OsgiPortal.model.Action('testActionType', {
+		var action = new OsgiPortal.model.Action(appClient1, 'testActionType', {
 			val : 'testPropsVal42'
 		});
 
-		context.doActionFromAppClient(appClient1, action);
+		context.doActionFromAppClient(action);
 
 		// 1 Hook need to be called
 		expect(hookCount).toBe(5);
