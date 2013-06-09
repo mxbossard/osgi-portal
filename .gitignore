@@ -6,6 +6,7 @@
 *.springBeans
 *MANIFEST.MF
 *build.properties
+*/build
 
 # Package Files #
 *.jar

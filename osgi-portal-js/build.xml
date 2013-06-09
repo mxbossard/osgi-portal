@@ -1,0 +1,46 @@
+<project name="osgi-portal-js" default="js.minify" basedir="." xmlns:up="urn:up-util-ant" xmlns:artifact="urn:maven-artifact-ant">
+
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="src.dir" value="${basedir}/src" />
+
+	<target name="js.concatenate">
+		<concat destfile="${build.dir}/concatenated/mby-utils.js">
+			<fileset dir="${src.dir}/mbyUtils" includes="Tools.js" />
+			<fileset dir="${src.dir}/mbyUtils" includes="Logger.js" />
+			<fileset dir="${src.dir}/mbyUtils/event" includes="*.js" />
+		</concat>
+
+		<concat destfile="${build.dir}/concatenated/osgi-portal.js">
+			<fileset dir="${build.dir}/concatenated" includes="mby-utils.js" />
+			
+			<fileset dir="${src.dir}/osgiPortal/model" includes="*.js" />
+			<fileset dir="${src.dir}/osgiPortal/context" includes="*.js" />
+			<fileset dir="${src.dir}/osgiPortal" includes="*.js" />
+		</concat>
+	</target>
+
+	<target name="js.minify" depends="js.concatenate">
+		<apply executable="java" parallel="false">
+			<fileset dir="${build.dir}/concatenated" includes="mby-utils.js, osgi-portal.js" />
+			<arg line="-jar" />
+			<arg path="lib/yuicompressor-2.4.7.jar" />
+			<srcfile />
+			<arg line="-o" />
+			<mapper type="glob" from="*.js" to="*-min.js" />
+			<targetfile />
+		</apply>
+	</target>
+
+	<!-- Not used -->
+	<target name="js.preprocess" depends="js.concatenate">
+		
+		<apply executable="cpp" dest="${build.dir}/preprocessed">
+			<fileset dir="${build.dir}/concatenated" includes="mby-utils.js, osgi-portal.js" />
+			<arg line="${js.preprocess.switches}" />
+			<srcfile />
+			<targetfile />
+			<mapper type="identity" />
+		</apply>
+	</target>
+
+</project>

@@ -2,7 +2,7 @@
 
 window.MbyUtils = window.MbyUtils || {};
 
-(function(MbyUtils, window, undefined) {
+(function(window, MbyUtils, undefined) {
 	var loggerNames = ["log", "debug", "info", "warn", "error", "assert", "dir", "dirxml", "group", "groupEnd", "time",
 			"timeEnd", "count", "trace", "profile", "profileEnd"];
 
@@ -61,7 +61,7 @@ window.MbyUtils = window.MbyUtils || {};
 		error : window.error
 	};
 
-})(window.MbyUtils, window);
+})(window, window.MbyUtils);
 
 /**
  * Remove an object from the array.
