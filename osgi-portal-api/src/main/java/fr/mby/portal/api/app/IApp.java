@@ -60,4 +60,10 @@ public interface IApp {
 	 */
 	String getHeight();
 
+	/**
+	 * The title of this IApp to display.
+	 * 
+	 * @return the IApp title
+	 */
+	String getTitle();
 }
