@@ -4,7 +4,7 @@
 	<groupId>fr.mby.osgi-portal-app</groupId>
 	<artifactId>hello</artifactId>
 	<version>0.0.1.SNAPSHOT</version>
-	<name>OSGi portal Wab</name>
+	<name>OSGi portal Wab Hello</name>
 	<packaging>war</packaging>
 
 	<parent>
