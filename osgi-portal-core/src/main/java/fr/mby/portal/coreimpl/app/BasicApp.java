@@ -35,6 +35,8 @@ public class BasicApp implements IApp {
 
 	private String height;
 
+	private String title;
+
 	/**
 	 * @param appConfig
 	 */
@@ -131,6 +133,26 @@ public class BasicApp implements IApp {
 	 */
 	public void setHeight(final String height) {
 		this.height = height;
+	}
+
+	/**
+	 * Getter of title.
+	 * 
+	 * @return the title
+	 */
+	@Override
+	public String getTitle() {
+		return this.title;
+	}
+
+	/**
+	 * Setter of title.
+	 * 
+	 * @param title
+	 *            the title to set
+	 */
+	public void setTitle(final String title) {
+		this.title = title;
 	}
 
 }

@@ -1,0 +1,79 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.mby.osgi-portal-app</groupId>
+	<artifactId>header</artifactId>
+	<version>0.0.1.SNAPSHOT</version>
+	<name>OSGi portal Wab Header</name>
+	<packaging>war</packaging>
+
+	<parent>
+		<groupId>fr.mby.maven</groupId>
+		<version>1.0.0.PARENT</version>
+		<artifactId>spring-basic-bundle-web</artifactId>
+		<relativePath>../../max-utils/maven-parent/spring-basic-bundle-web/pom.xml</relativePath>
+	</parent>
+
+	<properties>
+		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
+		
+		<bundlor.template.webContextPath>/hello</bundlor.template.webContextPath>
+
+		<servlet.version>2.5</servlet.version>
+		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>fr.mby.osgi-portal</groupId>
+			<artifactId>osgi-portal-core</artifactId>
+			<version>${osgi-portal-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>fr.mby.utils</groupId>
+			<artifactId>web-utils</artifactId>
+			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Spring dependencies -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.webflow</groupId>
+			<artifactId>spring-webflow</artifactId>
+			<version>${spring-webflow.version}</version>
+			<scope>provided</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+		
+		</plugins>
+	</build>
+</project>
