@@ -38,6 +38,7 @@ import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppConfigFactory;
 import fr.mby.portal.core.app.IAppFactory;
+import fr.mby.portal.core.app.IAppStore;
 import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
 
 /**
@@ -56,6 +57,9 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 
 	@Autowired
 	private IAppFactory appFactory;
+
+	@Autowired
+	private IAppStore appStore;
 
 	@Override
 	public void render(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -102,6 +106,9 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 				// Each App is displayed 3 times
 				for (int k = 0; k < 3; k++) {
 					final IApp app = this.appFactory.build(request, appConfig);
+
+					this.appStore.storeApp(app, request);
+
 					appsToRender.add(app);
 				}
 			}
@@ -184,6 +191,63 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 	 */
 	public void setPortalAppReferenceListener(final PortalAppReferenceListener portalAppReferenceListener) {
 		this.portalAppReferenceListener = portalAppReferenceListener;
+	}
+
+	/**
+	 * Getter of appConfigFactory.
+	 * 
+	 * @return the appConfigFactory
+	 */
+	public IAppConfigFactory getAppConfigFactory() {
+		return this.appConfigFactory;
+	}
+
+	/**
+	 * Setter of appConfigFactory.
+	 * 
+	 * @param appConfigFactory
+	 *            the appConfigFactory to set
+	 */
+	public void setAppConfigFactory(final IAppConfigFactory appConfigFactory) {
+		this.appConfigFactory = appConfigFactory;
+	}
+
+	/**
+	 * Getter of appFactory.
+	 * 
+	 * @return the appFactory
+	 */
+	public IAppFactory getAppFactory() {
+		return this.appFactory;
+	}
+
+	/**
+	 * Setter of appFactory.
+	 * 
+	 * @param appFactory
+	 *            the appFactory to set
+	 */
+	public void setAppFactory(final IAppFactory appFactory) {
+		this.appFactory = appFactory;
+	}
+
+	/**
+	 * Getter of appStore.
+	 * 
+	 * @return the appStore
+	 */
+	public IAppStore getAppStore() {
+		return this.appStore;
+	}
+
+	/**
+	 * Setter of appStore.
+	 * 
+	 * @param appStore
+	 *            the appStore to set
+	 */
+	public void setAppStore(final IAppStore appStore) {
+		this.appStore = appStore;
 	}
 
 }

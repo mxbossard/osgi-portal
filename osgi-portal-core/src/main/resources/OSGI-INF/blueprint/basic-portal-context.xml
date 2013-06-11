@@ -16,4 +16,8 @@
 		<property name="portalAppReferenceListener" ref="portalAppReferenceListener" />
 	</bean>
 	
+	<bean id="portalService" class="fr.mby.portal.coreimpl.BasicPortalService">
+		<property name="appStore" ref="sessionAppStore" />
+	</bean>
+	
 </beans>

@@ -31,6 +31,8 @@ import fr.mby.portal.api.app.IApp;
  */
 public interface IPortalRenderer {
 
+	static final String SIGNATURE_REQUEST_PARAM = "signature";
+
 	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 	List<IApp> getAppsToRender(HttpServletRequest request) throws Exception;

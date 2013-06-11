@@ -13,27 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.coreimpl;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
+
 import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.app.IApp;
-
+import fr.mby.portal.core.app.IAppStore;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
+@Service
 public class BasicPortalService implements IPortalService {
 
-	/* (non-Javadoc)
-	 * @see fr.mby.portal.api.IPortalService#getTargetedApp(javax.servlet.http.HttpServletRequest)
-	 */
+	@Autowired
+	private IAppStore appStore;
+
 	@Override
-	public IApp getTargetedApp(HttpServletRequest request) {
-		// TODO Auto-generated method stub
-		return null;
+	public IApp getTargetedApp(final HttpServletRequest request) {
+		final IApp app = this.appStore.retrieveApp(request);
+
+		Assert.state(app != null, "IApp should exists in the store !");
+
+		return app;
+	}
+
+	/**
+	 * Getter of appStore.
+	 * 
+	 * @return the appStore
+	 */
+	public IAppStore getAppStore() {
+		return this.appStore;
+	}
+
+	/**
+	 * Setter of appStore.
+	 * 
+	 * @param appStore
+	 *            the appStore to set
+	 */
+	public void setAppStore(final IAppStore appStore) {
+		this.appStore = appStore;
 	}
 
 }

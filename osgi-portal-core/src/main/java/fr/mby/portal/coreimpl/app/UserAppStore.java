@@ -20,52 +20,41 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
-import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IApp;
+import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppStore;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-@Service
-public class SessionAppStore implements IAppStore {
+public class UserAppStore implements IAppStore {
 
-	/** TODO: replace the map by a cache. */
-	private final Map<String, UserAppStore> userAppStoreBySession = new ConcurrentHashMap<String, UserAppStore>(16);
+	/** TODO: need to clean the map : a cache ? */
+	/** The user IApp are stored by signature. */
+	private final Map<String, IApp> userAppStore = new ConcurrentHashMap<String, IApp>(16);
 
 	@Override
 	public synchronized void storeApp(final IApp app, final HttpServletRequest request) {
-		final String sessionId = request.getSession(true).getId();
+		final String appSignature = app.getSignature();
 
-		UserAppStore userAppStore = this.userAppStoreBySession.get(sessionId);
-		if (userAppStore == null) {
-			// Init UserAppStore
-			userAppStore = new UserAppStore();
-			this.userAppStoreBySession.put(sessionId, userAppStore);
-		}
+		Assert.isTrue(!this.userAppStore.containsKey(appSignature),
+				"UserAppStore cannot store an already stored IApp !");
 
-		userAppStore.storeApp(app, request);
+		this.userAppStore.put(appSignature, app);
 
 	}
 
 	@Override
 	public IApp retrieveApp(final HttpServletRequest request) {
-		IApp retrievedApp = null;
+		final String appSignature = request.getParameter(IPortalRenderer.SIGNATURE_REQUEST_PARAM);
 
-		final HttpSession session = request.getSession(true);
+		Assert.hasText(appSignature, "No App signature found in Http request !");
 
-		final String sessionId = session.getId();
-		final UserAppStore userAppStore = this.userAppStoreBySession.get(sessionId);
-
-		if (userAppStore != null) {
-			retrievedApp = userAppStore.retrieveApp(request);
-		}
-
-		return retrievedApp;
+		return this.userAppStore.get(appSignature);
 	}
 
 }

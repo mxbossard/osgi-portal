@@ -66,4 +66,11 @@ public interface IApp {
 	 * @return the IApp title
 	 */
 	String getTitle();
+
+	/**
+	 * The URL to access this IApp.
+	 * 
+	 * @return the IApp URL path
+	 */
+	String getWebPath();
 }

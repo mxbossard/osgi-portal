@@ -16,16 +16,21 @@
 
 package fr.mby.portal.coreimpl.app;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppFactory;
 
 /**
@@ -37,6 +42,9 @@ public class BasicAppFactory implements IAppFactory {
 
 	private static final String REQUEST_BUILD_INFO = "REQUEST_BUILD_INFO";
 
+	/** Logger. */
+	private static final Logger LOG = LogManager.getLogger(BasicAppFactory.class);
+
 	@Override
 	public IApp build(final HttpServletRequest request, final IAppConfig appConfig) {
 		Assert.notNull(request, "No HttpServletRequest supplied !");
@@ -44,8 +52,26 @@ public class BasicAppFactory implements IAppFactory {
 
 		final BasicApp app = new BasicApp(appConfig);
 
-		app.setNamespace(this.generateNamespace(request, appConfig));
-		app.setSignature(this.generateSignature(request, appConfig));
+		final String namespace = this.generateNamespace(request, appConfig);
+		app.setNamespace(namespace);
+
+		final String signatrue = this.generateSignature(request, app);
+		app.setSignature(signatrue);
+
+		try {
+			final String encodedSignature = URLEncoder.encode(signatrue, "UTF-8");
+
+			// Add signature to IApp webPath
+			final StringBuilder webPathBuilder = new StringBuilder(64);
+			webPathBuilder.append(appConfig.getContext().getWebContextPath());
+			webPathBuilder.append("/?");
+			webPathBuilder.append(IPortalRenderer.SIGNATURE_REQUEST_PARAM);
+			webPathBuilder.append("=");
+			webPathBuilder.append(encodedSignature);
+			app.setWebPath(webPathBuilder.toString());
+		} catch (final UnsupportedEncodingException e) {
+			BasicAppFactory.LOG.error("Error while URL encoding IApp signature !", e);
+		}
 
 		// Default
 		app.setWidth("400px");
@@ -59,9 +85,9 @@ public class BasicAppFactory implements IAppFactory {
 	 * @param appConfig
 	 * @return
 	 */
-	protected String generateSignature(final HttpServletRequest request, final IAppConfig appConfig) {
+	protected String generateSignature(final HttpServletRequest request, final IApp app) {
 
-		return "signature_" + System.currentTimeMillis();
+		return "signature_" + app.toString() + "_" + System.currentTimeMillis();
 	}
 
 	/**

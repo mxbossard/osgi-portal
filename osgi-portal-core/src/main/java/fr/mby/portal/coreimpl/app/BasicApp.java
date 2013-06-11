@@ -37,6 +37,8 @@ public class BasicApp implements IApp {
 
 	private String title;
 
+	private String webPath;
+
 	/**
 	 * @param appConfig
 	 */
@@ -153,6 +155,26 @@ public class BasicApp implements IApp {
 	 */
 	public void setTitle(final String title) {
 		this.title = title;
+	}
+
+	/**
+	 * Getter of webPath.
+	 * 
+	 * @return the webPath
+	 */
+	@Override
+	public String getWebPath() {
+		return this.webPath;
+	}
+
+	/**
+	 * Setter of webPath.
+	 * 
+	 * @param webPath
+	 *            the webPath to set
+	 */
+	public void setWebPath(final String webPath) {
+		this.webPath = webPath;
 	}
 
 }
