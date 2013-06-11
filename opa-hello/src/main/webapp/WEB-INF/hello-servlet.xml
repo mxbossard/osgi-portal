@@ -35,6 +35,7 @@
 
 
 	<bean id="helloController" class="fr.mby.portal.web.controller.HelloController">
+		<property name="portalService" ref="portalService" />
 	</bean>
 
 </beans>

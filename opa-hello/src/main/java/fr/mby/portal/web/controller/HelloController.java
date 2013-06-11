@@ -18,12 +18,17 @@ package fr.mby.portal.web.controller;
 
 import java.util.Collection;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
+import fr.mby.portal.api.IPortalService;
+import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.api.message.IActionMessage;
@@ -44,38 +49,26 @@ public class HelloController implements IPortalApp {
 	@Autowired
 	private Collection<IUserActionDispatcher> userActionDispatchers;
 
-	@RequestMapping(method = RequestMethod.GET)
-	public String hello(final Model model) {
+	@Autowired
+	private IPortalService portalService;
 
-		model.addAttribute("message", "Spring 3 MVC Hello World !");
+	@RequestMapping(method = RequestMethod.GET)
+	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+		final ModelAndView mv = new ModelAndView("hello");
+
+		mv.addObject("message", "Spring 3 MVC Hello World !");
 
 		if (this.userActionDispatchers == null) {
-			model.addAttribute("userActionDispatcherCount", "null");
+			mv.addObject("userActionDispatcherCount", "null");
 		} else {
-			model.addAttribute("userActionDispatcherCount", this.userActionDispatchers.size());
+			mv.addObject("userActionDispatcherCount", this.userActionDispatchers.size());
 		}
 
-		return "hello";
+		final IApp helloApp = this.portalService.getTargetedApp(request);
+		mv.addObject("app", helloApp);
 
-	}
+		return mv;
 
-	/**
-	 * Getter of userActionDispatchers.
-	 * 
-	 * @return the userActionDispatchers
-	 */
-	public Collection<IUserActionDispatcher> getUserActionDispatchers() {
-		return this.userActionDispatchers;
-	}
-
-	/**
-	 * Setter of userActionDispatchers.
-	 * 
-	 * @param userActionDispatchers
-	 *            the userActionDispatchers to set
-	 */
-	public void setUserActionDispatchers(final Collection<IUserActionDispatcher> userActionDispatchers) {
-		this.userActionDispatchers = userActionDispatchers;
 	}
 
 	/*
@@ -122,6 +115,44 @@ public class HelloController implements IPortalApp {
 	public void render(final IRenderMessage request, final IRenderReply response) {
 		// TODO Auto-generated method stub
 
+	}
+
+	/**
+	 * Getter of userActionDispatchers.
+	 * 
+	 * @return the userActionDispatchers
+	 */
+	public Collection<IUserActionDispatcher> getUserActionDispatchers() {
+		return this.userActionDispatchers;
+	}
+
+	/**
+	 * Setter of userActionDispatchers.
+	 * 
+	 * @param userActionDispatchers
+	 *            the userActionDispatchers to set
+	 */
+	public void setUserActionDispatchers(final Collection<IUserActionDispatcher> userActionDispatchers) {
+		this.userActionDispatchers = userActionDispatchers;
+	}
+
+	/**
+	 * Getter of portalService.
+	 * 
+	 * @return the portalService
+	 */
+	public IPortalService getPortalService() {
+		return this.portalService;
+	}
+
+	/**
+	 * Setter of portalService.
+	 * 
+	 * @param portalService
+	 *            the portalService to set
+	 */
+	public void setPortalService(final IPortalService portalService) {
+		this.portalService = portalService;
 	}
 
 }

@@ -13,6 +13,9 @@ Import-Package: fr.mby.portal.core,
  javax.servlet.jsp,
  javax.servlet.jsp.el,
  javax.servlet.jsp.jstl.core,
+ org.apache.taglibs.standard.tlv,
+ org.apache.taglibs.standard.tei,
+ org.apache.taglibs.standard.tag.rt.core,
  org.eclipse.virgo.web.dm,
  org.eclipse.gemini.blueprint.blueprint.config,
  org.springframework.context.config,
@@ -30,6 +33,7 @@ Excluded-Imports:
 Export-Template: 
 Ignored-Existing-Headers: 
 Import-Template: 
+ fr.mby.portal.api.*;version="${osgi-portal-api.version:medium-range}",
  fr.mby.portal.core.*;version="${osgi-portal-api.version:medium-range}",
  fr.mby.utils.web.*;version="[0.0.1, 2.0.0)",
  javax.servlet.*;version="${servlet.version:[=.=.=, +1.0.0)}",
