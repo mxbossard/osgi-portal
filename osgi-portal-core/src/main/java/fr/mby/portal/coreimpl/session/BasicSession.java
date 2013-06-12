@@ -31,9 +31,7 @@ public class BasicSession implements ISession {
 
 	private final Map<String, Object> session;
 
-	/**
-	 * 
-	 */
+	/** Hidden builder. */
 	protected BasicSession() {
 		super();
 
@@ -41,21 +39,21 @@ public class BasicSession implements ISession {
 	}
 
 	@Override
-	public Object getAttribute(String name) throws IllegalArgumentException {
+	public Object getAttribute(final String name) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		return this.session.get(name);
 	}
 
 	@Override
-	public void setAttribute(String name, Object value) throws IllegalArgumentException {
+	public void setAttribute(final String name, final Object value) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		this.session.put(name, value);
 	}
 
 	@Override
-	public Object removeAttribute(String name) throws IllegalArgumentException {
+	public Object removeAttribute(final String name) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		return this.session.remove(name);

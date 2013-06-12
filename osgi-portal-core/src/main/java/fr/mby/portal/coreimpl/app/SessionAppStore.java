@@ -20,26 +20,32 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.core.app.IAppStore;
+import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Service
-public class SessionAppStore implements IAppStore {
+public class SessionAppStore implements IAppStore, InitializingBean {
 
 	/** TODO: replace the map by a cache. */
 	private final Map<String, UserAppStore> userAppStoreBySession = new ConcurrentHashMap<String, UserAppStore>(16);
 
+	@Autowired
+	private ISessionManager sessionManager;
+
 	@Override
 	public synchronized void storeApp(final IApp app, final HttpServletRequest request) {
-		final String sessionId = request.getSession(true).getId();
+		final String sessionId = this.sessionManager.getPortalSessionId(request);
 
 		UserAppStore userAppStore = this.userAppStoreBySession.get(sessionId);
 		if (userAppStore == null) {
@@ -56,9 +62,7 @@ public class SessionAppStore implements IAppStore {
 	public IApp retrieveApp(final HttpServletRequest request) {
 		IApp retrievedApp = null;
 
-		final HttpSession session = request.getSession(true);
-
-		final String sessionId = session.getId();
+		final String sessionId = this.sessionManager.getPortalSessionId(request);
 		final UserAppStore userAppStore = this.userAppStoreBySession.get(sessionId);
 
 		if (userAppStore != null) {
@@ -66,6 +70,30 @@ public class SessionAppStore implements IAppStore {
 		}
 
 		return retrievedApp;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.sessionManager, "No ISessionManager configured !");
+	}
+
+	/**
+	 * Getter of sessionManager.
+	 * 
+	 * @return the sessionManager
+	 */
+	public ISessionManager getSessionManager() {
+		return this.sessionManager;
+	}
+
+	/**
+	 * Setter of sessionManager.
+	 * 
+	 * @param sessionManager
+	 *            the sessionManager to set
+	 */
+	public void setSessionManager(final ISessionManager sessionManager) {
+		this.sessionManager = sessionManager;
 	}
 
 }

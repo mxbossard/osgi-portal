@@ -25,6 +25,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -32,18 +34,23 @@ import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppFactory;
+import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Service
-public class BasicAppFactory implements IAppFactory {
-
-	private static final String REQUEST_BUILD_INFO = "REQUEST_BUILD_INFO";
+public class BasicAppFactory implements IAppFactory, InitializingBean {
 
 	/** Logger. */
 	private static final Logger LOG = LogManager.getLogger(BasicAppFactory.class);
+
+	/** Request build informations param name. */
+	private static final String REQUEST_BUILD_INFO = "REQUEST_BUILD_INFO";
+
+	@Autowired
+	private ISessionManager sessionManager;
 
 	@Override
 	public IApp build(final HttpServletRequest request, final IAppConfig appConfig) {
@@ -58,16 +65,27 @@ public class BasicAppFactory implements IAppFactory {
 		final String signatrue = this.generateSignature(request, app);
 		app.setSignature(signatrue);
 
+		final String portalSessionId = this.sessionManager.getPortalSessionId(request);
+
 		try {
 			final String encodedSignature = URLEncoder.encode(signatrue, "UTF-8");
+			final String encodedPortalSessionId = URLEncoder.encode(portalSessionId, "UTF-8");
 
-			// Add signature to IApp webPath
 			final StringBuilder webPathBuilder = new StringBuilder(64);
 			webPathBuilder.append(appConfig.getContext().getWebContextPath());
+
+			// Add signature to IApp webPath
 			webPathBuilder.append("/?");
 			webPathBuilder.append(IPortalRenderer.SIGNATURE_REQUEST_PARAM);
 			webPathBuilder.append("=");
 			webPathBuilder.append(encodedSignature);
+
+			// Add portal session to IApp webPath
+			webPathBuilder.append("&");
+			webPathBuilder.append(IPortalRenderer.PORTAL_SESSION_ID_REQUEST_PARAM);
+			webPathBuilder.append("=");
+			webPathBuilder.append(encodedPortalSessionId);
+
 			app.setWebPath(webPathBuilder.toString());
 		} catch (final UnsupportedEncodingException e) {
 			BasicAppFactory.LOG.error("Error while URL encoding IApp signature !", e);
@@ -78,6 +96,11 @@ public class BasicAppFactory implements IAppFactory {
 		app.setHeight("300px");
 
 		return app;
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		Assert.notNull(this.sessionManager, "No ISessionManager configured !");
 	}
 
 	/**
@@ -127,4 +150,24 @@ public class BasicAppFactory implements IAppFactory {
 			return count;
 		}
 	}
+
+	/**
+	 * Getter of sessionManager.
+	 * 
+	 * @return the sessionManager
+	 */
+	public ISessionManager getSessionManager() {
+		return this.sessionManager;
+	}
+
+	/**
+	 * Setter of sessionManager.
+	 * 
+	 * @param sessionManager
+	 *            the sessionManager to set
+	 */
+	public void setSessionManager(final ISessionManager sessionManager) {
+		this.sessionManager = sessionManager;
+	}
+
 }

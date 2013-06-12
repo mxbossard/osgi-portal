@@ -33,6 +33,8 @@ public interface IPortalRenderer {
 
 	static final String SIGNATURE_REQUEST_PARAM = "signature";
 
+	static final String PORTAL_SESSION_ID_REQUEST_PARAM = "portalSession";
+
 	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 	List<IApp> getAppsToRender(HttpServletRequest request) throws Exception;

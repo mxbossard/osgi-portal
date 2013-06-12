@@ -16,6 +16,8 @@
 
 package fr.mby.portal.core.session;
 
+import javax.servlet.http.HttpServletRequest;
+
 import fr.mby.portal.api.action.IUserAction;
 import fr.mby.portal.api.app.ISession;
 
@@ -26,5 +28,7 @@ import fr.mby.portal.api.app.ISession;
 public interface ISessionManager {
 
 	ISession getAppSession(IUserAction userAction, boolean create);
+
+	String getPortalSessionId(HttpServletRequest request);
 
 }
