@@ -38,13 +38,7 @@
 			<artifactId>spring-utils</artifactId>
 			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
 		</dependency>
-		
-		<dependency>
-			<groupId>fr.mby.utils</groupId>
-			<artifactId>common-utils</artifactId>
-			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
-		</dependency>
-		
+
 		<!-- Spring 3 -->
 		<dependency>
 			<groupId>org.springframework</groupId>
