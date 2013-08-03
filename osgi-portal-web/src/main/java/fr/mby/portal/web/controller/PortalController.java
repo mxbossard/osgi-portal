@@ -48,14 +48,24 @@ public class PortalController {
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		final ModelAndView view = new ModelAndView("portal");
 
-		if (this.portalRenderers != null && this.portalRenderers.size() > 0) {
-			final IPortalRenderer firstPortalRenderer = this.portalRenderers.iterator().next();
+		final IPortalRenderer firstPortalRenderer = this.chooseOnePortalRenderer();
 
-			final List<IApp> appsToRender = firstPortalRenderer.getAppsToRender(request);
-			view.addObject(PortalController.APPS_TO_RENDER, appsToRender);
-		}
+		final List<IApp> appsToRender = firstPortalRenderer.getAppsToRender(request);
+		view.addObject(PortalController.APPS_TO_RENDER, appsToRender);
 
 		return view;
+	}
+
+	protected IPortalRenderer chooseOnePortalRenderer() throws Exception {
+		final IPortalRenderer firstPortalRenderer;
+
+		if (this.portalRenderers != null && this.portalRenderers.size() > 0) {
+			firstPortalRenderer = this.portalRenderers.iterator().next();
+		} else {
+			throw new Exception("No IPortalRenderer available !");
+		}
+
+		return firstPortalRenderer;
 	}
 
 	/**
