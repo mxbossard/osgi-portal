@@ -19,13 +19,41 @@ package fr.mby.portal.api.acl;
 import java.util.Set;
 
 /**
+ * Represents a Role which aggregate multiple permissions. A Role may aggregate multiple sub-roles and be granted their
+ * permissions.
+ * 
  * @author Maxime Bossard - 2013
  * 
  */
 public interface IRole {
 
+	/**
+	 * Return the role name.
+	 * 
+	 * @return the role name
+	 */
 	String getName();
 
+	/**
+	 * Test if the specified permission is granted by this Role.
+	 * 
+	 * @param permission
+	 * @return true if the specified permission is granted by this Role
+	 */
+	boolean isGranted(IPermission permission);
+
+	/**
+	 * Retrieve all permissions granted to this role.
+	 * 
+	 * @return a Set of all permissions granted to this role
+	 */
 	Set<IPermission> getPermissions();
+
+	/**
+	 * Retrieve all sub-roles which are included in this role.
+	 * 
+	 * @return a set of all sub-roles included in this role
+	 */
+	Set<IRole> getSubRoles();
 
 }

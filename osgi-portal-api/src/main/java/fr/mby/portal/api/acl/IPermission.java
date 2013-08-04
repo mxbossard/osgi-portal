@@ -17,11 +17,18 @@
 package fr.mby.portal.api.acl;
 
 /**
+ * Represents a permission to use a resource.
+ * 
  * @author Maxime Bossard - 2013
  * 
  */
 public interface IPermission {
 
+	/**
+	 * Return the permission name.
+	 * 
+	 * @return the permission name
+	 */
 	String getName();
 
 }
