@@ -18,6 +18,10 @@ import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.core.acl.IAclDao;
 import fr.mby.portal.core.acl.IPermissionFactory;
 import fr.mby.portal.core.acl.IRoleFactory;
+import fr.mby.portal.core.acl.RoleAlreadyExistsException;
+import fr.mby.portal.core.acl.RoleNotFoundException;
+import fr.mby.portal.core.security.PrincipalAlreadyExistsException;
+import fr.mby.portal.core.security.PrincipalNotFoundException;
 
 @Service
 public class MemoryAclDao implements IAclDao {
@@ -33,7 +37,7 @@ public class MemoryAclDao implements IAclDao {
 	private IPermissionFactory permissionFactory;
 
 	@Override
-	public void createRole(final IRole role) {
+	public void createRole(final IRole role) throws RoleAlreadyExistsException {
 		Assert.notNull(role, "No role supplied !");
 
 		final String roleName = role.getName();
@@ -41,55 +45,82 @@ public class MemoryAclDao implements IAclDao {
 		if (StringUtils.hasText(roleName) && !this.rolesCache.containsKey(roleName)) {
 			this.rolesCache.put(roleName, role);
 		} else {
-			// TODO MBD: throw an Exception not yet specified in API !
-			throw new RuntimeException("Role already exists !");
+			throw new RoleAlreadyExistsException(role);
 		}
 	}
 
 	@Override
-	public IRole findRole(final String name) {
+	public IRole findRole(final String name) throws RoleNotFoundException {
 		Assert.hasText(name, "No name supplied !");
 
 		final IRole role = this.roleFactory.build(name);
+
+		if (role == null) {
+			throw new RoleNotFoundException(name);
+		}
 
 		return role;
 	}
 
 	@Override
-	public IRole addRolePermissions(final IRole role, final Set<IPermission> permissions) {
+	public IRole addRolePermissions(final IRole role, final Set<IPermission> permissions) throws RoleNotFoundException {
 		Assert.notNull(role, "No role supplied !");
 		Assert.notNull(permissions, "No permissions supplied !");
 
 		final String roleName = role.getName();
-		final HashSet<IPermission> allPermissions = new HashSet<IPermission>(role.getPermissions());
-		allPermissions.addAll(permissions);
 
 		// Reinitialize the Role in the Factory
-		this.roleFactory.initializeRole(roleName, allPermissions, role.getSubRoles());
+		final IRole roleFound = this.findRole(roleName);
+		final HashSet<IPermission> allPermissions = new HashSet<IPermission>(roleFound.getPermissions());
+		allPermissions.addAll(permissions);
+		this.roleFactory.initializeRole(roleFound.getName(), allPermissions, roleFound.getSubRoles());
 
 		return this.roleFactory.build(roleName);
 	}
 
 	@Override
-	public void resetRole(final IRole role) {
+	public void resetRole(final IRole role) throws RoleNotFoundException {
 		Assert.notNull(role, "No role supplied !");
 
 		final String roleName = role.getName();
 
-		if (StringUtils.hasText(roleName) && this.rolesCache.containsKey(roleName)) {
-			this.rolesCache.put(roleName, role);
-		} else {
-			// TODO MBD: throw an Exception not yet specified in API !
-			throw new RuntimeException("Role doesn't exists !");
-		}
+		final IRole roleFound = this.findRole(roleName);
+
+		final IRole initializedRole = this.roleFactory.initializeRole(roleFound.getName(), roleFound.getPermissions(),
+				roleFound.getSubRoles());
+
+		this.rolesCache.put(roleName, initializedRole);
+
 	}
 
 	@Override
-	public Set<IRole> grantRoles(final Principal principal, final Set<IRole> roles) {
+	public void registerPrincipal(final Principal principal) throws PrincipalAlreadyExistsException {
+		Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
+		if (alreadyGrantedRoles == null) {
+			alreadyGrantedRoles = new HashSet<IRole>(8);
+			this.aclCache.put(principal, alreadyGrantedRoles);
+		} else {
+			throw new PrincipalAlreadyExistsException(principal);
+		}
+
+	}
+
+	@Override
+	public Set<IRole> grantRoles(final Principal principal, final Set<IRole> roles) throws RoleNotFoundException,
+			PrincipalNotFoundException {
 		Assert.notNull(principal, "No principal supplied !");
 		Assert.notNull(roles, "No roles supplied !");
 
-		final Set<IRole> alreadyGrantedRoles = this.initializeAclCache(principal);
+		// Search all supplied role for existence
+		for (final IRole role : roles) {
+			this.findRole(role.getName());
+		}
+
+		// Test if supplied principal is already known
+		final Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
+		if (alreadyGrantedRoles == null) {
+			throw new PrincipalNotFoundException(principal);
+		}
 
 		alreadyGrantedRoles.addAll(roles);
 
@@ -97,11 +128,21 @@ public class MemoryAclDao implements IAclDao {
 	}
 
 	@Override
-	public Set<IRole> revokeRoles(final Principal principal, final Set<IRole> roles) {
+	public Set<IRole> revokeRoles(final Principal principal, final Set<IRole> roles) throws RoleNotFoundException,
+			PrincipalNotFoundException {
 		Assert.notNull(principal, "No principal supplied !");
 		Assert.notNull(roles, "No roles supplied !");
 
-		final Set<IRole> alreadyGrantedRoles = this.initializeAclCache(principal);
+		// Search all supplied role for existence
+		for (final IRole role : roles) {
+			this.findRole(role.getName());
+		}
+
+		// Test if supplied principal is already known
+		final Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
+		if (alreadyGrantedRoles == null) {
+			throw new PrincipalNotFoundException(principal);
+		}
 
 		alreadyGrantedRoles.removeAll(roles);
 
@@ -109,25 +150,16 @@ public class MemoryAclDao implements IAclDao {
 	}
 
 	@Override
-	public Set<IRole> findPrincipalRoles(final Principal principal) {
-		Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
+	public Set<IRole> findPrincipalRoles(final Principal principal) throws PrincipalNotFoundException {
+		Assert.notNull(principal, "No principal supplied !");
 
+		// Test if supplied principal is already known
+		final Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
 		if (alreadyGrantedRoles == null) {
-			alreadyGrantedRoles = Collections.emptySet();
-		} else {
-			alreadyGrantedRoles = Collections.unmodifiableSet(alreadyGrantedRoles);
+			throw new PrincipalNotFoundException(principal);
 		}
 
-		return alreadyGrantedRoles;
-	}
-
-	protected Set<IRole> initializeAclCache(final Principal principal) {
-		Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
-		if (alreadyGrantedRoles == null) {
-			alreadyGrantedRoles = new HashSet<IRole>(8);
-			this.aclCache.put(principal, alreadyGrantedRoles);
-		}
-		return alreadyGrantedRoles;
+		return Collections.unmodifiableSet(alreadyGrantedRoles);
 	}
 
 }

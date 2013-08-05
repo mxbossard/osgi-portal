@@ -18,24 +18,31 @@ package fr.mby.portal.coreimpl.acl;
 
 import java.security.Principal;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.core.acl.IAclDao;
 import fr.mby.portal.core.acl.IAclManager;
 import fr.mby.portal.core.acl.IPermissionFactory;
 import fr.mby.portal.core.acl.IRoleFactory;
+import fr.mby.portal.core.acl.RoleNotFoundException;
+import fr.mby.portal.core.security.PrincipalAlreadyExistsException;
+import fr.mby.portal.core.security.PrincipalNotFoundException;
+import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Service
-public class BasicAclManager implements IAclManager {
+public class BasicAclManager implements IAclManager, InitializingBean {
 
 	@Autowired(required = true)
 	private IRoleFactory roleFactory;
@@ -47,12 +54,46 @@ public class BasicAclManager implements IAclManager {
 	private IAclDao aclDao;
 
 	@Override
-	public Set<IRole> retrievePrincipalRoles(final Principal principal) {
-		Assert.notNull(principal, "No Principal provided !");
+	public void registerPrincipal(final Principal principal) throws PrincipalAlreadyExistsException {
+		Assert.notNull(principal, "No Principal supplied !");
+
+		this.aclDao.registerPrincipal(principal);
+	}
+
+	@Override
+	public void registerPrincipalRoles(final Principal principal, final Set<IRole> roles)
+			throws PrincipalNotFoundException, RoleNotFoundException {
+		Assert.notNull(principal, "No Principal supplied !");
+		Assert.notNull(roles, "No Roles provided !");
+
+		this.aclDao.grantRoles(principal, roles);
+	}
+
+	@Override
+	public Set<IRole> retrievePrincipalRoles(final Principal principal) throws PrincipalNotFoundException {
+		Assert.notNull(principal, "No Principal supplied !");
 
 		final Set<IRole> roles = this.aclDao.findPrincipalRoles(principal);
 
 		return Collections.unmodifiableSet(roles);
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		// Initialize ACL
+		final Principal adminPrincipal = new PortalUserPrincipal("admin");
+		this.aclDao.registerPrincipal(adminPrincipal);
+
+		final IPermission allPermissions = this.permissionFactory.build("allPermissions");
+		final Set<IPermission> allPermissionsSet = new HashSet<IPermission>(1);
+		allPermissionsSet.add(allPermissions);
+
+		final IRole adminRole = this.roleFactory.initializeRole("admin", allPermissionsSet, null);
+		final Set<IRole> adminRolesSet = new HashSet<IRole>(1);
+		adminRolesSet.add(adminRole);
+
+		this.registerPrincipal(adminPrincipal);
+		this.registerPrincipalRoles(adminPrincipal, adminRolesSet);
 	}
 
 }
