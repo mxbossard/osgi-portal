@@ -77,7 +77,7 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 		writer.append("<h1>OSGi Portal !</h1>\n");
 
 		if (this.portalAppReferenceListener != null) {
-			for (final ServiceReference<?> appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
+			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
 				final Bundle bundle = appRef.getBundle();
 				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
 
@@ -99,7 +99,7 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 		final ArrayList<IApp> appsToRender = new ArrayList<IApp>(16);
 
 		if (this.portalAppReferenceListener != null) {
-			for (final ServiceReference<?> appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
+			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
 				final Bundle bundle = appRef.getBundle();
 				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
 
