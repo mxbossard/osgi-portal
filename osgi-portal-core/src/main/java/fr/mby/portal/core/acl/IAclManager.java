@@ -20,6 +20,8 @@ import java.security.Principal;
 import java.util.Set;
 
 import fr.mby.portal.api.acl.IRole;
+import fr.mby.portal.core.security.PrincipalAlreadyExistsException;
+import fr.mby.portal.core.security.PrincipalNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -27,6 +29,36 @@ import fr.mby.portal.api.acl.IRole;
  */
 public interface IAclManager {
 
-	Set<IRole> retrievePrincipalRoles(Principal principal);
+	/**
+	 * Register a Principal.
+	 * 
+	 * @param principal
+	 * @throws PrincipalAlreadyExistsException
+	 *             if the specified Principal was already registered previously
+	 */
+	void registerPrincipal(Principal principal) throws PrincipalAlreadyExistsException;
+
+	/**
+	 * Register the Set of IRole of a Principal.
+	 * 
+	 * @param principal
+	 * @param roles
+	 * @throws PrincipalNotFoundException
+	 *             if the specified principal is not already registered
+	 * @throws RoleNotFoundException
+	 *             if specified roles are not registered
+	 */
+	void registerPrincipalRoles(Principal principal, Set<IRole> roles) throws PrincipalNotFoundException,
+			RoleNotFoundException;
+
+	/**
+	 * Search for the Roles available to a Principal.
+	 * 
+	 * @param principal
+	 * @return the Set of IRole available
+	 * @throws PrincipalNotFoundException
+	 *             if the specified principal is not already registered
+	 */
+	Set<IRole> retrievePrincipalRoles(Principal principal) throws PrincipalNotFoundException;
 
 }

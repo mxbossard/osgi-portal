@@ -21,6 +21,8 @@ import java.util.Set;
 
 import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
+import fr.mby.portal.core.security.PrincipalAlreadyExistsException;
+import fr.mby.portal.core.security.PrincipalNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -32,16 +34,20 @@ public interface IAclDao {
 	 * Create an IRole with some permissions.
 	 * 
 	 * @param role
+	 * @throws RoleAlreadyExistsException
+	 *             if specified role was already created previously
 	 */
-	void createRole(IRole role);
-	
+	void createRole(IRole role) throws RoleAlreadyExistsException;
+
 	/**
 	 * Find an IRole by its name.
 	 * 
 	 * @param role
 	 * @return the found IRole
+	 * @throws RoleNotFoundException
+	 *             if no IRole match the specified name
 	 */
-	IRole findRole(String name);
+	IRole findRole(String name) throws RoleNotFoundException;
 
 	/**
 	 * Update an IRole by adding it permissions.
@@ -51,8 +57,10 @@ public interface IAclDao {
 	 * @param permissions
 	 *            the IPermissions to add to the Irole
 	 * @return the updated IRole
+	 * @throws RoleNotFoundException
+	 *             if the specified IRole wasn't previously created
 	 */
-	IRole addRolePermissions(IRole role, Set<IPermission> permissions);
+	IRole addRolePermissions(IRole role, Set<IPermission> permissions) throws RoleNotFoundException;
 
 	/**
 	 * Reset an IRole.
@@ -60,8 +68,19 @@ public interface IAclDao {
 	 * @param role
 	 *            the IRole to reset
 	 * @return the reseted IRole
+	 * @throws RoleNotFoundException
+	 *             if the specified IRole wasn't previously created
 	 */
-	void resetRole(IRole role);
+	void resetRole(IRole role) throws RoleNotFoundException;
+
+	/**
+	 * Register a new Principal.
+	 * 
+	 * @param principal
+	 * @throws PrincipalAlreadyExistsException
+	 *             if the Principal already exists
+	 */
+	void registerPrincipal(Principal principal) throws PrincipalAlreadyExistsException;
 
 	/**
 	 * Grant roles to a Principal.
@@ -69,8 +88,13 @@ public interface IAclDao {
 	 * @param principal
 	 * @param roles
 	 * @return the Set of every IRoles currently available for the Principal
+	 * @throws RoleNotFoundException
+	 *             if at least one of the specified IRole wasn't previously created
+	 * @throws PrincipalNotFoundException
+	 *             if the specified principal is not already known
 	 */
-	Set<IRole> grantRoles(Principal principal, Set<IRole> roles);
+	Set<IRole> grantRoles(Principal principal, Set<IRole> roles) throws RoleNotFoundException,
+			PrincipalNotFoundException;
 
 	/**
 	 * Revoke roles from a Principal.
@@ -78,15 +102,22 @@ public interface IAclDao {
 	 * @param principal
 	 * @param roles
 	 * @return the Set of every IRoles currently available for the Principal
+	 * @throws RoleNotFoundException
+	 *             if at least one of the specified IRole wasn't previously created
+	 * @throws PrincipalNotFoundException
+	 *             if the specified principal is not already known
 	 */
-	Set<IRole> revokeRoles(Principal principal, Set<IRole> roles);
+	Set<IRole> revokeRoles(Principal principal, Set<IRole> roles) throws RoleNotFoundException,
+			PrincipalNotFoundException;
 
 	/**
 	 * Find the Set of every IRoles currently available for a principal.
 	 * 
 	 * @param principal
 	 * @return the Set of every IRoles currently available for the Principal
+	 * @throws PrincipalNotFoundException
+	 *             if the specified principal is not already known
 	 */
-	Set<IRole> findPrincipalRoles(Principal principal);
+	Set<IRole> findPrincipalRoles(Principal principal) throws PrincipalNotFoundException;
 
 }
