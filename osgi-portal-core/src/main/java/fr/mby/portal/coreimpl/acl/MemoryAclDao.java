@@ -1,3 +1,4 @@
+
 package fr.mby.portal.coreimpl.acl;
 
 import java.security.Principal;
@@ -32,11 +33,11 @@ public class MemoryAclDao implements IAclDao {
 	private IPermissionFactory permissionFactory;
 
 	@Override
-	public void createRole(IRole role) {
+	public void createRole(final IRole role) {
 		Assert.notNull(role, "No role supplied !");
-		
+
 		final String roleName = role.getName();
-		
+
 		if (StringUtils.hasText(roleName) && !this.rolesCache.containsKey(roleName)) {
 			this.rolesCache.put(roleName, role);
 		} else {
@@ -46,23 +47,23 @@ public class MemoryAclDao implements IAclDao {
 	}
 
 	@Override
-	public IRole findRole(String name) {
+	public IRole findRole(final String name) {
 		Assert.hasText(name, "No name supplied !");
-		
+
 		final IRole role = this.roleFactory.build(name);
-		
+
 		return role;
 	}
 
 	@Override
-	public IRole addRolePermissions(IRole role, Set<IPermission> permissions) {
+	public IRole addRolePermissions(final IRole role, final Set<IPermission> permissions) {
 		Assert.notNull(role, "No role supplied !");
 		Assert.notNull(permissions, "No permissions supplied !");
-		
+
 		final String roleName = role.getName();
-		final HashSet<IPermission> allPermissions = new HashSet<>(role.getPermissions());
+		final HashSet<IPermission> allPermissions = new HashSet<IPermission>(role.getPermissions());
 		allPermissions.addAll(permissions);
-		
+
 		// Reinitialize the Role in the Factory
 		this.roleFactory.initializeRole(roleName, allPermissions, role.getSubRoles());
 
@@ -70,11 +71,11 @@ public class MemoryAclDao implements IAclDao {
 	}
 
 	@Override
-	public void resetRole(IRole role) {
+	public void resetRole(final IRole role) {
 		Assert.notNull(role, "No role supplied !");
-		
+
 		final String roleName = role.getName();
-		
+
 		if (StringUtils.hasText(roleName) && this.rolesCache.containsKey(roleName)) {
 			this.rolesCache.put(roleName, role);
 		} else {
@@ -84,43 +85,43 @@ public class MemoryAclDao implements IAclDao {
 	}
 
 	@Override
-	public Set<IRole> grantRoles(Principal principal, Set<IRole> roles) {
+	public Set<IRole> grantRoles(final Principal principal, final Set<IRole> roles) {
 		Assert.notNull(principal, "No principal supplied !");
 		Assert.notNull(roles, "No roles supplied !");
-		
-		Set<IRole> alreadyGrantedRoles = this.initializeAclCache(principal);
-		
+
+		final Set<IRole> alreadyGrantedRoles = this.initializeAclCache(principal);
+
 		alreadyGrantedRoles.addAll(roles);
-		
+
 		return Collections.unmodifiableSet(alreadyGrantedRoles);
 	}
 
 	@Override
-	public Set<IRole> revokeRoles(Principal principal, Set<IRole> roles) {
+	public Set<IRole> revokeRoles(final Principal principal, final Set<IRole> roles) {
 		Assert.notNull(principal, "No principal supplied !");
 		Assert.notNull(roles, "No roles supplied !");
-		
-		Set<IRole> alreadyGrantedRoles = this.initializeAclCache(principal);
-		
+
+		final Set<IRole> alreadyGrantedRoles = this.initializeAclCache(principal);
+
 		alreadyGrantedRoles.removeAll(roles);
-		
+
 		return Collections.unmodifiableSet(alreadyGrantedRoles);
 	}
 
 	@Override
-	public Set<IRole> findPrincipalRoles(Principal principal) {
+	public Set<IRole> findPrincipalRoles(final Principal principal) {
 		Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
-		
+
 		if (alreadyGrantedRoles == null) {
 			alreadyGrantedRoles = Collections.emptySet();
 		} else {
 			alreadyGrantedRoles = Collections.unmodifiableSet(alreadyGrantedRoles);
 		}
-		
+
 		return alreadyGrantedRoles;
 	}
 
-	protected Set<IRole> initializeAclCache(Principal principal) {
+	protected Set<IRole> initializeAclCache(final Principal principal) {
 		Set<IRole> alreadyGrantedRoles = this.aclCache.get(principal);
 		if (alreadyGrantedRoles == null) {
 			alreadyGrantedRoles = new HashSet<IRole>(8);
