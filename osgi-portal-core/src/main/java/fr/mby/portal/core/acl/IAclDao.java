@@ -32,9 +32,16 @@ public interface IAclDao {
 	 * Create an IRole with some permissions.
 	 * 
 	 * @param role
-	 * @return the created IRole
 	 */
 	void createRole(IRole role);
+	
+	/**
+	 * Find an IRole by its name.
+	 * 
+	 * @param role
+	 * @return the found IRole
+	 */
+	IRole findRole(String name);
 
 	/**
 	 * Update an IRole by adding it permissions.
@@ -45,7 +52,7 @@ public interface IAclDao {
 	 *            the IPermissions to add to the Irole
 	 * @return the updated IRole
 	 */
-	IRole addRolePermissions(IRole role, IPermission... permissions);
+	IRole addRolePermissions(IRole role, Set<IPermission> permissions);
 
 	/**
 	 * Reset an IRole.
@@ -63,7 +70,7 @@ public interface IAclDao {
 	 * @param roles
 	 * @return the Set of every IRoles currently available for the Principal
 	 */
-	Set<IRole> grantRoles(Principal principal, IRole... roles);
+	Set<IRole> grantRoles(Principal principal, Set<IRole> roles);
 
 	/**
 	 * Revoke roles from a Principal.
@@ -72,7 +79,7 @@ public interface IAclDao {
 	 * @param roles
 	 * @return the Set of every IRoles currently available for the Principal
 	 */
-	Set<IRole> revokeRoles(Principal principal, IRole... roles);
+	Set<IRole> revokeRoles(Principal principal, Set<IRole> roles);
 
 	/**
 	 * Find the Set of every IRoles currently available for a principal.

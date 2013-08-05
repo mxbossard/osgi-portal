@@ -16,6 +16,9 @@
 
 package fr.mby.portal.coreimpl.acl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
@@ -29,11 +32,18 @@ import fr.mby.portal.core.acl.IPermissionFactory;
 @Service
 public class BasicPermissionFactory implements IPermissionFactory {
 
+	private final Map<String, IPermission> permissionsCache = new HashMap<String, IPermission>(128);
+
 	@Override
 	public IPermission build(final String name) {
 		Assert.hasText(name, "No name provided !");
 
-		final BasicPermission newPermission = new BasicPermission(name);
+		IPermission newPermission = this.permissionsCache.get(name);
+		
+		if (newPermission == null) {
+			newPermission = new BasicPermission(name);
+			this.permissionsCache.put(name, newPermission);
+		}
 
 		return newPermission;
 	}

@@ -17,15 +17,13 @@
 package fr.mby.portal.coreimpl.acl;
 
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.core.acl.IAclDao;
 import fr.mby.portal.core.acl.IAclManager;
@@ -48,17 +46,13 @@ public class BasicAclManager implements IAclManager {
 	@Autowired(required = true)
 	private IAclDao aclDao;
 
-	private final Map<String, IRole> rolesCache = new HashMap<String, IRole>(128);
-
-	private final Map<String, IPermission> permissionsCache = new HashMap<String, IPermission>(128);
-
 	@Override
 	public Set<IRole> retrievePrincipalRoles(final Principal principal) {
 		Assert.notNull(principal, "No Principal provided !");
 
 		final Set<IRole> roles = this.aclDao.findPrincipalRoles(principal);
 
-		return roles;
+		return Collections.unmodifiableSet(roles);
 	}
 
 }

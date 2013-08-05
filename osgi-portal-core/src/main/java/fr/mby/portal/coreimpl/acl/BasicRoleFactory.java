@@ -16,6 +16,9 @@
 
 package fr.mby.portal.coreimpl.acl;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
@@ -32,13 +35,34 @@ import fr.mby.portal.core.acl.IRoleFactory;
 @Service
 public class BasicRoleFactory implements IRoleFactory {
 
+	private final Map<String, IRole> rolesCache = new HashMap<String, IRole>(128);
+
 	@Override
-	public IRole build(final String name, final Set<IPermission> permissions) {
+	public IRole build(final String name) {
+		Assert.hasText(name, "No name provided !");
+
+		final IRole newRole = this.rolesCache.get(name);
+
+		Assert.notNull(newRole, "This role wasn't initialized !");
+		
+		return newRole;
+	}
+	
+	@Override
+	public IRole initializeRole(final String name, final Set<IPermission> permissions, final Set<IRole> subRoles) {
 		Assert.hasText(name, "No name provided !");
 		Assert.notEmpty(permissions, "No permission provided !");
 
 		final BasicRole newRole = new BasicRole(name);
-		newRole.setPermissions(permissions);
+		newRole.setPermissions(Collections.unmodifiableSet(permissions));
+		
+		if(subRoles != null) {
+			newRole.setSubRoles(Collections.unmodifiableSet(subRoles));
+		} else {
+			newRole.setSubRoles(Collections.<IRole> emptySet());
+		}
+		
+		this.rolesCache.put(name, newRole);
 
 		return newRole;
 	}
