@@ -32,12 +32,24 @@ import fr.mby.portal.core.acl.IAclDao;
 import fr.mby.portal.core.acl.IAclManager;
 import fr.mby.portal.core.acl.IPermissionFactory;
 import fr.mby.portal.core.acl.IRoleFactory;
+import fr.mby.portal.core.acl.RoleAlreadyExistsException;
 import fr.mby.portal.core.acl.RoleNotFoundException;
 import fr.mby.portal.core.security.PrincipalAlreadyExistsException;
 import fr.mby.portal.core.security.PrincipalNotFoundException;
 import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 
 /**
+ * Basic ACL manager wich self register 3 Principal with some roles.
+ * 
+ * <ul>
+ * <li>
+ * GUEST : role guest with no permission</li>
+ * <li>
+ * USER : role user with "user permission"</li>
+ * <li>
+ * ADMIN : role admin with "all permissions" and sub-role USER</li>
+ * </ul>
+ * 
  * @author Maxime Bossard - 2013
  * 
  */
@@ -45,15 +57,15 @@ import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 public class BasicAclManager implements IAclManager, InitializingBean {
 
 	public static final Principal ADMIN = new PortalUserPrincipal("admin");
-	
+
 	public static final Principal GUEST = new PortalUserPrincipal("guest");
-	
+
 	public static final Principal USER = new PortalUserPrincipal("user");
-	
+
 	public static final String ALL_PERMISSIONS = "allPermissions";
-	
+
 	public static final String USER_PERMISSION = "userPermission";
-	
+
 	@Autowired(required = true)
 	private IRoleFactory roleFactory;
 
@@ -91,43 +103,47 @@ public class BasicAclManager implements IAclManager, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// Initialize ACL
-		initializeAcl();
-		
+		this.initializeAcl();
+
 	}
 
-	protected void initializeAcl() throws PrincipalAlreadyExistsException,
-			PrincipalNotFoundException, RoleNotFoundException {
+	protected void initializeAcl() throws PrincipalAlreadyExistsException, PrincipalNotFoundException,
+			RoleNotFoundException, RoleAlreadyExistsException {
 		// Guest with no permission
-		final IRole guestRole = this.roleFactory.initializeRole(GUEST.getName(), null, null);
+		final IRole guestRole = this.roleFactory.initializeRole(BasicAclManager.GUEST.getName(), null, null);
 		final Set<IRole> guestRolesSet = new HashSet<IRole>(1);
 		guestRolesSet.add(guestRole);
 
-		this.registerPrincipal(GUEST);
-		this.registerPrincipalRoles(GUEST, guestRolesSet);
-		
+		this.registerPrincipal(BasicAclManager.GUEST);
+		this.aclDao.createRole(guestRole);
+		this.registerPrincipalRoles(BasicAclManager.GUEST, guestRolesSet);
+
 		// User with "user permission"
-		final IPermission userPermission = this.permissionFactory.build(USER_PERMISSION);
+		final IPermission userPermission = this.permissionFactory.build(BasicAclManager.USER_PERMISSION);
 		final Set<IPermission> userPermissionSet = new HashSet<IPermission>(1);
 		userPermissionSet.add(userPermission);
 
-		final IRole userRole = this.roleFactory.initializeRole(USER.getName(), userPermissionSet, null);
+		final IRole userRole = this.roleFactory.initializeRole(BasicAclManager.USER.getName(), userPermissionSet, null);
 		final Set<IRole> userRoleSet = new HashSet<IRole>(1);
 		userRoleSet.add(userRole);
 
-		this.registerPrincipal(USER);
-		this.registerPrincipalRoles(USER, userRoleSet);
-		
+		this.registerPrincipal(BasicAclManager.USER);
+		this.aclDao.createRole(userRole);
+		this.registerPrincipalRoles(BasicAclManager.USER, userRoleSet);
+
 		// Admin with "all permissions"
-		final IPermission allPermissions = this.permissionFactory.build(ALL_PERMISSIONS);
+		final IPermission allPermissions = this.permissionFactory.build(BasicAclManager.ALL_PERMISSIONS);
 		final Set<IPermission> allPermissionsSet = new HashSet<IPermission>(1);
 		allPermissionsSet.add(allPermissions);
 
-		final IRole adminRole = this.roleFactory.initializeRole(ADMIN.getName(), allPermissionsSet, userRoleSet);
+		final IRole adminRole = this.roleFactory.initializeRole(BasicAclManager.ADMIN.getName(), allPermissionsSet,
+				userRoleSet);
 		final Set<IRole> adminRolesSet = new HashSet<IRole>(1);
 		adminRolesSet.add(adminRole);
 
-		this.registerPrincipal(ADMIN);
-		this.registerPrincipalRoles(ADMIN, adminRolesSet);
+		this.registerPrincipal(BasicAclManager.ADMIN);
+		this.aclDao.createRole(adminRole);
+		this.registerPrincipalRoles(BasicAclManager.ADMIN, adminRolesSet);
 	}
 
 }

@@ -19,7 +19,6 @@ package fr.mby.portal.core.acl;
 import java.security.Principal;
 import java.util.Set;
 
-import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.core.security.PrincipalAlreadyExistsException;
 import fr.mby.portal.core.security.PrincipalNotFoundException;
@@ -50,20 +49,7 @@ public interface IAclDao {
 	IRole findRole(String name) throws RoleNotFoundException;
 
 	/**
-	 * Update an IRole by adding it permissions.
-	 * 
-	 * @param role
-	 *            the IRole to update
-	 * @param permissions
-	 *            the IPermissions to add to the Irole
-	 * @return the updated IRole
-	 * @throws RoleNotFoundException
-	 *             if the specified IRole wasn't previously created
-	 */
-	IRole addRolePermissions(IRole role, Set<IPermission> permissions) throws RoleNotFoundException;
-
-	/**
-	 * Reset an IRole.
+	 * Update an IRole.
 	 * 
 	 * @param role
 	 *            the IRole to reset
@@ -71,7 +57,7 @@ public interface IAclDao {
 	 * @throws RoleNotFoundException
 	 *             if the specified IRole wasn't previously created
 	 */
-	void resetRole(IRole role) throws RoleNotFoundException;
+	void updateRole(IRole role) throws RoleNotFoundException;
 
 	/**
 	 * Register a new Principal.
