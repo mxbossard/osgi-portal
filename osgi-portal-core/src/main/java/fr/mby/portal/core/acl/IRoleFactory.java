@@ -27,7 +27,7 @@ import fr.mby.portal.api.acl.IRole;
  */
 public interface IRoleFactory {
 
-	IRole build(String name);
+	IRole build(String name) throws RoleNotFoundException;
 	
 	IRole initializeRole(String name, Set<IPermission> permissions, Set<IRole> subRoles);
 

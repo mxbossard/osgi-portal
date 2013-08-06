@@ -27,6 +27,7 @@ import org.springframework.util.Assert;
 import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.core.acl.IRoleFactory;
+import fr.mby.portal.core.acl.RoleNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -38,12 +39,14 @@ public class BasicRoleFactory implements IRoleFactory {
 	private final Map<String, IRole> rolesCache = new HashMap<String, IRole>(128);
 
 	@Override
-	public IRole build(final String name) {
+	public IRole build(final String name) throws RoleNotFoundException {
 		Assert.hasText(name, "No name provided !");
 
 		final IRole newRole = this.rolesCache.get(name);
 
-		Assert.notNull(newRole, "This role wasn't initialized !");
+		if (newRole == null) {
+			throw new RoleNotFoundException(name);
+		}
 		
 		return newRole;
 	}
@@ -51,10 +54,14 @@ public class BasicRoleFactory implements IRoleFactory {
 	@Override
 	public IRole initializeRole(final String name, final Set<IPermission> permissions, final Set<IRole> subRoles) {
 		Assert.hasText(name, "No name provided !");
-		Assert.notEmpty(permissions, "No permission provided !");
 
 		final BasicRole newRole = new BasicRole(name);
-		newRole.setPermissions(Collections.unmodifiableSet(permissions));
+		
+		if(permissions != null) { 
+			newRole.setPermissions(Collections.unmodifiableSet(permissions));
+		} else {
+			newRole.setPermissions(Collections.<IPermission> emptySet());
+		}
 		
 		if(subRoles != null) {
 			newRole.setSubRoles(Collections.unmodifiableSet(subRoles));

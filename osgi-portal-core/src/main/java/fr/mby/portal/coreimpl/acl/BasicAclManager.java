@@ -44,6 +44,16 @@ import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 @Service
 public class BasicAclManager implements IAclManager, InitializingBean {
 
+	public static final Principal ADMIN = new PortalUserPrincipal("admin");
+	
+	public static final Principal GUEST = new PortalUserPrincipal("guest");
+	
+	public static final Principal USER = new PortalUserPrincipal("user");
+	
+	public static final String ALL_PERMISSIONS = "allPermissions";
+	
+	public static final String USER_PERMISSION = "userPermission";
+	
 	@Autowired(required = true)
 	private IRoleFactory roleFactory;
 
@@ -81,19 +91,43 @@ public class BasicAclManager implements IAclManager, InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		// Initialize ACL
-		final Principal adminPrincipal = new PortalUserPrincipal("admin");
-		this.aclDao.registerPrincipal(adminPrincipal);
+		initializeAcl();
+		
+	}
 
-		final IPermission allPermissions = this.permissionFactory.build("allPermissions");
+	protected void initializeAcl() throws PrincipalAlreadyExistsException,
+			PrincipalNotFoundException, RoleNotFoundException {
+		// Guest with no permission
+		final IRole guestRole = this.roleFactory.initializeRole(GUEST.getName(), null, null);
+		final Set<IRole> guestRolesSet = new HashSet<IRole>(1);
+		guestRolesSet.add(guestRole);
+
+		this.registerPrincipal(GUEST);
+		this.registerPrincipalRoles(GUEST, guestRolesSet);
+		
+		// User with "user permission"
+		final IPermission userPermission = this.permissionFactory.build(USER_PERMISSION);
+		final Set<IPermission> userPermissionSet = new HashSet<IPermission>(1);
+		userPermissionSet.add(userPermission);
+
+		final IRole userRole = this.roleFactory.initializeRole(USER.getName(), userPermissionSet, null);
+		final Set<IRole> userRoleSet = new HashSet<IRole>(1);
+		userRoleSet.add(userRole);
+
+		this.registerPrincipal(USER);
+		this.registerPrincipalRoles(USER, userRoleSet);
+		
+		// Admin with "all permissions"
+		final IPermission allPermissions = this.permissionFactory.build(ALL_PERMISSIONS);
 		final Set<IPermission> allPermissionsSet = new HashSet<IPermission>(1);
 		allPermissionsSet.add(allPermissions);
 
-		final IRole adminRole = this.roleFactory.initializeRole("admin", allPermissionsSet, null);
+		final IRole adminRole = this.roleFactory.initializeRole(ADMIN.getName(), allPermissionsSet, userRoleSet);
 		final Set<IRole> adminRolesSet = new HashSet<IRole>(1);
 		adminRolesSet.add(adminRole);
 
-		this.registerPrincipal(adminPrincipal);
-		this.registerPrincipalRoles(adminPrincipal, adminRolesSet);
+		this.registerPrincipal(ADMIN);
+		this.registerPrincipalRoles(ADMIN, adminRolesSet);
 	}
 
 }

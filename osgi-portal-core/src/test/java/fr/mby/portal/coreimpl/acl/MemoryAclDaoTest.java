@@ -30,6 +30,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
+import fr.mby.portal.core.acl.RoleAlreadyExistsException;
+import fr.mby.portal.core.acl.RoleNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -62,7 +64,7 @@ public class MemoryAclDaoTest {
 	private MemoryAclDao memoryAclDao;
 	
 	@Test
-	public void testCreateAndFoundRole() throws Exception {
+	public void testCreateAndFindRole() throws Exception {
 		IPermission perm1 = basicPermissionFactory.build(TEST_PERM_NAME_1);
 		Assert.assertNotNull("Permission 1 should not be null !", perm1);
 		
@@ -95,6 +97,41 @@ public class MemoryAclDaoTest {
 		memoryAclDao.createRole(role2);
 		IRole role2found = memoryAclDao.findRole(TEST_ROLE_NAME_2);
 		Assert.assertTrue("Role 2 created and role 2 found shoud be the same !", role2 == role2found);
+	}
+
+	@Test(expected=RoleAlreadyExistsException.class)
+	public void testCreateRoleWhichAlreadyExists() throws Exception {
+		IPermission perm1 = basicPermissionFactory.build(TEST_PERM_NAME_1);
+		Assert.assertNotNull("Permission 1 should not be null !", perm1);
+		
+		IPermission perm2 = basicPermissionFactory.build(TEST_PERM_NAME_2);
+		Assert.assertNotNull("Permission 2 should not be null !", perm2);
+		
+		IPermission perm3 = basicPermissionFactory.build(TEST_PERM_NAME_3);
+		Assert.assertNotNull("Permission 3 should not be null !", perm3);
+		
+		IPermission perm4 = basicPermissionFactory.build(TEST_PERM_NAME_4);
+		Assert.assertNotNull("Permission 4 should not be null !", perm4);
+		
+		// Create Role 1 whith Perms 2 & 3
+		Set<IPermission> permissionsRole1 = new HashSet<IPermission>();
+		permissionsRole1.add(perm2);
+		permissionsRole1.add(perm3);
+		IRole role1 = this.basicRoleFactory.initializeRole(TEST_ROLE_NAME_1, permissionsRole1 , null);
+		
+		memoryAclDao.createRole(role1);
+		IRole role1found = memoryAclDao.findRole(TEST_ROLE_NAME_1);
+		Assert.assertTrue("Role 1 created and role 1 found shoud be the same !", role1 == role1found);
+
+		// Create Role 2 with Perms 4 but with same name as Role 1
+		Set<IPermission> permissionsRole2 = new HashSet<IPermission>();
+		permissionsRole2.add(perm4);
+		this.basicRoleFactory.initializeRole(TEST_ROLE_NAME_1, permissionsRole2 , null);
+	}
+	
+	@Test(expected=RoleNotFoundException.class)
+	public void testFindRoleWhichDoesntExists() throws Exception {
+		memoryAclDao.findRole(TEST_ROLE_NAME_2);
 	}
 	
 	@Test
