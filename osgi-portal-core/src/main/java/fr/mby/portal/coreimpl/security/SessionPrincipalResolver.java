@@ -19,12 +19,14 @@ package fr.mby.portal.coreimpl.security;
 import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 
+import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.core.security.IPrincipalResolver;
+import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
@@ -34,19 +36,22 @@ import fr.mby.portal.core.security.IPrincipalResolver;
 @Order(value = 100)
 public class SessionPrincipalResolver implements IPrincipalResolver {
 
+	/** Session attribute name to retrieve the Principal. */
 	public static final String PRINCIPAL_SESSION_ATTR_NAME = "Principal";
+
+	@Autowired(required = true)
+	private ISessionManager sessionManager;
 
 	@Override
 	public Principal resolve(final HttpServletRequest request) {
 		final Principal resolvedPrincipal = null;
 
-		final HttpSession session = request.getSession(true);
-
-		final Object principalInSession = session.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+		final ISession portalSession = this.sessionManager.getPortalSession(request);
+		final Object principalInSession = portalSession.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
 
 		if (principalInSession != null && !Principal.class.isAssignableFrom(principalInSession.getClass())) {
 			// If Principal in session got a bad type we remove it
-			session.removeAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+			portalSession.removeAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
 		}
 
 		return resolvedPrincipal;
