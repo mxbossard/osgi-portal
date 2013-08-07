@@ -33,6 +33,7 @@ import fr.mby.portal.api.user.IUserDetails;
 import fr.mby.portal.core.action.IUserActionFactory;
 import fr.mby.portal.core.context.IPortalContextResolver;
 import fr.mby.portal.core.properties.IRequestPropertiesResolver;
+import fr.mby.portal.core.session.ISessionManager;
 import fr.mby.portal.core.user.IUserDetailsResolver;
 
 /**
@@ -53,6 +54,9 @@ public class BasicUserActionFactory implements IUserActionFactory, InitializingB
 	@Autowired(required = true)
 	private IUserDetailsResolver userDetailsResolver;
 
+	@Autowired(required = true)
+	private ISessionManager sessionManager;
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public IUserAction build(final HttpServletRequest request) {
@@ -60,12 +64,13 @@ public class BasicUserActionFactory implements IUserActionFactory, InitializingB
 
 		final IPortalContext portalContext = this.portalContextResolver.resolve(request);
 		final IUserDetails userDetails = this.userDetailsResolver.resolve(request);
+		final String portalSessionId = this.sessionManager.getPortalSessionId(request);
 		final Map<String, Iterable<String>> properties = this.requestPropertiesResolver.resolve(request);
 		final Map<String, String[]> parameters = request.getParameterMap();
 		final Map<String, Object> attributes = this.extractAttributes(request);
 
-		final BasicUserAction userAction = new BasicUserAction(portalContext, userDetails, properties, parameters,
-				attributes);
+		final BasicUserAction userAction = new BasicUserAction(portalContext, userDetails, portalSessionId, properties,
+				parameters, attributes);
 
 		return userAction;
 	}

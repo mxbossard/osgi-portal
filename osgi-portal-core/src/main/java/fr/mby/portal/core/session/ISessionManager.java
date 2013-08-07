@@ -27,8 +27,38 @@ import fr.mby.portal.api.app.ISession;
  */
 public interface ISessionManager {
 
+	/**
+	 * Retrieve the App Session corresponding to the user action. An App Session must be App private : visible only to
+	 * the App.
+	 * 
+	 * @param userAction
+	 * @param create
+	 * @return
+	 */
 	ISession getAppSession(IUserAction userAction, boolean create);
 
+	/**
+	 * Retrieve the Portal Session corresponding to the request. A Portal Session must be Portal private : no external
+	 * App shoud access it.
+	 * 
+	 * @param request
+	 * @return
+	 */
+	ISession getPortalSession(HttpServletRequest request);
+
+	/**
+	 * Retrieve the unique portal session Id corresponding to the request.
+	 * 
+	 * @param request
+	 * @return
+	 */
 	String getPortalSessionId(HttpServletRequest request);
+
+	/**
+	 * Destroy all sessions attached to the request.
+	 * 
+	 * @param request
+	 */
+	void destroySessions(HttpServletRequest request);
 
 }

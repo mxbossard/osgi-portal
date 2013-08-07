@@ -35,6 +35,8 @@ public class BasicUserAction implements IUserAction {
 
 	private final IUserDetails userDetails;
 
+	private final String portalSessionId;
+
 	private final Map<String, Iterable<String>> properties;
 
 	private final Map<String, String[]> parameters;
@@ -43,16 +45,18 @@ public class BasicUserAction implements IUserAction {
 
 	/** Protected constructor. Use the factory. */
 	protected BasicUserAction(final IPortalContext portalContext, final IUserDetails userDetails,
-			final Map<String, Iterable<String>> properties, final Map<String, String[]> parameters,
-			final Map<String, Object> attributes) {
+			final String portalSessionId, final Map<String, Iterable<String>> properties,
+			final Map<String, String[]> parameters, final Map<String, Object> attributes) {
 		Assert.notNull(portalContext, "No PortalContext provided !");
 		Assert.notNull(userDetails, "No User Principal provided !");
+		Assert.hasText(portalSessionId, "No Portal Session Id provided !");
 		Assert.notNull(properties, "No properties provided !");
 		Assert.notNull(parameters, "No parameters provided !");
 		Assert.notNull(attributes, "No attributes provided !");
 
 		this.portalContext = portalContext;
 		this.userDetails = userDetails;
+		this.portalSessionId = portalSessionId;
 		this.properties = properties;
 		this.parameters = parameters;
 		this.attributes = attributes;
@@ -66,6 +70,11 @@ public class BasicUserAction implements IUserAction {
 	@Override
 	public IUserDetails getUserDetails() {
 		return this.userDetails;
+	}
+
+	@Override
+	public String getPortalSessionId() {
+		return this.portalSessionId;
 	}
 
 	@Override

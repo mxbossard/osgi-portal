@@ -44,6 +44,13 @@ public interface IUserAction {
 	IUserDetails getUserDetails();
 
 	/**
+	 * Returns the Portal Session Id used to make the action.
+	 * 
+	 * @return the portal session Id
+	 */
+	String getPortalSessionId();
+
+	/**
 	 * Returns the value of the specified request property as a String. If the request did not include a property of the
 	 * specified name, this method returns null. A portlet can access portal/portlet-container specific properties
 	 * through this method and, if available, the headers of the HTTP client request. This method should only be used if
@@ -61,7 +68,7 @@ public interface IUserAction {
 	String getProperty(String name) throws IllegalArgumentException;
 
 	/**
-	 * Returns all the values of the specified request property as a Enumeration of String objects. If the request did
+	 * Returns all the values of the specified request property as an Enumeration of String objects. If the request did
 	 * not include any properties of the specified name, this method returns an empty Enumeration. The property name is
 	 * case insensitive. You can use this method with any request property.
 	 * 
