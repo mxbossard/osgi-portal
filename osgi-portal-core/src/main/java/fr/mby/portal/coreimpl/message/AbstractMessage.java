@@ -23,7 +23,6 @@ import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IAppPreferences;
 import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.message.IMessage;
-import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
@@ -32,22 +31,22 @@ import fr.mby.portal.core.session.ISessionManager;
 public abstract class AbstractMessage implements IMessage {
 
 	private final IAppContext appContext;
-	private final ISessionManager sessionManager;
+	private final ISession appSession;
 	private final IAppPreferences appPreferences;
 	private final IUserAction userAction;
 
 	/** Protected constructor. Use the factory. */
-	protected AbstractMessage(final IAppContext appContext, final ISessionManager sessionManager,
+	protected AbstractMessage(final IAppContext appContext, final ISession appSession,
 			final IAppPreferences appPreferences, final IUserAction userAction) {
 		super();
 
 		Assert.notNull(appContext, "No IAppContext provided !");
-		Assert.notNull(sessionManager, "No ISessionManager provided !");
+		Assert.notNull(appSession, "No AppSession provided !");
 		Assert.notNull(appPreferences, "No IAppPreferences provided !");
 		Assert.notNull(userAction, "No IUserAction provided !");
 
 		this.appContext = appContext;
-		this.sessionManager = sessionManager;
+		this.appSession = appSession;
 		this.appPreferences = appPreferences;
 		this.userAction = userAction;
 	}
@@ -64,9 +63,7 @@ public abstract class AbstractMessage implements IMessage {
 
 	@Override
 	public ISession getAppSession(final boolean create) {
-		final ISession session = this.sessionManager.getAppSession(this.userAction, create);
-
-		return session;
+		return this.appSession;
 	}
 
 	@Override

@@ -19,8 +19,8 @@ package fr.mby.portal.coreimpl.message;
 import fr.mby.portal.api.action.IUserAction;
 import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.message.IActionMessage;
-import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
@@ -34,9 +34,9 @@ public class BasicActionMessage extends AbstractMessage implements IActionMessag
 	 * @param appPreferences
 	 * @param userAction
 	 */
-	protected BasicActionMessage(IAppContext appContext, ISessionManager sessionManager,
-			IAppPreferences appPreferences, IUserAction userAction) {
-		super(appContext, sessionManager, appPreferences, userAction);
+	protected BasicActionMessage(final IAppContext appContext, final ISession appSession,
+			final IAppPreferences appPreferences, final IUserAction userAction) {
+		super(appContext, appSession, appPreferences, userAction);
 	}
 
 }

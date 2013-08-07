@@ -19,8 +19,8 @@ package fr.mby.portal.coreimpl.message;
 import fr.mby.portal.api.action.IUserAction;
 import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.message.IRenderMessage;
-import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
@@ -30,13 +30,13 @@ public class BasicRenderMessage extends AbstractMessage implements IRenderMessag
 
 	/**
 	 * @param appContext
-	 * @param sessionManager
+	 * @param appSession
 	 * @param appPreferences
 	 * @param userAction
 	 */
-	protected BasicRenderMessage(IAppContext appContext, ISessionManager sessionManager,
-			IAppPreferences appPreferences, IUserAction userAction) {
-		super(appContext, sessionManager, appPreferences, userAction);
+	protected BasicRenderMessage(final IAppContext appContext, final ISession appSession,
+			final IAppPreferences appPreferences, final IUserAction userAction) {
+		super(appContext, appSession, appPreferences, userAction);
 	}
 
 }

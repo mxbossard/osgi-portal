@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
 import fr.mby.portal.api.action.IUserAction;
 import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.event.IEvent;
 import fr.mby.portal.api.message.IMessage;
 import fr.mby.portal.api.message.IMessage.MessageType;
@@ -66,19 +67,20 @@ public class BasicMessageFactory implements IMessageFactory, InitializingBean {
 		final IUserAction userAction = this.userActionFactory.build(request);
 		final IAppContext appContext = this.appContextResolver.resolve(userAction);
 		final IAppPreferences appPrefs = this.appPreferencesResolver.resolve(userAction);
+		final ISession appSession = this.sessionManager.getAppSession(userAction, true);
 
 		final IMessage message;
 
 		switch (messageType) {
 			case ACTION :
-				message = new BasicActionMessage(appContext, this.sessionManager, appPrefs, userAction);
+				message = new BasicActionMessage(appContext, appSession, appPrefs, userAction);
 				break;
 			case RENDER :
-				message = new BasicRenderMessage(appContext, this.sessionManager, appPrefs, userAction);
+				message = new BasicRenderMessage(appContext, appSession, appPrefs, userAction);
 				break;
 			case EVENT :
 				final IEvent event = this.eventFactory.build("testEvent", "eventValue");
-				message = new BasicEventMessage(appContext, this.sessionManager, appPrefs, userAction, event);
+				message = new BasicEventMessage(appContext, appSession, appPrefs, userAction, event);
 				break;
 			default :
 				throw new IllegalArgumentException("Unknown message type !");
