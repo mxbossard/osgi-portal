@@ -16,7 +16,6 @@
 
 package fr.mby.portal.coreimpl.action;
 
-import java.security.Principal;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,10 +29,11 @@ import org.springframework.util.Assert;
 
 import fr.mby.portal.api.action.IUserAction;
 import fr.mby.portal.api.context.IPortalContext;
+import fr.mby.portal.api.user.IUserDetails;
 import fr.mby.portal.core.action.IUserActionFactory;
 import fr.mby.portal.core.context.IPortalContextResolver;
 import fr.mby.portal.core.properties.IRequestPropertiesResolver;
-import fr.mby.portal.core.security.IPrincipalResolver;
+import fr.mby.portal.core.user.IUserDetailsResolver;
 
 /**
  * @author Maxime Bossard - 2013
@@ -42,17 +42,16 @@ import fr.mby.portal.core.security.IPrincipalResolver;
 @Service
 public class BasicUserActionFactory implements IUserActionFactory, InitializingBean {
 
-	@Autowired
+	@Autowired(required = true)
 	/** Resolver for portal context. */
 	private IPortalContextResolver<HttpServletRequest> portalContextResolver;
 
-	@Autowired
-	/** Resolver for principal. */
-	private IPrincipalResolver<HttpServletRequest> principalResolver;
-
-	@Autowired
+	@Autowired(required = true)
 	/** Resolver for properties. */
 	private IRequestPropertiesResolver requestPropertiesResolver;
+
+	@Autowired(required = true)
+	private IUserDetailsResolver userDetailsResolver;
 
 	@Override
 	@SuppressWarnings("unchecked")
@@ -60,12 +59,12 @@ public class BasicUserActionFactory implements IUserActionFactory, InitializingB
 		Assert.notNull(request, "No HTTP request provided !");
 
 		final IPortalContext portalContext = this.portalContextResolver.resolve(request);
-		final Principal userPrincipal = this.principalResolver.resolve(request);
+		final IUserDetails userDetails = this.userDetailsResolver.resolve(request);
 		final Map<String, Iterable<String>> properties = this.requestPropertiesResolver.resolve(request);
 		final Map<String, String[]> parameters = request.getParameterMap();
 		final Map<String, Object> attributes = this.extractAttributes(request);
 
-		final BasicUserAction userAction = new BasicUserAction(portalContext, userPrincipal, properties, parameters,
+		final BasicUserAction userAction = new BasicUserAction(portalContext, userDetails, properties, parameters,
 				attributes);
 
 		return userAction;
@@ -89,7 +88,7 @@ public class BasicUserActionFactory implements IUserActionFactory, InitializingB
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.portalContextResolver, "No IPortalContextResolver configured !");
-		Assert.notNull(this.principalResolver, "No IPrincipalResolver configured !");
+		Assert.notNull(this.userDetailsResolver, "No IPrincipalResolver configured !");
 		Assert.notNull(this.requestPropertiesResolver, "No IRequestPropertiesResolver configured !");
 	}
 

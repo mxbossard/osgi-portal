@@ -14,18 +14,29 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.security;
+package fr.mby.portal.coreimpl.security;
+
+import java.security.Principal;
 
 import javax.servlet.http.HttpServletRequest;
 
-import fr.mby.portal.api.user.IUserDetails;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Service;
+
+import fr.mby.portal.core.security.IPrincipalResolver;
+import fr.mby.portal.coreimpl.acl.BasicAclManager;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IUserDetailsResolver {
+@Service
+@Order(value = 1000)
+public class GuestPrincipalResolver implements IPrincipalResolver {
 
-	IUserDetails resolve(HttpServletRequest request);
+	@Override
+	public Principal resolve(final HttpServletRequest object) {
+		return BasicAclManager.GUEST;
+	}
 
 }

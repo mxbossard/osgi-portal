@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.security;
+package fr.mby.portal.core.user;
 
 import java.security.Principal;
+import java.util.Map;
+import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
+import fr.mby.portal.api.acl.IRole;
+import fr.mby.portal.api.user.IUserDetails;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPrincipalResolver {
+public interface IUserDetailsFactory {
 
-	/**
-	 * Resolve a Principal.
-	 * 
-	 * @param request
-	 * @return
-	 */
-	Principal resolve(HttpServletRequest request);
+	IUserDetails build(Principal principal, boolean isAuthenticated, Set<IRole> roles, Map<String, String> details);
 
 }

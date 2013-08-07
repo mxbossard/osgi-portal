@@ -37,6 +37,11 @@ public class BasicUserDetails implements IUserDetails {
 
 	private Map<String, String> details;
 
+	/** Protected constructor. */
+	protected BasicUserDetails() {
+		super();
+	}
+
 	/**
 	 * Getter of principal.
 	 * 

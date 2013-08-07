@@ -14,24 +14,18 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.security;
-
-import java.security.Principal;
+package fr.mby.portal.core.user;
 
 import javax.servlet.http.HttpServletRequest;
+
+import fr.mby.portal.api.user.IUserDetails;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPrincipalResolver {
+public interface IUserDetailsResolver {
 
-	/**
-	 * Resolve a Principal.
-	 * 
-	 * @param request
-	 * @return
-	 */
-	Principal resolve(HttpServletRequest request);
+	IUserDetails resolve(HttpServletRequest request);
 
 }

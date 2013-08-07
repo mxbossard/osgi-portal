@@ -16,7 +16,6 @@
 
 package fr.mby.portal.coreimpl.action;
 
-import java.security.Principal;
 import java.util.Collections;
 import java.util.Map;
 
@@ -24,6 +23,7 @@ import org.springframework.util.Assert;
 
 import fr.mby.portal.api.action.IUserAction;
 import fr.mby.portal.api.context.IPortalContext;
+import fr.mby.portal.api.user.IUserDetails;
 
 /**
  * @author Maxime Bossard - 2013
@@ -33,7 +33,7 @@ public class BasicUserAction implements IUserAction {
 
 	private final IPortalContext portalContext;
 
-	private final Principal userPrincipal;
+	private final IUserDetails userDetails;
 
 	private final Map<String, Iterable<String>> properties;
 
@@ -42,17 +42,17 @@ public class BasicUserAction implements IUserAction {
 	private final Map<String, Object> attributes;
 
 	/** Protected constructor. Use the factory. */
-	protected BasicUserAction(final IPortalContext portalContext, final Principal userPrincipal,
+	protected BasicUserAction(final IPortalContext portalContext, final IUserDetails userDetails,
 			final Map<String, Iterable<String>> properties, final Map<String, String[]> parameters,
 			final Map<String, Object> attributes) {
 		Assert.notNull(portalContext, "No PortalContext provided !");
-		Assert.notNull(userPrincipal, "No User Principal provided !");
+		Assert.notNull(userDetails, "No User Principal provided !");
 		Assert.notNull(properties, "No properties provided !");
 		Assert.notNull(parameters, "No parameters provided !");
 		Assert.notNull(attributes, "No attributes provided !");
 
 		this.portalContext = portalContext;
-		this.userPrincipal = userPrincipal;
+		this.userDetails = userDetails;
 		this.properties = properties;
 		this.parameters = parameters;
 		this.attributes = attributes;
@@ -64,8 +64,8 @@ public class BasicUserAction implements IUserAction {
 	}
 
 	@Override
-	public Principal getUserPrincipal() {
-		return this.userPrincipal;
+	public IUserDetails getUserDetails() {
+		return this.userDetails;
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class BasicUserAction implements IUserAction {
 	}
 
 	@Override
-	public Iterable<String> getProperties(String name) throws IllegalArgumentException {
+	public Iterable<String> getProperties(final String name) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		return this.properties.get(name);
@@ -88,7 +88,7 @@ public class BasicUserAction implements IUserAction {
 	}
 
 	@Override
-	public String getParameter(String name) throws IllegalArgumentException {
+	public String getParameter(final String name) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		String value = null;
@@ -101,7 +101,7 @@ public class BasicUserAction implements IUserAction {
 	}
 
 	@Override
-	public String[] getParameterValues(String name) throws IllegalArgumentException {
+	public String[] getParameterValues(final String name) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		final String[] values = this.parameters.get(name);
@@ -119,7 +119,7 @@ public class BasicUserAction implements IUserAction {
 	}
 
 	@Override
-	public Object getAttribute(String name) throws IllegalArgumentException {
+	public Object getAttribute(final String name) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		return this.attributes.get(name);
@@ -131,12 +131,12 @@ public class BasicUserAction implements IUserAction {
 	}
 
 	@Override
-	public void setAttribute(String name, Object value) throws IllegalArgumentException {
+	public void setAttribute(final String name, final Object value) throws IllegalArgumentException {
 		this.attributes.put(name, value);
 	}
 
 	@Override
-	public Object removeAttribute(String name) throws IllegalArgumentException {
+	public Object removeAttribute(final String name) throws IllegalArgumentException {
 		Assert.hasText(name, "No property name provided !");
 
 		return this.removeAttribute(name);

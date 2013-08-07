@@ -16,10 +16,10 @@
 
 package fr.mby.portal.api.action;
 
-import java.security.Principal;
 import java.util.Map;
 
 import fr.mby.portal.api.context.IPortalContext;
+import fr.mby.portal.api.user.IUserDetails;
 
 /**
  * Represents an action sent by the client to the portal.
@@ -37,12 +37,11 @@ public interface IUserAction {
 	IPortalContext getPortalContext();
 
 	/**
-	 * Returns a java.security.Principal object containing the name of the current authenticated user.
+	 * Returns an IUserDetails object containing the informations about the current user.
 	 * 
-	 * @return a java.security.Principal containing the name of the user making this request, or null if the user has
-	 *         not been authenticated.
+	 * @return an IUserDetailsl containing the informations about the user making this request.
 	 */
-	Principal getUserPrincipal();
+	IUserDetails getUserDetails();
 
 	/**
 	 * Returns the value of the specified request property as a String. If the request did not include a property of the
