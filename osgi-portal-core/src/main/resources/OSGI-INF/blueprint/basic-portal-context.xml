@@ -20,4 +20,10 @@
 		<property name="appStore" ref="sessionAppStore" />
 	</bean>
 	
+	<bean id="basicAuthenticationManager" class="fr.mby.portal.coreimpl.auth.BasicAuthenticationManager">
+		<property name="externalAuthenticationProviders" ref="authenticationProviderReferences" />
+	</bean>
+	
+	<bean id="basicLoginManager" class="fr.mby.portal.coreimpl.security.BasicLoginManager" />
+	
 </beans>

@@ -37,7 +37,7 @@ public class PrincipalAlreadyExistsException extends AbstractPortalException {
 	 * @param role
 	 */
 	public PrincipalAlreadyExistsException(final Principal principal) {
-		super(String.format("Principal: [%1$s] already exists !", principal.toString()));
+		super(String.format("Principal: [%1$s] already exists !", principal.getName()));
 		this.principal = principal;
 	}
 

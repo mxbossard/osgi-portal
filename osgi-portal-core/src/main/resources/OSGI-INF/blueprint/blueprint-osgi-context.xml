@@ -19,7 +19,15 @@
 	<!-- ConfigurationManager -->
 	<service id="configManagerService" ref="configManager"
 		 interface="fr.mby.portal.core.configuration.IConfigurationManager" />
-
+		 
+	<!-- AuthenticationManager -->
+	<service id="authenticationManagerService" ref="basicAuthenticationManager" 
+		interface="fr.mby.portal.core.auth.IAuthenticationManager"/>
+		
+	<!-- LoginManager -->
+	<service id="loginManagerService" ref="basicLoginManager" 
+		interface="fr.mby.portal.core.security.ILoginManager"/>
+		
 	<bean id="portalAppReferenceListener" class="fr.mby.portal.coreimpl.app.PortalAppReferenceListener" />
 <!-- 	
 	<service ref="portalAppReferenceListener" interface="org.osgi.service.event.EventHandler">
@@ -40,5 +48,8 @@
 	</reference>
  -->
 	
+	<!-- IAuthenticationProvider installed -->
+	<reference-list id="authenticationProviderReferences" interface="fr.mby.portal.core.auth.IAuthenticationProvider" availability="optional">
+	</reference-list>
 	
 </blueprint>

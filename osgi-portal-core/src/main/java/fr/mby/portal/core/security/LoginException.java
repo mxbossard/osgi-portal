@@ -21,23 +21,32 @@ import java.security.Principal;
 import fr.mby.portal.core.acl.AbstractPortalException;
 
 /**
- * Thrown in case of search against a non existing Principal.
- * 
  * @author Maxime Bossard - 2013
  * 
  */
-public class PrincipalNotFoundException extends AbstractPortalException {
+public class LoginException extends AbstractPortalException {
 
 	/** Svuid. */
-	private static final long serialVersionUID = 5290104026847510729L;
+	private static final long serialVersionUID = 3142935384489443263L;
 
 	private final Principal principal;
 
 	/**
+	 * @param message
+	 * @param cause
+	 */
+	public LoginException(final Principal principal, final Throwable cause) {
+		super(cause);
+
+		this.principal = principal;
+	}
+
+	/**
 	 * @param role
 	 */
-	public PrincipalNotFoundException(final Principal principal) {
-		super(String.format("Principal: [%1$s] does not exists !", principal.getName()));
+	public LoginException(final Principal principal, final String message) {
+		super(String.format("Unable to perform login for Principal: [%1$s] ! Error messages is: [%2$s]",
+				principal.getName(), message));
 		this.principal = principal;
 	}
 

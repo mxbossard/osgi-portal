@@ -16,38 +16,34 @@
 
 package fr.mby.portal.core.security;
 
-import java.security.Principal;
+import javax.servlet.http.HttpServletRequest;
 
-import fr.mby.portal.core.acl.AbstractPortalException;
+import fr.mby.portal.core.auth.IAuthentication;
 
 /**
- * Thrown in case of search against a non existing Principal.
- * 
  * @author Maxime Bossard - 2013
  * 
  */
-public class PrincipalNotFoundException extends AbstractPortalException {
-
-	/** Svuid. */
-	private static final long serialVersionUID = 5290104026847510729L;
-
-	private final Principal principal;
+public interface ILoginManager {
 
 	/**
-	 * @param role
-	 */
-	public PrincipalNotFoundException(final Principal principal) {
-		super(String.format("Principal: [%1$s] does not exists !", principal.getName()));
-		this.principal = principal;
-	}
-
-	/**
-	 * Getter of principal.
+	 * Perform a login to the Portal.
 	 * 
-	 * @return the principal
+	 * @param request
+	 *            the request which is the origin of the login.
+	 * @param authentication
+	 *            the IAuthentication object wich must already be authenticated.
+	 * @throws LoginException
+	 *             when somethig goes wrong.
 	 */
-	public Principal getPrincipal() {
-		return this.principal;
-	}
+	void login(final HttpServletRequest request, IAuthentication authentication) throws LoginException;
+
+	/**
+	 * Perform a logout from the Portal.
+	 * 
+	 * @param request
+	 *            the Http request origin of the logout.
+	 */
+	void logout(final HttpServletRequest request);
 
 }

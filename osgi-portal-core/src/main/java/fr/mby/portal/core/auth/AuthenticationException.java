@@ -14,30 +14,29 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.security;
+package fr.mby.portal.core.auth;
 
 import java.security.Principal;
 
 import fr.mby.portal.core.acl.AbstractPortalException;
 
 /**
- * Thrown in case of search against a non existing Principal.
- * 
  * @author Maxime Bossard - 2013
  * 
  */
-public class PrincipalNotFoundException extends AbstractPortalException {
+public class AuthenticationException extends AbstractPortalException {
 
 	/** Svuid. */
-	private static final long serialVersionUID = 5290104026847510729L;
+	private static final long serialVersionUID = 7863807893870709887L;
 
 	private final Principal principal;
 
 	/**
 	 * @param role
 	 */
-	public PrincipalNotFoundException(final Principal principal) {
-		super(String.format("Principal: [%1$s] does not exists !", principal.getName()));
+	public AuthenticationException(final Principal principal, final String message) {
+		super(String.format("Unable to perform authentication for Principal: [%1$s] ! Error messages is: [%2$s]",
+				principal.getName(), message));
 		this.principal = principal;
 	}
 

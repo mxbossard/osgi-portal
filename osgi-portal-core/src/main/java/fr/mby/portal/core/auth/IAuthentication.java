@@ -14,40 +14,26 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.security;
+package fr.mby.portal.core.auth;
 
+import java.io.Serializable;
 import java.security.Principal;
+import java.util.Set;
 
-import fr.mby.portal.core.acl.AbstractPortalException;
+import fr.mby.portal.api.acl.IRole;
 
 /**
- * Thrown in case of search against a non existing Principal.
- * 
  * @author Maxime Bossard - 2013
  * 
  */
-public class PrincipalNotFoundException extends AbstractPortalException {
+public interface IAuthentication extends Principal, Serializable {
 
-	/** Svuid. */
-	private static final long serialVersionUID = 5290104026847510729L;
+	Principal getPrincipal();
 
-	private final Principal principal;
+	Object getCredentials();
 
-	/**
-	 * @param role
-	 */
-	public PrincipalNotFoundException(final Principal principal) {
-		super(String.format("Principal: [%1$s] does not exists !", principal.getName()));
-		this.principal = principal;
-	}
+	boolean isAuthenticated();
 
-	/**
-	 * Getter of principal.
-	 * 
-	 * @return the principal
-	 */
-	public Principal getPrincipal() {
-		return this.principal;
-	}
+	Set<IRole> getRoles();
 
 }
