@@ -3,8 +3,10 @@
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
            default-activation="eager">
     
+    <!-- Implementation of IPortal App. -->
 	<service id="helloAppService" ref="helloController" interface="fr.mby.portal.api.app.IPortalApp" activation="eager" />
 
-	<reference id="portalService" interface="fr.mby.portal.api.IPortalService" activation="eager" />
+	<!-- Portal Service reference. -->
+	<reference id="portalServiceRef" interface="fr.mby.portal.api.IPortalService" activation="eager" />
 
 </blueprint>
