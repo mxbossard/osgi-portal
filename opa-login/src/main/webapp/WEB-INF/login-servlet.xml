@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+
+ 	 <import resource="classpath:*context.xml" />
+ 	
+ 	<!-- the mvc resources tag does the magic -->
+ 	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<!-- - Les controlleurs de cette application fournissent une annotation 
+		@RequestMapping - Qui peuvent être déclaré de deux manière différentes : 
+		- Au niveau de la classe par exemple : - @RequestMapping("/addVisit.html") 
+		- Pour ce type de controlleurs on peut annoter les méthodes pour qu'elles 
+		- prennent en charge une requête Post ou une requête Get - @RequestMapping(method 
+		= RequestMethod.GET) - Ou alors au niveau de chaque méthode, différents exemples 
+		seront fournis. -->
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping" />		
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter" />
+		
+	<!-- Ceci est le view resolver, il permet de définir la technologie de vue 
+		utilisée et comment sélectionner une vue. Ici on prendra la solution la plus 
+		simple, elle permet de mapper le nom de la vue retournée avec la sélection 
+		d'une jsp. Exemple si le nom de la vue retournée est "foo/bar/hello" alors 
+		on utilisera le fichier WEB-INF/jsp/foo/bar/hello.jsp pour constuire la vue. -->
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/jsp/"/>
+		<property name="suffix" value=".jsp" />
+	</bean>
+
+
+	<bean id="loginController" class="fr.mby.opa.login.web.controller.LoginController">
+		<property name="portalService" ref="portalServiceRef" />
+		<property name="loginManager" ref="loginManagerRef" />
+	</bean>
+
+</beans>

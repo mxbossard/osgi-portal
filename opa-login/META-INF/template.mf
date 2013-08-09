@@ -1,0 +1,62 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ${bundle.symbolicName}
+Bundle-Name: ${bundle.name}		
+Bundle-Version: ${bundle.version}
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: ${bundlor.template.classPath}
+Web-ContextPath: ${bundlor.template.webContextPath}_${bundle.version}
+Webapp-Context: ${bundlor.template.webAppContext}_${bundle.version}
+Import-Package: fr.mby.portal.core,
+ fr.mby.portal.core.security,
+ javax.servlet,
+ javax.servlet.http,
+ javax.servlet.resources,
+ javax.servlet.jsp,
+ javax.servlet.jsp.el,
+ javax.servlet.jsp.jstl.core,
+ org.apache.taglibs.standard.tlv,
+ org.apache.taglibs.standard.tei,
+ org.apache.taglibs.standard.tag.rt.core,
+ org.eclipse.virgo.web.dm,
+ org.eclipse.gemini.blueprint.blueprint.config,
+ org.springframework.context.config,
+ org.springframework.stereotype,
+ org.springframework.web.servlet,
+ org.springframework.web.servlet.config,
+ org.springframework.web.servlet.mvc,
+ org.springframework.web.servlet.mvc.annotation,
+ org.springframework.web.servlet.tags,
+ org.springframework.web.servlet.tags.form,
+ org.springframework.web.servlet.view,
+ org.springframework.web.context
+Excluded-Exports: fr.mby.*
+Excluded-Imports: 
+Export-Template: 
+Ignored-Existing-Headers: 
+Import-Template: 
+ fr.mby.portal.api.*;version="${osgi-portal-api.version:medium-range}",
+ fr.mby.portal.core.*;version="${osgi-portal-api.version:medium-range}",
+ fr.mby.utils.web.*;version="[0.0.1, 2.0.0)",
+ javax.servlet.*;version="${servlet.version:[=.=.=, +1.0.0)}",
+ javax.servlet.jsp.*;version="[2.2.0,3.0.0)",
+ javax.servlet.jsp.jstl.*;version="[1.2.0,2.0.0)",
+ org.eclipse.gemini.blueprint.blueprint.config.*;version="${blueprint.version:major-range}",
+ org.eclipse.virgo.web.dm.*;version="[3.0,4)",
+ org.apache.logging.log4j.*;version="[2.0.0,3.0.0)",
+ org.springframework.aop.*;version="${spring.version:major-range}",
+ org.springframework.aspects.*;version="${spring.version:major-range}",
+ org.springframework.beans.*;version="${spring.version:major-range}",
+ org.springframework.context.*;version="${spring.version:major-range}",
+ org.springframework.context.support.*;version="${spring.version:major-range}",
+ org.springframework.core.*;version="${spring.version:major-range}",
+ org.springframework.stereotype.*;version="${spring.version:major-range}",
+ org.springframework.web.*;version="${spring.version:major-range}",
+ org.springframework.web.servlet.*;version="${spring.version:major-range}",
+ org.springframework.web.servlet.mvc.*;version="${spring.version:major-range}",
+ org.springframework.web.servlet.tags.*;version="${spring.version:major-range}",
+ org.springframework.security.*;version="${spring-security.version:major-range}",
+ org.springframework.webflow.*;version="${spring-webflow.version:major-range}"
+Version-Patterns: 
+ major-range;pattern="[=.=.=.=, +1.0.0.=)",
+ medium-range;pattern="[=.=.=.=, =.+1.0.=)",
+ exact-range;pattern="[=.=.=, =.=.=]"
