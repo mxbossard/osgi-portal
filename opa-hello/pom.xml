@@ -4,14 +4,15 @@
 	<groupId>fr.mby.osgi-portal-app</groupId>
 	<artifactId>hello</artifactId>
 	<version>0.0.1.SNAPSHOT</version>
-	<name>OSGi portal Wab Hello</name>
 	<packaging>war</packaging>
+	<name>OSGi portal Wab Hello World</name>
+	<description>OPA Hello World</description>
 
 	<parent>
 		<groupId>fr.mby.maven</groupId>
 		<version>1.0.0.PARENT</version>
 		<artifactId>spring-basic-bundle-web</artifactId>
-		<relativePath>../../max-utils/maven-parent/spring-basic-bundle-web/pom.xml</relativePath>
+		<relativePath>../../max-utils/maven-parents/spring-basic-bundle-web/pom.xml</relativePath>
 	</parent>
 
 	<properties>
