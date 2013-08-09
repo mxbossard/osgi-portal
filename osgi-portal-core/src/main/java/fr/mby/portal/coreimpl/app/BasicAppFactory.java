@@ -92,8 +92,8 @@ public class BasicAppFactory implements IAppFactory, InitializingBean {
 		}
 
 		// Default
-		app.setWidth("400px");
-		app.setHeight("300px");
+		app.setWidth("500px");
+		app.setHeight("500px");
 
 		return app;
 	}

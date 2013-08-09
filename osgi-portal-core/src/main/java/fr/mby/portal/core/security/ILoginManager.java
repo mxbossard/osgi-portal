@@ -33,10 +33,20 @@ public interface ILoginManager {
 	 *            the request which is the origin of the login.
 	 * @param authentication
 	 *            the IAuthentication object wich must already be authenticated.
+	 * @return the IAuthentication wich allowed the login to be performed.
 	 * @throws LoginException
 	 *             when somethig goes wrong.
 	 */
-	void login(final HttpServletRequest request, IAuthentication authentication) throws LoginException;
+	IAuthentication login(final HttpServletRequest request, IAuthentication authentication) throws LoginException;
+
+	/**
+	 * Test if the Http request was sent by a logged user.
+	 * 
+	 * @param request
+	 *            Http request
+	 * @return true if the user is logged.
+	 */
+	boolean isLogged(final HttpServletRequest request);
 
 	/**
 	 * Perform a logout from the Portal.

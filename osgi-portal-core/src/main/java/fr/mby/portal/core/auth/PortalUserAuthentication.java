@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.coreimpl.auth;
+package fr.mby.portal.core.auth;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.Set;
 
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.acl.IRole;
-import fr.mby.portal.core.auth.IAuthentication;
 import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 
 /**
- * IAuthentication for Portal User.
+ * Basic IAuthentication with username and password for Portal User.
  * 
  * @author Maxime Bossard - 2013
  * 
@@ -40,23 +40,49 @@ public class PortalUserAuthentication implements IAuthentication {
 
 	private final String credentials;
 
-	private boolean authenticated;
+	private final boolean authenticated;
 
 	private Set<IRole> roles;
 
 	/**
+	 * Normal constructor of PortalUserAuthentication.
+	 * 
 	 * @param principal
 	 * @param credentials
 	 */
-	public PortalUserAuthentication(final String login, final String password) {
+	public PortalUserAuthentication(final String username, final String password) {
 		super();
 
-		Assert.hasText(login, "No login supplied !");
+		Assert.hasText(username, "No username supplied !");
 		Assert.hasText(password, "No password supplied !");
 
-		this.principal = new PortalUserPrincipal(login);
+		this.principal = new PortalUserPrincipal(username);
 		this.credentials = password;
 		this.authenticated = false;
+	}
+
+	/**
+	 * Constructor which should only be used internally for authenticated Principal.
+	 * 
+	 * @param principal
+	 * @param credentials
+	 */
+	public PortalUserAuthentication(final String username, final String password, final Set<IRole> roles) {
+		super();
+
+		Assert.hasText(username, "No username supplied !");
+		Assert.hasText(password, "No password supplied !");
+
+		this.principal = new PortalUserPrincipal(username);
+		this.credentials = password;
+
+		if (roles != null) {
+			this.roles = roles;
+		} else {
+			this.roles = Collections.emptySet();
+		}
+
+		this.authenticated = true;
 	}
 
 	@Override
@@ -108,26 +134,6 @@ public class PortalUserAuthentication implements IAuthentication {
 	public String toString() {
 		return "PortalUserAuthentication [principal=" + this.principal + ", authenticated=" + this.authenticated
 				+ ", roles=" + this.roles + "]";
-	}
-
-	/**
-	 * Setter of authenticated.
-	 * 
-	 * @param authenticated
-	 *            the authenticated to set
-	 */
-	protected void setAuthenticated(final boolean authenticated) {
-		this.authenticated = authenticated;
-	}
-
-	/**
-	 * Setter of roles.
-	 * 
-	 * @param roles
-	 *            the roles to set
-	 */
-	protected void setRoles(final Set<IRole> roles) {
-		this.roles = roles;
 	}
 
 }

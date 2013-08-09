@@ -42,7 +42,8 @@ public class BasicLoginManager implements ILoginManager {
 	private IAuthenticationManager authenticationManager;
 
 	@Override
-	public void login(final HttpServletRequest request, final IAuthentication authentication) throws LoginException {
+	public IAuthentication login(final HttpServletRequest request, final IAuthentication authentication)
+			throws LoginException {
 		Assert.notNull(request, "No Http request supplied !");
 		Assert.notNull(authentication, "No IAuthentication supplied !");
 
@@ -64,6 +65,25 @@ public class BasicLoginManager implements ILoginManager {
 		} else {
 			throw new LoginException(authentication, "Supplied principal was not previously authenticared !");
 		}
+
+		return resultingAuth;
+	}
+
+	@Override
+	public boolean isLogged(final HttpServletRequest request) {
+		boolean authenticated = false;
+
+		final ISession portalSession = this.sessionManager.getPortalSession(request);
+		final Object auth = portalSession.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+
+		authenticated = auth != null && IAuthentication.class.isAssignableFrom(auth.getClass())
+				&& ((IAuthentication) auth).isAuthenticated();
+
+		if (!authenticated) {
+			this.sessionManager.destroySessions(request);
+		}
+
+		return authenticated;
 	}
 
 	@Override

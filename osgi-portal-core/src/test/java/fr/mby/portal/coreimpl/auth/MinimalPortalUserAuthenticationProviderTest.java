@@ -27,6 +27,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fr.mby.portal.core.auth.AuthenticationException;
 import fr.mby.portal.core.auth.IAuthentication;
+import fr.mby.portal.core.auth.PortalUserAuthentication;
 
 /**
  * @author Maxime Bossard - 2013

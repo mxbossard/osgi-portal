@@ -30,6 +30,7 @@ import fr.mby.portal.core.acl.IAclManager;
 import fr.mby.portal.core.auth.AuthenticationException;
 import fr.mby.portal.core.auth.IAuthentication;
 import fr.mby.portal.core.auth.IAuthenticationProvider;
+import fr.mby.portal.core.auth.PortalUserAuthentication;
 import fr.mby.portal.core.security.PrincipalNotFoundException;
 import fr.mby.portal.coreimpl.acl.BasicAclManager;
 
@@ -56,8 +57,11 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 		Assert.isInstanceOf(PortalUserAuthentication.class, authentication,
 				"IAuthentication shoud be a PortalUserAuthentication type !");
 
+		if (authentication.isAuthenticated()) {
+			throw new AuthenticationException(authentication, "Already authenticated IAuthentication token supplied !");
+		}
+
 		final PortalUserAuthentication auth = (PortalUserAuthentication) authentication;
-		auth.setAuthenticated(false);
 
 		IAuthentication resultingAuth = null;
 
@@ -96,9 +100,7 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 				roles = Collections.emptySet();
 			}
 
-			resultingAuth = new PortalUserAuthentication(user.getName(), password);
-			resultingAuth.setRoles(roles);
-			resultingAuth.setAuthenticated(true);
+			resultingAuth = new PortalUserAuthentication(user.getName(), password, roles);
 		}
 
 		return resultingAuth;
