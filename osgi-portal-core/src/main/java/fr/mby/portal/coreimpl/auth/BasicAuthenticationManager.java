@@ -59,6 +59,19 @@ public class BasicAuthenticationManager implements IAuthenticationManager {
 
 		IAuthentication resultingAuth = null;
 
+		// Try to authenticate with internal providers
+		final Iterator<IAuthenticationProvider> internalProviderIt = this.internalAuthenticationProviders.iterator();
+		while ((resultingAuth == null || !resultingAuth.isAuthenticated()) && internalProviderIt.hasNext()) {
+			final IAuthenticationProvider provider = internalProviderIt.next();
+			if (provider != null && provider.supports(authentication)) {
+				try {
+					resultingAuth = provider.authenticate(authentication);
+				} catch (final AuthenticationException e) {
+					// Nothing to do : try the next provider
+				}
+			}
+		}
+
 		// Try to authenticate with external providers
 		if (!CollectionUtils.isEmpty(this.externalAuthenticationProviders)) {
 			final Iterator<IAuthenticationProvider> externalProviderIt = this.externalAuthenticationProviders
@@ -66,18 +79,18 @@ public class BasicAuthenticationManager implements IAuthenticationManager {
 			while ((resultingAuth == null || !resultingAuth.isAuthenticated()) && externalProviderIt.hasNext()) {
 				final IAuthenticationProvider provider = externalProviderIt.next();
 				if (provider != null && provider.supports(authentication)) {
-					resultingAuth = provider.authenticate(authentication);
+					try {
+						resultingAuth = provider.authenticate(authentication);
+					} catch (final AuthenticationException e) {
+						// Nothing to do : try the next provider
+					}
 				}
 			}
 		}
 
-		// Try to authenticate with internal providers
-		final Iterator<IAuthenticationProvider> internalProviderIt = this.internalAuthenticationProviders.iterator();
-		while ((resultingAuth == null || !resultingAuth.isAuthenticated()) && internalProviderIt.hasNext()) {
-			final IAuthenticationProvider provider = internalProviderIt.next();
-			if (provider != null && provider.supports(authentication)) {
-				resultingAuth = provider.authenticate(authentication);
-			}
+		if (resultingAuth == null) {
+			throw new AuthenticationException(authentication,
+					"No Provider was able to authenticate the supplied IAuthentication object !");
 		}
 
 		return resultingAuth;
