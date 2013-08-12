@@ -17,6 +17,7 @@
 package fr.mby.portal.coreimpl.security;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -28,6 +29,7 @@ import fr.mby.portal.core.auth.IAuthenticationManager;
 import fr.mby.portal.core.security.ILoginManager;
 import fr.mby.portal.core.security.LoginException;
 import fr.mby.portal.core.session.ISessionManager;
+import fr.mby.portal.core.session.SessionNotInitializedException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -42,8 +44,8 @@ public class BasicLoginManager implements ILoginManager {
 	private IAuthenticationManager authenticationManager;
 
 	@Override
-	public IAuthentication login(final HttpServletRequest request, final IAuthentication authentication)
-			throws LoginException {
+	public IAuthentication login(final HttpServletRequest request, final HttpServletResponse response,
+			final IAuthentication authentication) throws LoginException {
 		Assert.notNull(request, "No Http request supplied !");
 		Assert.notNull(authentication, "No IAuthentication supplied !");
 
@@ -56,12 +58,20 @@ public class BasicLoginManager implements ILoginManager {
 
 		if (resultingAuth != null && resultingAuth.isAuthenticated()) {
 			// Invalidate current session a rebuild a new one
-			request.getSession().invalidate();
-			request.getSession(true);
+			// request.getSession().invalidate();
+			// request.getSession(true);
+
+			final ISession portalSession;
+			try {
+				this.sessionManager.destroySessions(request, response);
+				this.sessionManager.initPortalSession(request, response);
+				portalSession = this.sessionManager.getPortalSession(request);
+			} catch (final SessionNotInitializedException e) {
+				throw new LoginException(authentication, e);
+			}
 
 			// Store principal in Portal Session
-			final ISession portalSession = this.sessionManager.getPortalSession(request);
-			portalSession.setAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME, authentication);
+			portalSession.setAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME, resultingAuth);
 		} else {
 			throw new LoginException(authentication, "Supplied principal was not previously authenticared !");
 		}
@@ -73,24 +83,24 @@ public class BasicLoginManager implements ILoginManager {
 	public boolean isLogged(final HttpServletRequest request) {
 		boolean authenticated = false;
 
-		final ISession portalSession = this.sessionManager.getPortalSession(request);
-		final Object auth = portalSession.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
-
-		authenticated = auth != null && IAuthentication.class.isAssignableFrom(auth.getClass())
-				&& ((IAuthentication) auth).isAuthenticated();
-
-		if (!authenticated) {
-			this.sessionManager.destroySessions(request);
+		final ISession portalSession;
+		try {
+			portalSession = this.sessionManager.getPortalSession(request);
+			final Object auth = portalSession.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+			authenticated = auth != null && IAuthentication.class.isAssignableFrom(auth.getClass())
+					&& ((IAuthentication) auth).isAuthenticated();
+		} catch (final SessionNotInitializedException e) {
+			// Error while retrieving Session
+			authenticated = false;
 		}
 
 		return authenticated;
 	}
 
 	@Override
-	public void logout(final HttpServletRequest request) {
+	public void logout(final HttpServletRequest request, final HttpServletResponse response) {
 		// Destroy Portal sessions and Http session
-		this.sessionManager.destroySessions(request);
-		request.getSession().invalidate();
+		this.sessionManager.destroySessions(request, response);
 	}
 
 }

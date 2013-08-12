@@ -23,7 +23,7 @@
 <body>
 	<h2>You are logged !</h2>
 
-	<spring:url value="/logout" var="logoutUrl" htmlEncoding="true" />
+	<spring:url value="/logout" var="logoutUrl" htmlEscape="true" />
 	<a href="${logoutUrl}">Logout</a>
 	
 </body>

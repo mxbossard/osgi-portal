@@ -17,8 +17,9 @@
 package fr.mby.portal.core.session;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import fr.mby.portal.api.action.IUserAction;
+import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.ISession;
 
 /**
@@ -28,14 +29,34 @@ import fr.mby.portal.api.app.ISession;
 public interface ISessionManager {
 
 	/**
-	 * Retrieve the App Session corresponding to the user action. An App Session must be App private : visible only to
+	 * Retrieve the App Session corresponding to the HTTP request. An App Session must be App private : visible only to
 	 * the App.
 	 * 
-	 * @param userAction
+	 * @param request
 	 * @param create
 	 * @return
 	 */
-	ISession getAppSession(IUserAction userAction, boolean create);
+	ISession getAppSession(HttpServletRequest request, boolean create);
+
+	/**
+	 * Retrieve the App Session corresponding to an App. An App Session must be App private : visible only to the App.
+	 * 
+	 * @param app
+	 * @param create
+	 * @return
+	 */
+	ISession getAppSession(IApp app, boolean create);
+
+	/**
+	 * Retrieve the Shared Session corresponding to the HTTP request.
+	 * 
+	 * @param request
+	 * @param create
+	 * @return
+	 * @throws SessionNotInitializedException
+	 *             if trying to get a not Initialized session.
+	 */
+	ISession getSharedSession(HttpServletRequest request) throws SessionNotInitializedException;
 
 	/**
 	 * Retrieve the Portal Session corresponding to the request. A Portal Session must be Portal private : no external
@@ -43,22 +64,32 @@ public interface ISessionManager {
 	 * 
 	 * @param request
 	 * @return
+	 * @throws SessionNotInitializedException
+	 *             if trying to get a not Initialized session.
 	 */
-	ISession getPortalSession(HttpServletRequest request);
+	ISession getPortalSession(HttpServletRequest request) throws SessionNotInitializedException;
 
 	/**
 	 * Retrieve the unique portal session Id corresponding to the request.
 	 * 
 	 * @param request
-	 * @return
+	 * @return the sessionId or null if session not initialized.
 	 */
 	String getPortalSessionId(HttpServletRequest request);
+
+	/**
+	 * Initialize the portal Session.
+	 * 
+	 * @param request
+	 * @param response
+	 */
+	void initPortalSession(HttpServletRequest request, HttpServletResponse response);
 
 	/**
 	 * Destroy all sessions attached to the request.
 	 * 
 	 * @param request
 	 */
-	void destroySessions(HttpServletRequest request);
+	void destroySessions(HttpServletRequest request, HttpServletResponse response);
 
 }

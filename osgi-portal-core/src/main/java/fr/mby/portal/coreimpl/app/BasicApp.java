@@ -39,6 +39,16 @@ public class BasicApp implements IApp {
 
 	private String webPath;
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "BasicApp [namespace= " + this.namespace + " , signature= " + this.signature + "]";
+	}
+
 	/**
 	 * @param appConfig
 	 */

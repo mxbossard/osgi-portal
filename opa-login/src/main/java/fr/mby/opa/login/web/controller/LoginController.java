@@ -16,7 +16,9 @@
 
 package fr.mby.opa.login.web.controller;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import fr.mby.portal.api.message.IActionMessage;
 import fr.mby.portal.api.message.IActionReply;
 import fr.mby.portal.api.message.IRenderMessage;
 import fr.mby.portal.api.message.IRenderReply;
+import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.auth.IAuthentication;
 import fr.mby.portal.core.auth.PortalUserAuthentication;
 import fr.mby.portal.core.security.ILoginManager;
@@ -60,7 +63,7 @@ public class LoginController implements IPortalApp {
 	private ILoginManager loginManager;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String display(final ModelMap model, final HttpServletRequest request) {
+	public String display(final ModelMap model, final HttpServletRequest request, final HttpServletResponse response) {
 		String view = LoginController.LOGIN_PAGE;
 
 		// On basic GET which page do we display ?
@@ -69,14 +72,14 @@ public class LoginController implements IPortalApp {
 			view = LoginController.LOGOUT_PAGE;
 		}
 
-		this.initModelMap(model, request);
+		this.initView(model, request, response);
 
 		return view;
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(final ModelMap model, @Valid final LoginForm loginForm, final BindingResult result,
-			final HttpServletRequest request) {
+			final HttpServletRequest request, final HttpServletResponse response) {
 		String view = LoginController.LOGIN_PAGE;
 
 		if (!result.hasErrors()) {
@@ -85,7 +88,7 @@ public class LoginController implements IPortalApp {
 					loginForm.getPassword());
 			try {
 				// Try to login user
-				this.loginManager.login(request, authentication);
+				this.loginManager.login(request, response, authentication);
 				// If no error user is logged => display logout page
 				view = LoginController.LOGOUT_PAGE;
 			} catch (final LoginException e) {
@@ -93,16 +96,16 @@ public class LoginController implements IPortalApp {
 			}
 		}
 
-		this.initModelMap(model, request);
+		this.initView(model, request, response);
 
 		return view;
 	}
 
-	@RequestMapping(value = "/logout", method = RequestMethod.POST)
-	public String logout(final ModelMap model, final HttpServletRequest request) {
-		this.loginManager.logout(request);
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(final ModelMap model, final HttpServletRequest request, final HttpServletResponse response) {
+		this.loginManager.logout(request, response);
 
-		this.initModelMap(model, request);
+		this.initView(model, request, response);
 
 		return LoginController.LOGIN_PAGE;
 	}
@@ -157,10 +160,12 @@ public class LoginController implements IPortalApp {
 	 * @param model
 	 * @param request
 	 */
-	protected void initModelMap(final ModelMap model, final HttpServletRequest request) {
+	protected void initView(final ModelMap model, final HttpServletRequest request, final HttpServletResponse response) {
 		final IApp thisApp = this.portalService.getTargetedApp(request);
 		model.addAttribute("app", thisApp);
 		model.addAttribute("loginForm", new LoginForm());
+
+		response.addCookie(new Cookie(IPortalRenderer.SIGNATURE_PARAM_PARAM, thisApp.getSignature()));
 	}
 
 	/**

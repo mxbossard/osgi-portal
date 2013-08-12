@@ -15,8 +15,8 @@
 
 .portalApp {
 	float: left;
-	width: 500px;
-	height: 500px;
+	width: 700px;
+	height: 400px;
 	border: 1px dashed green;
 	margin: 5px;
 	overflow: hidden;

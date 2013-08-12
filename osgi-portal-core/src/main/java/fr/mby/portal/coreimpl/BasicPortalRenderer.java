@@ -81,8 +81,8 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 				final Bundle bundle = appRef.getBundle();
 				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
 
-				// Each App is displayed 3 times
-				for (int k = 0; k < 3; k++) {
+				// Each App is displayed 1 times
+				for (int k = 0; k < 1; k++) {
 					final IApp app = this.appFactory.build(request, appConfig);
 
 					this.renderApp(writer, app);
@@ -103,8 +103,8 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 				final Bundle bundle = appRef.getBundle();
 				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
 
-				// Each App is displayed 3 times
-				for (int k = 0; k < 3; k++) {
+				// Each App is displayed 1 times
+				for (int k = 0; k < 1; k++) {
 					final IApp app = this.appFactory.build(request, appConfig);
 
 					this.appStore.storeApp(app, request);

@@ -29,13 +29,21 @@ import fr.mby.portal.api.app.ISession;
  */
 public class BasicSession implements ISession {
 
+	private final String id;
+
 	private final Map<String, Object> session;
 
-	/** Hidden builder. */
-	protected BasicSession() {
+	/** Protected constructor. */
+	protected BasicSession(final String id) {
 		super();
 
+		this.id = id;
 		this.session = new HashMap<String, Object>();
+	}
+
+	@Override
+	public String getId() {
+		return this.id;
 	}
 
 	@Override

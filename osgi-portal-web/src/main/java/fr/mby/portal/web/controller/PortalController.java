@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.core.IPortalRenderer;
+import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
@@ -44,9 +45,14 @@ public class PortalController {
 
 	private Collection<IPortalRenderer> portalRenderers;
 
+	private ISessionManager sessionManager;
+
 	@RequestMapping(method = RequestMethod.GET)
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		final ModelAndView view = new ModelAndView("portal");
+
+		// Init portal session
+		this.sessionManager.initPortalSession(request, response);
 
 		final IPortalRenderer firstPortalRenderer = this.chooseOnePortalRenderer();
 
@@ -85,6 +91,25 @@ public class PortalController {
 	 */
 	public void setPortalRenderers(final Collection<IPortalRenderer> portalRenderers) {
 		this.portalRenderers = portalRenderers;
+	}
+
+	/**
+	 * Getter of sessionManager.
+	 * 
+	 * @return the sessionManager
+	 */
+	public ISessionManager getSessionManager() {
+		return this.sessionManager;
+	}
+
+	/**
+	 * Setter of sessionManager.
+	 * 
+	 * @param sessionManager
+	 *            the sessionManager to set
+	 */
+	public void setSessionManager(final ISessionManager sessionManager) {
+		this.sessionManager = sessionManager;
 	}
 
 }

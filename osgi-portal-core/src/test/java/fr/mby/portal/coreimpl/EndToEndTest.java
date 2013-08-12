@@ -28,6 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fr.mby.portal.core.IUserActionDispatcher;
+import fr.mby.portal.core.session.ISessionManager;
 
 /**
  * @author Maxime Bossard - 2013
@@ -40,6 +41,9 @@ public class EndToEndTest {
 	@Autowired
 	private IUserActionDispatcher userActionDispatcher;
 
+	@Autowired
+	private ISessionManager sessionManager;
+
 	/**
 	 * End to end test.
 	 * 
@@ -49,6 +53,8 @@ public class EndToEndTest {
 	public void testDispatch() throws Exception {
 		final MockHttpServletRequest request = new MockHttpServletRequest();
 		final MockHttpServletResponse response = new MockHttpServletResponse();
+
+		this.sessionManager.initPortalSession(request, response);
 
 		this.userActionDispatcher.dispatch(request, response);
 

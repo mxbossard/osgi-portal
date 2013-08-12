@@ -25,7 +25,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -34,6 +33,7 @@ import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppFactory;
+import fr.mby.portal.core.app.IAppSigner;
 import fr.mby.portal.core.session.ISessionManager;
 
 /**
@@ -41,7 +41,7 @@ import fr.mby.portal.core.session.ISessionManager;
  * 
  */
 @Service
-public class BasicAppFactory implements IAppFactory, InitializingBean {
+public class BasicAppFactory implements IAppFactory {
 
 	/** Logger. */
 	private static final Logger LOG = LogManager.getLogger(BasicAppFactory.class);
@@ -51,6 +51,9 @@ public class BasicAppFactory implements IAppFactory, InitializingBean {
 
 	@Autowired
 	private ISessionManager sessionManager;
+
+	@Autowired
+	private IAppSigner appSigner;
 
 	@Override
 	public IApp build(final HttpServletRequest request, final IAppConfig appConfig) {
@@ -62,7 +65,7 @@ public class BasicAppFactory implements IAppFactory, InitializingBean {
 		final String namespace = this.generateNamespace(request, appConfig);
 		app.setNamespace(namespace);
 
-		final String signatrue = this.generateSignature(request, app);
+		final String signatrue = this.appSigner.generateSignature(request, app);
 		app.setSignature(signatrue);
 
 		final String portalSessionId = this.sessionManager.getPortalSessionId(request);
@@ -76,13 +79,13 @@ public class BasicAppFactory implements IAppFactory, InitializingBean {
 
 			// Add signature to IApp webPath
 			webPathBuilder.append("/?");
-			webPathBuilder.append(IPortalRenderer.SIGNATURE_REQUEST_PARAM);
+			webPathBuilder.append(IPortalRenderer.SIGNATURE_PARAM_PARAM);
 			webPathBuilder.append("=");
 			webPathBuilder.append(encodedSignature);
 
 			// Add portal session to IApp webPath
 			webPathBuilder.append("&");
-			webPathBuilder.append(IPortalRenderer.PORTAL_SESSION_ID_REQUEST_PARAM);
+			webPathBuilder.append(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
 			webPathBuilder.append("=");
 			webPathBuilder.append(encodedPortalSessionId);
 
@@ -92,25 +95,10 @@ public class BasicAppFactory implements IAppFactory, InitializingBean {
 		}
 
 		// Default
-		app.setWidth("500px");
-		app.setHeight("500px");
+		app.setWidth("700px");
+		app.setHeight("400px");
 
 		return app;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		Assert.notNull(this.sessionManager, "No ISessionManager configured !");
-	}
-
-	/**
-	 * @param request
-	 * @param appConfig
-	 * @return
-	 */
-	protected String generateSignature(final HttpServletRequest request, final IApp app) {
-
-		return "signature_" + app.toString() + "_" + System.currentTimeMillis();
 	}
 
 	/**

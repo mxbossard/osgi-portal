@@ -23,21 +23,26 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.action.IUserAction;
-import fr.mby.portal.api.app.IAppContext;
+import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.context.IAppContextResolver;
 import fr.mby.portal.core.session.ISessionManager;
+import fr.mby.portal.core.session.SessionNotInitializedException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -52,22 +57,79 @@ public class MemorySessionManager implements ISessionManager {
 
 	private final Map<String, SessionBucket> sessionBucketCache = new HashMap<String, SessionBucket>(1024);
 
-	@Autowired(required = true)
+	private final Map<IApp, ISession> appSessionCache = new HashMap<IApp, ISession>(1024);
+
+	@Autowired
+	private IPortalService portalService;
+
+	@Autowired
 	private IAppContextResolver<IUserAction> appContextResolver;
 
 	@Override
-	public ISession getAppSession(final IUserAction userAction, final boolean create) {
-		final IAppContext appContext = this.appContextResolver.resolve(userAction);
+	public ISession getAppSession(final HttpServletRequest request, final boolean create) {
+		Assert.notNull(request, "No HttpServletRequest supplied !");
 
-		final SessionBucket sessionBucket = this.loadSessionBucket(userAction.getPortalSessionId());
-		final ISession appSession = sessionBucket.getAppSession(appContext, create);
+		final IApp targetedApp = this.portalService.getTargetedApp(request);
+
+		return this.getAppSession(targetedApp, create);
+	}
+
+	@Override
+	public ISession getAppSession(final IApp app, final boolean create) {
+		Assert.notNull(app, "No IApp supplied !");
+
+		ISession appSession = this.appSessionCache.get(app);
+		if (appSession == null) {
+			appSession = new BasicSession(app.getSignature());
+			this.appSessionCache.put(app, appSession);
+		}
 
 		return appSession;
 	}
 
 	@Override
-	public ISession getPortalSession(final HttpServletRequest request) {
+	public void initPortalSession(final HttpServletRequest request, final HttpServletResponse response) {
+		String portalSessionId = this.getPortalSessionId(request);
+
+		if (portalSessionId == null) {
+			// Can't find session Id => session wasn't initialized
+			portalSessionId = this.genSessionId(request);
+
+			this.initSessionBucket(portalSessionId);
+
+			// Put sessionId in Cookie
+			final Cookie portalSessionCookie = new Cookie(IPortalRenderer.PORTAL_SESSION_ID_COOKIE_NAME,
+					portalSessionId);
+			portalSessionCookie.setPath("/");
+			response.addCookie(portalSessionCookie);
+
+			// Put sessionId in current Http request
+			request.setAttribute(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME, portalSessionId);
+		}
+
+	}
+
+	@Override
+	public ISession getSharedSession(final HttpServletRequest request) throws SessionNotInitializedException {
 		final String portalSessionId = this.getPortalSessionId(request);
+
+		if (portalSessionId == null) {
+			throw new SessionNotInitializedException("Trying to retrieve a not initialized portal session !");
+		}
+
+		final SessionBucket sessionBucket = this.loadSessionBucket(portalSessionId);
+		final ISession sharedSession = sessionBucket.getSharedSession();
+
+		return sharedSession;
+	}
+
+	@Override
+	public ISession getPortalSession(final HttpServletRequest request) throws SessionNotInitializedException {
+		final String portalSessionId = this.getPortalSessionId(request);
+
+		if (portalSessionId == null) {
+			throw new SessionNotInitializedException("Trying to retrieve a not initialized portal session !");
+		}
 
 		final SessionBucket sessionBucket = this.loadSessionBucket(portalSessionId);
 		final ISession portalSession = sessionBucket.getPortalSession();
@@ -77,30 +139,75 @@ public class MemorySessionManager implements ISessionManager {
 
 	@Override
 	public String getPortalSessionId(final HttpServletRequest request) {
-		// Search Portal Session Id in Http Session
-		String portalSessionId = (String) request.getSession(true).getAttribute(
-				IPortalRenderer.PORTAL_SESSION_ID_REQUEST_PARAM);
+		String portalSessionId = null;
 
-		// Search Portal Session Id in Http Request params
-		if (!StringUtils.hasText(portalSessionId)) {
-			portalSessionId = request.getParameter(IPortalRenderer.PORTAL_SESSION_ID_REQUEST_PARAM);
+		// Put sessionId in current Http request
+		final Object attrValue = request.getAttribute(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
+		if (attrValue != null && attrValue instanceof String) {
+			portalSessionId = (String) attrValue;
 		}
 
-		// Generate Portal Session Id
 		if (!StringUtils.hasText(portalSessionId)) {
-			portalSessionId = this.genSessionId(request);
-			request.getSession(true).setAttribute(IPortalRenderer.PORTAL_SESSION_ID_REQUEST_PARAM, portalSessionId);
+			final Cookie[] cookies = request.getCookies();
+			if (cookies != null) {
+				for (final Cookie cookie : cookies) {
+					if (cookie != null && IPortalRenderer.PORTAL_SESSION_ID_COOKIE_NAME.equals(cookie.getName())) {
+						portalSessionId = cookie.getValue();
+					}
+				}
+			}
+		}
+
+		if (!StringUtils.hasText(portalSessionId)) {
+			// Search Portal Session Id in Http Session
+			portalSessionId = (String) request.getSession(true).getAttribute(
+					IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
+		}
+
+		if (!StringUtils.hasText(portalSessionId)) {
+			// Search Portal Session Id in Http Request params
+			portalSessionId = request.getParameter(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
+		}
+
+		// Null is the default value
+		if (!StringUtils.hasText(portalSessionId) || !this.sessionBucketCache.containsKey(portalSessionId)) {
+			// If the session Id cannot be found in the cache we cannot trust the session Id found.
+			portalSessionId = null;
 		}
 
 		return portalSessionId;
 	}
 
 	@Override
-	public void destroySessions(final HttpServletRequest request) {
+	public void destroySessions(final HttpServletRequest request, final HttpServletResponse response) {
 		final String portalSessionId = this.getPortalSessionId(request);
-		final SessionBucket sessionBucket = this.sessionBucketCache.remove(portalSessionId);
+		if (portalSessionId != null) {
+			final SessionBucket sessionBucket = this.sessionBucketCache.remove(portalSessionId);
+			sessionBucket.destroy();
+			final Cookie portalSessionCookie = new Cookie(IPortalRenderer.PORTAL_SESSION_ID_COOKIE_NAME,
+					"SESSION_DESTROYED");
+			portalSessionCookie.setPath("/");
+			response.addCookie(portalSessionCookie);
 
-		sessionBucket.destroy();
+			this.generatedSessionIds.remove(portalSessionId);
+		}
+	}
+
+	/**
+	 * Init a session bucket with new SessionId.
+	 * 
+	 * @param portalSessionId
+	 * @return
+	 */
+	protected SessionBucket initSessionBucket(final String portalSessionId) {
+		SessionBucket sessionBucket = this.sessionBucketCache.get(portalSessionId);
+
+		if (sessionBucket == null) {
+			sessionBucket = new SessionBucket(portalSessionId);
+			this.sessionBucketCache.put(portalSessionId, sessionBucket);
+		}
+
+		return sessionBucket;
 	}
 
 	/**
@@ -110,12 +217,7 @@ public class MemorySessionManager implements ISessionManager {
 	 * @return
 	 */
 	protected SessionBucket loadSessionBucket(final String portalSessionId) {
-		SessionBucket sessionBucket = this.sessionBucketCache.get(portalSessionId);
-
-		if (sessionBucket == null) {
-			sessionBucket = new SessionBucket(portalSessionId);
-			this.sessionBucketCache.put(portalSessionId, sessionBucket);
-		}
+		final SessionBucket sessionBucket = this.sessionBucketCache.get(portalSessionId);
 
 		return sessionBucket;
 	}
@@ -167,7 +269,7 @@ public class MemorySessionManager implements ISessionManager {
 
 		private ISession portalSession;
 
-		private Map<IAppContext, ISession> appSessionCache;
+		private ISession sharedSession;
 
 		/**
 		 * @param portalSessionId
@@ -176,14 +278,13 @@ public class MemorySessionManager implements ISessionManager {
 			super();
 			this.portalSessionId = portalSessionId;
 
-			this.portalSession = new BasicSession();
-			this.appSessionCache = new HashMap<IAppContext, ISession>(8);
+			this.portalSession = new BasicSession(portalSessionId);
+			this.sharedSession = new BasicSession(portalSessionId);
 		}
 
 		public void destroy() {
-			this.appSessionCache.clear();
-			this.appSessionCache = null;
 			this.portalSession = null;
+			this.sharedSession = null;
 		}
 
 		/**
@@ -196,19 +297,12 @@ public class MemorySessionManager implements ISessionManager {
 		}
 
 		/**
-		 * Getter of appSessionCache.
+		 * Getter of sharedSession.
 		 * 
-		 * @return the appSessionCache
+		 * @return the sharedSession
 		 */
-		public ISession getAppSession(final IAppContext appContext, final boolean create) {
-			ISession appSession = this.appSessionCache.get(appContext);
-
-			if (appSession == null && create) {
-				appSession = new BasicSession();
-				this.appSessionCache.put(appContext, appSession);
-			}
-
-			return appSession;
+		public ISession getSharedSession() {
+			return this.sharedSession;
 		}
 
 		@Override
@@ -250,4 +344,5 @@ public class MemorySessionManager implements ISessionManager {
 		}
 
 	}
+
 }

@@ -47,15 +47,16 @@
 
 
 	<bean id="helloController" class="fr.mby.portal.web.controller.HelloController">
-		<property name="userActionDispatchers" ref="userActionDispatchers" />
+		<property name="userActionDispatchers" ref="userActionDispatchersRef" />
 	</bean>
 
 	<bean id="actionController" class="fr.mby.portal.web.controller.ActionController">
-		<property name="userActionDispatchers" ref="userActionDispatchers" />
+		<property name="userActionDispatchers" ref="userActionDispatchersRef" />
 	</bean>
 
 	<bean id="portalController" class="fr.mby.portal.web.controller.PortalController">
-		<property name="portalRenderers" ref="portalRenderers" />
+		<property name="portalRenderers" ref="portalRenderersRef" />
+		<property name="sessionManager" ref="sessionManagerRef" />
 	</bean> 
 	
 </beans>

@@ -14,31 +14,38 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core;
-
-import java.util.List;
+package fr.mby.portal.core.app;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import fr.mby.portal.api.app.IApp;
 
 /**
- * IPortalRenderer implementation is in charge of rendering the portal.
+ * Responsible for IApp signing.
  * 
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalRenderer {
+public interface IAppSigner {
 
-	static final String SIGNATURE_PARAM_PARAM = "signature";
+	/**
+	 * Generate the signature of an IApp.
+	 * 
+	 * @param request
+	 *            the HTTP request.
+	 * @param app
+	 *            the IApp to sign.
+	 * @return the IApp signature.
+	 */
+	String generateSignature(HttpServletRequest request, IApp app);
 
-	static final String PORTAL_SESSION_ID_PARAM_NAME = "portalSession";
-
-	static final String PORTAL_SESSION_ID_COOKIE_NAME = "portalSession";
-
-	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
-
-	List<IApp> getAppsToRender(HttpServletRequest request) throws Exception;
+	/**
+	 * Retrieve the signature of an IApp relative to a HTTP request.
+	 * 
+	 * @param request
+	 *            the HTTP request.
+	 * @return the IApp signature or null if no signature can be found.
+	 */
+	String retrieveSignature(HttpServletRequest request);
 
 }

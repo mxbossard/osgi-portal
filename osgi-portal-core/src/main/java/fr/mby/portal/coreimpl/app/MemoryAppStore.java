@@ -22,6 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IApp;
@@ -32,33 +33,36 @@ import fr.mby.portal.core.app.IAppStore;
  * @author Maxime Bossard - 2013
  * 
  */
-public class UserAppStore implements IAppStore {
+@Service
+public class MemoryAppStore implements IAppStore {
 
-	/** TODO: need to clean the map : a cache ? */
-	/** The user IApp are stored by signature. */
-	private final Map<String, IApp> userAppStore = new ConcurrentHashMap<String, IApp>(16);
+	/** TODO: replace the map by a cache. */
+	private final Map<String, IApp> appStore = new ConcurrentHashMap<String, IApp>(16);
 
 	@Autowired
 	private IAppSigner appSigner;
 
 	@Override
 	public synchronized void storeApp(final IApp app, final HttpServletRequest request) {
-		final String appSignature = app.getSignature();
+		final String signature = app.getSignature();
 
-		Assert.isTrue(!this.userAppStore.containsKey(appSignature),
-				"UserAppStore cannot store an already stored IApp !");
-
-		this.userAppStore.put(appSignature, app);
+		if (!this.appStore.containsKey(signature)) {
+			// Init UserAppStore
+			this.appStore.put(signature, app);
+		} else {
+			throw new IllegalStateException("An IApp is already stored with this signature !");
+		}
 
 	}
 
 	@Override
 	public IApp retrieveApp(final HttpServletRequest request) {
-		final String appSignature = this.appSigner.retrieveSignature(request);
+		final String signature = this.appSigner.retrieveSignature(request);
 
-		Assert.hasText(appSignature, "No App signature found in Http request !");
+		Assert.hasText(signature, "No App signature found in Http request !");
 
-		return this.userAppStore.get(appSignature);
+		final IApp retrievedApp = this.appStore.get(signature);
+
+		return retrievedApp;
 	}
-
 }

@@ -16,14 +16,14 @@
 		<property name="portalAppReferenceListener" ref="portalAppReferenceListener" />
 	</bean>
 	
-	<bean id="portalService" class="fr.mby.portal.coreimpl.BasicPortalService">
-		<property name="appStore" ref="sessionAppStore" />
-	</bean>
-	
-	<bean id="basicAuthenticationManager" class="fr.mby.portal.coreimpl.auth.BasicAuthenticationManager">
+	<bean id="portalService" class="fr.mby.portal.coreimpl.BasicPortalService" />
+
+	<bean id="authenticationManager" class="fr.mby.portal.coreimpl.auth.BasicAuthenticationManager">
 		<property name="externalAuthenticationProviders" ref="authenticationProviderReferences" />
 	</bean>
 	
-	<bean id="basicLoginManager" class="fr.mby.portal.coreimpl.security.BasicLoginManager" />
+	<bean id="sessionManager" class="fr.mby.portal.coreimpl.session.MemorySessionManager" />
 	
+	<bean id="loginManager" class="fr.mby.portal.coreimpl.security.BasicLoginManager" />
+
 </beans>

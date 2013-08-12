@@ -36,8 +36,11 @@ import fr.mby.portal.core.event.IEventFactory;
 import fr.mby.portal.core.message.IMessageFactory;
 import fr.mby.portal.core.preferences.IAppPreferencesResolver;
 import fr.mby.portal.core.session.ISessionManager;
+import fr.mby.portal.core.session.SessionNotInitializedException;
 
 /**
+ * FIXME: We build a message from a request. They may be multiple different message to build from a single request !
+ * 
  * @author Maxime Bossard - 2013
  * 
  */
@@ -67,7 +70,13 @@ public class BasicMessageFactory implements IMessageFactory, InitializingBean {
 		final IUserAction userAction = this.userActionFactory.build(request);
 		final IAppContext appContext = this.appContextResolver.resolve(userAction);
 		final IAppPreferences appPrefs = this.appPreferencesResolver.resolve(userAction);
-		final ISession appSession = this.sessionManager.getAppSession(userAction, true);
+		ISession appSession;
+		try {
+			appSession = this.sessionManager.getSharedSession(request);
+		} catch (final SessionNotInitializedException e) {
+			// Problem !
+			throw new IllegalStateException(e);
+		}
 
 		final IMessage message;
 

@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.core.security.IPrincipalResolver;
 import fr.mby.portal.core.session.ISessionManager;
+import fr.mby.portal.core.session.SessionNotInitializedException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -39,15 +40,22 @@ public class SessionPrincipalResolver implements IPrincipalResolver {
 	/** Session attribute name to retrieve the Principal. */
 	public static final String PRINCIPAL_SESSION_ATTR_NAME = "Principal";
 
-	@Autowired(required = true)
+	@Autowired
 	private ISessionManager sessionManager;
 
 	@Override
 	public Principal resolve(final HttpServletRequest request) {
 		final Principal resolvedPrincipal = null;
 
-		final ISession portalSession = this.sessionManager.getPortalSession(request);
-		final Object principalInSession = portalSession.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+		ISession portalSession = null;
+		Object principalInSession = null;
+
+		try {
+			portalSession = this.sessionManager.getPortalSession(request);
+			principalInSession = portalSession.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+		} catch (final SessionNotInitializedException e) {
+			// Portal Session not initialized yet !
+		}
 
 		if (principalInSession != null && !Principal.class.isAssignableFrom(principalInSession.getClass())) {
 			// If Principal in session got a bad type we remove it

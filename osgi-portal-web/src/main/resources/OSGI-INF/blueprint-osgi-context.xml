@@ -4,10 +4,13 @@
            default-activation="eager">
 
     
-	<reference-list id="userActionDispatchers" interface="fr.mby.portal.core.IUserActionDispatcher" availability="mandatory">
+	<reference-list id="userActionDispatchersRef" interface="fr.mby.portal.core.IUserActionDispatcher" availability="mandatory">
 	</reference-list>
 	
-	<reference-list id="portalRenderers" interface="fr.mby.portal.core.IPortalRenderer" availability="mandatory">
+	<reference-list id="portalRenderersRef" interface="fr.mby.portal.core.IPortalRenderer" availability="mandatory">
 	</reference-list>
+	
+	<reference id="sessionManagerRef" interface="fr.mby.portal.core.session.ISessionManager" availability="mandatory">
+	</reference>
 	
 </blueprint>

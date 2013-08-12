@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IApp;
@@ -34,7 +33,6 @@ import fr.mby.portal.core.session.ISessionManager;
  * @author Maxime Bossard - 2013
  * 
  */
-@Service
 public class SessionAppStore implements IAppStore, InitializingBean {
 
 	/** TODO: replace the map by a cache. */

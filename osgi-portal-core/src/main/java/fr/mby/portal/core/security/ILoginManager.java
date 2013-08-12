@@ -17,6 +17,7 @@
 package fr.mby.portal.core.security;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import fr.mby.portal.core.auth.IAuthentication;
 
@@ -31,13 +32,16 @@ public interface ILoginManager {
 	 * 
 	 * @param request
 	 *            the request which is the origin of the login.
+	 * @param response
+	 *            the response returned on login action.
 	 * @param authentication
 	 *            the IAuthentication object wich must already be authenticated.
 	 * @return the IAuthentication wich allowed the login to be performed.
 	 * @throws LoginException
 	 *             when somethig goes wrong.
 	 */
-	IAuthentication login(final HttpServletRequest request, IAuthentication authentication) throws LoginException;
+	IAuthentication login(HttpServletRequest request, HttpServletResponse response, IAuthentication authentication)
+			throws LoginException;
 
 	/**
 	 * Test if the Http request was sent by a logged user.
@@ -46,14 +50,16 @@ public interface ILoginManager {
 	 *            Http request
 	 * @return true if the user is logged.
 	 */
-	boolean isLogged(final HttpServletRequest request);
+	boolean isLogged(HttpServletRequest request);
 
 	/**
 	 * Perform a logout from the Portal.
 	 * 
 	 * @param request
 	 *            the Http request origin of the logout.
+	 * @param response
+	 *            the response returned on logout action.
 	 */
-	void logout(final HttpServletRequest request);
+	void logout(HttpServletRequest request, HttpServletResponse response);
 
 }

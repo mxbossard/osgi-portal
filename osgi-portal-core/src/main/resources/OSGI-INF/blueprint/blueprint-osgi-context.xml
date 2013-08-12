@@ -21,12 +21,16 @@
 		 interface="fr.mby.portal.core.configuration.IConfigurationManager" />
 		 
 	<!-- AuthenticationManager -->
-	<service id="authenticationManagerService" ref="basicAuthenticationManager" 
-		interface="fr.mby.portal.core.auth.IAuthenticationManager"/>
+	<service id="authenticationManagerService" ref="authenticationManager" 
+		interface="fr.mby.portal.core.auth.IAuthenticationManager" />
+		
+	<!-- SessionManager -->
+	<service id="sessionManagerService" ref="sessionManager" 
+		interface="fr.mby.portal.core.session.ISessionManager" />
 		
 	<!-- LoginManager -->
-	<service id="loginManagerService" ref="basicLoginManager" 
-		interface="fr.mby.portal.core.security.ILoginManager"/>
+	<service id="loginManagerService" ref="loginManager" 
+		interface="fr.mby.portal.core.security.ILoginManager" />
 		
 	<bean id="portalAppReferenceListener" class="fr.mby.portal.coreimpl.app.PortalAppReferenceListener" />
 <!-- 	

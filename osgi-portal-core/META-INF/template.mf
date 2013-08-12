@@ -11,7 +11,7 @@ Import-Package:
  org.springframework.stereotype
 Excluded-Exports: fr.mby.portal.coreimpl.*
 Excluded-Imports: 
-Export-Template: 
+Export-Template: fr.mby.portal.core.*
 Ignored-Existing-Headers: 
 Import-Template: 
  fr.mby.portal.api.*;version="${osgi-portal-api.version:medium-range}",
