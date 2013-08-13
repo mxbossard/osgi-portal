@@ -165,7 +165,7 @@ public class LoginController implements IPortalApp {
 		model.addAttribute("app", thisApp);
 		model.addAttribute("loginForm", new LoginForm());
 
-		response.addCookie(new Cookie(IPortalRenderer.SIGNATURE_PARAM_PARAM, thisApp.getSignature()));
+		response.addCookie(new Cookie(IPortalRenderer.SIGNATURE_PARAM_NAME, thisApp.getSignature()));
 	}
 
 	/**

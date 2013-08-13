@@ -16,20 +16,30 @@
 
 package fr.mby.portal.web.controller;
 
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.directwebremoting.util.SwallowingHttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.session.ISessionManager;
+import fr.mby.portal.servlet.http.OpaHttpServletRequest;
 
 /**
  * @author Maxime Bossard - 2013
@@ -38,14 +48,18 @@ import fr.mby.portal.core.session.ISessionManager;
 
 @Controller
 @RequestMapping("/")
-public class PortalController {
+public class PortalController implements ServletContextAware {
 
 	/** Name of view attribute for Apps to render. */
 	private static final String APPS_TO_RENDER = "appsToRender";
 
+	private static final String APPS_RENDERED = "renderedApps";
+
 	private Collection<IPortalRenderer> portalRenderers;
 
 	private ISessionManager sessionManager;
+
+	private ServletContext servletContext;
 
 	@RequestMapping(method = RequestMethod.GET)
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -59,7 +73,41 @@ public class PortalController {
 		final List<IApp> appsToRender = firstPortalRenderer.getAppsToRender(request);
 		view.addObject(PortalController.APPS_TO_RENDER, appsToRender);
 
+		this.renderApp(request, response, view, appsToRender);
+
 		return view;
+	}
+
+	/**
+	 * @param request
+	 * @param response
+	 * @param view
+	 * @param appsToRender
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected void renderApp(final HttpServletRequest request, final HttpServletResponse response,
+			final ModelAndView view, final List<IApp> appsToRender) throws ServletException, IOException {
+		final Map<IApp, String> appsRendered = new HashMap<IApp, String>(8);
+
+		if (appsToRender != null) {
+			for (final IApp app : appsToRender) {
+				final ServletContext loginContext = this.servletContext.getContext(app.getWebPath());
+				if (loginContext != null) {
+					final Writer sout = new StringWriter(1024);
+
+					final OpaHttpServletRequest opaRequest = new OpaHttpServletRequest(request, app);
+					final SwallowingHttpServletResponse swallowingResponse = new SwallowingHttpServletResponse(
+							response, sout, "UTF-8");
+					loginContext.getRequestDispatcher("/").forward(opaRequest, swallowingResponse);
+					final String appRendered = sout.toString();
+
+					appsRendered.put(app, appRendered);
+				}
+			}
+		}
+
+		view.addObject(PortalController.APPS_RENDERED, appsRendered);
 	}
 
 	protected IPortalRenderer chooseOnePortalRenderer() throws Exception {
@@ -110,6 +158,11 @@ public class PortalController {
 	 */
 	public void setSessionManager(final ISessionManager sessionManager) {
 		this.sessionManager = sessionManager;
+	}
+
+	@Override
+	public void setServletContext(final ServletContext servletContext) {
+		this.servletContext = servletContext;
 	}
 
 }

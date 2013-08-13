@@ -45,11 +45,6 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-
-	<bean id="helloController" class="fr.mby.portal.web.controller.HelloController">
-		<property name="userActionDispatchers" ref="userActionDispatchersRef" />
-	</bean>
-
 	<bean id="actionController" class="fr.mby.portal.web.controller.ActionController">
 		<property name="userActionDispatchers" ref="userActionDispatchersRef" />
 	</bean>

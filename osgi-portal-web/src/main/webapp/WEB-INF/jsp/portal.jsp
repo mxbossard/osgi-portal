@@ -17,18 +17,36 @@
 <body>
 	<h1>OSGi Portal</h1>
 
-	<c:forEach items="${appsToRender}" var="app">
-		<c:set var="appConfig" value="${app.config}" />
-		<c:set var="appContext" value="${appConfig.context}" />
+	<fieldset>
+		<legend>Apps to render</legend>
+	
+		<c:forEach items="${appsToRender}" var="app">
 
-		<div id="${app.namespace}" class="portalApp">
-			<h2>${appConfig.symbolicName} - ${appConfig.version}</h2>
+			<jsp:include page="app/displayApp.jsp">
+				<jsp:param value="${app}" name="app" />
+				<jsp:param value="iframed" name="displayMode" />
+			</jsp:include>
+		
+		</c:forEach>
+	
+	</fieldset>
+
+	<fieldset>
+		<legend>Rendered Apps</legend>
+	
+		<c:forEach items="${renderedApps}" var="appEntry">
+			<c:set var="app" value="${appEntry.key}" />
+			<c:set var="appContent" value="${appEntry.value}" />
+		
+			<jsp:include page="app/displayApp.jsp">
+				<jsp:param value="${app}" name="app" />
+				<jsp:param value="rendered" name="displayMode" />
+				<jsp:param value="${appContent}" name="appContent" />
+			</jsp:include>
 			
-			<p>path: ${appContext.webContextPath}</p>
-			
-			<iframe src="${app.webPath}" style="width: ${app.width}; height: ${app.height};"></iframe>
-		</div>
-	</c:forEach>
+		</c:forEach>
+	
+	</fieldset>
 
 </body>
 </html>

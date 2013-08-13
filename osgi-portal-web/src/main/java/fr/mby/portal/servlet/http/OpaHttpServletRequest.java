@@ -14,31 +14,41 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core;
-
-import java.util.List;
+package fr.mby.portal.servlet.http;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequestWrapper;
 
 import fr.mby.portal.api.app.IApp;
+import fr.mby.portal.core.IPortalRenderer;
 
 /**
- * IPortalRenderer implementation is in charge of rendering the portal.
+ * HttpServletRequestWrapper which allow to dispatch a request to an OPA.
  * 
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalRenderer {
+public class OpaHttpServletRequest extends HttpServletRequestWrapper {
 
-	static final String SIGNATURE_PARAM_NAME = "signature";
+	private final IApp targetedApp;
 
-	static final String PORTAL_SESSION_ID_PARAM_NAME = "portalSession";
+	/**
+	 * @param request
+	 */
+	public OpaHttpServletRequest(final HttpServletRequest request, final IApp app) {
+		super(request);
+		this.targetedApp = app;
 
-	static final String PORTAL_SESSION_ID_COOKIE_NAME = "portalSession";
+		this.setAttribute(IPortalRenderer.SIGNATURE_PARAM_NAME, app.getSignature());
+	}
 
-	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
-
-	List<IApp> getAppsToRender(HttpServletRequest request) throws Exception;
+	/**
+	 * Getter of targetedApp.
+	 * 
+	 * @return the targetedApp
+	 */
+	public IApp getTargetedApp() {
+		return this.targetedApp;
+	}
 
 }

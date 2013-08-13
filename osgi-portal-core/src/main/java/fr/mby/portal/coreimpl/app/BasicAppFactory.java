@@ -79,7 +79,7 @@ public class BasicAppFactory implements IAppFactory {
 
 			// Add signature to IApp webPath
 			webPathBuilder.append("/?");
-			webPathBuilder.append(IPortalRenderer.SIGNATURE_PARAM_PARAM);
+			webPathBuilder.append(IPortalRenderer.SIGNATURE_PARAM_NAME);
 			webPathBuilder.append("=");
 			webPathBuilder.append(encodedSignature);
 
