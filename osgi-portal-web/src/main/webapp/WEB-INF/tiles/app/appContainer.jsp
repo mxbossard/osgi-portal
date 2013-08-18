@@ -4,17 +4,24 @@
 <c:set var="appConfig" value="${app.config}" />
 <c:set var="appContext" value="${appConfig.context}" />
 
+<tiles:useAttribute id="displayMode" name="displayMode" />
+<tiles:useAttribute id="app" name="app" />
+<tiles:useAttribute id="appContent" name="appContent" />
+
 <div id="${app.namespace}" class="portalApp">
-	<h2>${appConfig.symbolicName} - ${appConfig.version}</h2>
-	
-	<p>path: ${appContext.webContextPath}</p>
-	
+	<div class="title">${app.title}</div>
+
 	<c:if test="${'iframed' eq displayMode}">
-		<tiles:insertAttribute name="iframedContent" />
+		<tiles:insertAttribute name="iframedContent">
+			<tiles:putAttribute name="app" value="${app}" />
+		</tiles:insertAttribute>
 	</c:if>
 	
 	<c:if test="${'rendered' eq displayMode}">
-		<tiles:insertAttribute name="renderedContent" />
+		<tiles:insertAttribute name="renderedContent">
+			<tiles:putAttribute name="app" value="${app}" />
+			<tiles:putAttribute name="appContent" value="${appContent}" />
+		</tiles:insertAttribute>
 	</c:if>
 	
 </div>	

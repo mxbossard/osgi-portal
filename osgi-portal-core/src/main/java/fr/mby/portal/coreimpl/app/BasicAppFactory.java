@@ -97,6 +97,7 @@ public class BasicAppFactory implements IAppFactory {
 		// Default
 		app.setWidth("700px");
 		app.setHeight("400px");
+		app.setTitle(appConfig.getContext().getWebContextPath());
 
 		return app;
 	}

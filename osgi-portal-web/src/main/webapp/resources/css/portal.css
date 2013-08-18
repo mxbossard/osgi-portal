@@ -22,6 +22,13 @@
 	overflow: hidden;
 }
 
+.portalApp .title {
+	border: 1px solid gray;
+	padding: 2px 10px;
+	background-color: blue;
+	color: white;
+}
+
 .portalApp iframe {
 	width: 100%;
 	height: 100%;

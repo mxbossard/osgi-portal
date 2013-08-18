@@ -4,10 +4,12 @@
 <fieldset>
 	<legend>Apps to render (in iframe)</legend>
 
-	<c:forEach items="${appsToRender}" var="app">
+	<c:forEach items="${appsToRender}" var="appValue">
 
 		<tiles:insertAttribute name="appContainer">
 			<tiles:putAttribute name="displayMode" value="iframed" />
+			<tiles:putAttribute name="app" value="${appValue}" />
+			<tiles:putAttribute name="appContent" value="" />
 		</tiles:insertAttribute>
 
 	</c:forEach>
@@ -18,11 +20,11 @@
 	<legend>Rendered Apps (without iframe)</legend>
 
 	<c:forEach items="${renderedApps}" var="appEntry">
-		<c:set var="app" value="${appEntry.key}" />
-		<c:set var="appContent" value="${appEntry.value}" />
-	
+
 		<tiles:insertAttribute name="appContainer">
 			<tiles:putAttribute name="displayMode" value="rendered" />
+			<tiles:putAttribute name="app" value="${appEntry.key}" />
+			<tiles:putAttribute name="appContent" value="${appEntry.value}" />
 		</tiles:insertAttribute>
 		
 	</c:forEach>
