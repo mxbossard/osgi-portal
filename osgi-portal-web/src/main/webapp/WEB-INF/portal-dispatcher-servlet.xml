@@ -39,12 +39,43 @@
 		simple, elle permet de mapper le nom de la vue retournée avec la sélection 
 		d'une jsp. Exemple si le nom de la vue retournée est "foo/bar/hello" alors 
 		on utilisera le fichier WEB-INF/jsp/foo/bar/hello.jsp pour constuire la vue. -->
+	
+	<!-- View resolver replaced for Tiles -->
+	<!-- 
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/jsp/"/>
 		<property name="suffix" value=".jsp" />
+	</bean> 
+	-->
+	
+	<!-- Tiles 3 -->
+	<!-- Don't add suffix or prefix like you do with .jsp files
+	<bean class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	    
+	    <property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView"/>
 	</bean>
-
+	
+	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer" >
+	    <property name="definitions">
+	        <value>/WEB-INF/tiles.xml</value>
+	    </property>
+	</bean>
+	-->
+	
+	<!-- Tiles 2 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+   		<property name="viewClass" value="org.springframework.web.servlet.view.tiles2.TilesView" />
+ 	</bean> 
+ 
+	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles2.TilesConfigurer">
+   		<property name="definitions">
+     		<list>
+       			<value>/WEB-INF/tiles.xml</value>
+     		</list>
+   		</property>
+ 	</bean>
+ 
 	<bean id="actionController" class="fr.mby.portal.web.controller.ActionController">
 		<property name="userActionDispatchers" ref="userActionDispatchersRef" />
 	</bean>
