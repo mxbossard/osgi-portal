@@ -17,7 +17,7 @@
 package fr.mby.portal.api.app;
 
 /**
- * The IAppContext interface makes resources available to the App. Using the context, a App can access the app log, and
+ * The IAppContext interface makes resources available to the App. Using the context, an App can access the app log, and
  * obtain URL references to resources. There is one context per application per Java Virtual Machine. As a web
  * application, an application also has a servlet context. The app context leverages most of its functionality from the
  * servlet context of the application. Attributes stored in the context are global for all users and all components in

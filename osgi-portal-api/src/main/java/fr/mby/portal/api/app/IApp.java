@@ -73,4 +73,11 @@ public interface IApp {
 	 * @return the IApp URL path
 	 */
 	String getWebPath();
+
+	/**
+	 * The preferences of this IApp.
+	 * 
+	 * @return the IApp URL path
+	 */
+	IAppPreferences getPreferences();
 }

@@ -16,9 +16,14 @@
 
 package fr.mby.portal.coreimpl.context;
 
+import java.io.IOException;
+import java.net.URL;
+import java.util.Properties;
+
 import org.osgi.framework.Bundle;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.core.app.IAppConfigFactory;
@@ -30,16 +35,20 @@ import fr.mby.portal.core.app.IAppConfigFactory;
 @Service
 public class BasicAppConfigFactory implements IAppConfigFactory {
 
-	public static final Object WEB_CONTEXT_PATH_BUNDLE_HEADER = "Web-ContextPath";
-
 	@Override
-	public IAppConfig build(final Bundle appBundle) {
+	public IAppConfig build(final Bundle appBundle) throws AppConfigNotFoundException {
 		Assert.notNull(appBundle, "No bunlde supplied !");
 
 		final BasicAppConfig appConfig = new BasicAppConfig();
 
 		appConfig.setSymbolicName(appBundle.getSymbolicName());
 		appConfig.setVersion(appBundle.getVersion().toString());
+
+		final String opaSn = appBundle.getSymbolicName();
+		final Properties opaConfig = this.loadOpaConfig(appBundle);
+		appConfig.setDefaultTitle(this.getPropertyValue(opaSn, opaConfig, OpaConfigKeys.DEFAULT_TITLE));
+		appConfig.setDefaultWidth(this.getPropertyValue(opaSn, opaConfig, OpaConfigKeys.DEFAULT_WIDTH));
+		appConfig.setDefaultHeight(this.getPropertyValue(opaSn, opaConfig, OpaConfigKeys.DEFAULT_HEIGHT));
 
 		final BasicAppContext appContext = new BasicAppContext();
 		appContext.setBundleId(appBundle.getBundleId());
@@ -49,13 +58,48 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 		return appConfig;
 	}
 
+	protected Properties loadOpaConfig(final Bundle opaBundle) throws AppConfigNotFoundException {
+		final URL opaPropertiesUrl = opaBundle.getResource(IAppConfigFactory.OPA_CONFIG_FILE_PATH);
+		if (opaPropertiesUrl == null) {
+			final String message = String.format("No OPA configuration file (%1$s) found in OPA [%2$s] !",
+					IAppConfigFactory.OPA_CONFIG_FILE_PATH, opaBundle.getSymbolicName());
+			throw new AppConfigNotFoundException(message);
+		}
+
+		final Properties props = new Properties();
+		try {
+			props.load(opaPropertiesUrl.openStream());
+		} catch (final IOException e) {
+			final String message = String.format("Unable to open OPA configuration file (%1$s) found in OPA [%2$s] !",
+					IAppConfigFactory.OPA_CONFIG_FILE_PATH, opaBundle.getSymbolicName());
+			throw new AppConfigNotFoundException(message, e);
+		}
+
+		return props;
+	}
+
+	protected String getPropertyValue(final String opaSymbolicName, final Properties opaProps,
+			final OpaConfigKeys opaConfigKey) throws AppConfigNotFoundException {
+		final String propertyKey = opaConfigKey.getKey();
+		final String propertyValue = opaProps.getProperty(propertyKey);
+
+		if (!StringUtils.hasText(propertyValue)) {
+			final String message = String.format("Missing property '%1$s' detected in OPA [%2$s] configuration file !",
+					propertyKey, opaSymbolicName);
+			throw new AppConfigNotFoundException(message);
+		}
+
+		return propertyValue;
+
+	}
+
 	/**
 	 * @param webContextPathHeader
 	 * @return
 	 */
 	protected String buildWebAppBundlePath(final Bundle bundle) {
 		final String webContextPathHeader = (String) bundle.getHeaders().get(
-				BasicAppConfigFactory.WEB_CONTEXT_PATH_BUNDLE_HEADER);
+				IAppConfigFactory.WEB_CONTEXT_PATH_BUNDLE_HEADER);
 		final String webBundlePath = "/".concat(webContextPathHeader.replaceAll("[\\/\\\\]+", ""));
 
 		return webBundlePath;

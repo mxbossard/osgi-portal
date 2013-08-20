@@ -18,6 +18,7 @@ package fr.mby.portal.coreimpl.app;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.api.app.IAppPreferences;
 
 /**
  * @author Maxime Bossard - 2013
@@ -26,6 +27,8 @@ import fr.mby.portal.api.app.IAppConfig;
 public class BasicApp implements IApp {
 
 	private final IAppConfig config;
+
+	private final IAppPreferences preferences;
 
 	private String namespace;
 
@@ -39,11 +42,6 @@ public class BasicApp implements IApp {
 
 	private String webPath;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
 	@Override
 	public String toString() {
 		return "BasicApp [namespace= " + this.namespace + " , signature= " + this.signature + "]";
@@ -52,9 +50,10 @@ public class BasicApp implements IApp {
 	/**
 	 * @param appConfig
 	 */
-	protected BasicApp(final IAppConfig appConfig) {
+	protected BasicApp(final IAppConfig appConfig, final IAppPreferences appPreferences) {
 		super();
 		this.config = appConfig;
+		this.preferences = appPreferences;
 	}
 
 	/**
@@ -65,6 +64,11 @@ public class BasicApp implements IApp {
 	@Override
 	public IAppConfig getConfig() {
 		return this.config;
+	}
+
+	@Override
+	public IAppPreferences getPreferences() {
+		return this.preferences;
 	}
 
 	/**

@@ -31,9 +31,11 @@ import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.api.app.IAppPreferences;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppFactory;
 import fr.mby.portal.core.app.IAppSigner;
+import fr.mby.portal.core.preferences.IAppPreferencesManager;
 import fr.mby.portal.core.session.ISessionManager;
 
 /**
@@ -55,12 +57,17 @@ public class BasicAppFactory implements IAppFactory {
 	@Autowired
 	private IAppSigner appSigner;
 
+	@Autowired
+	private IAppPreferencesManager appPreferencesManager;
+
 	@Override
 	public IApp build(final HttpServletRequest request, final IAppConfig appConfig) {
 		Assert.notNull(request, "No HttpServletRequest supplied !");
 		Assert.notNull(appConfig, "No IAppConfig supplied !");
 
-		final BasicApp app = new BasicApp(appConfig);
+		final IAppPreferences appPreferences = this.appPreferencesManager.getAppPreferences(appConfig);
+
+		final BasicApp app = new BasicApp(appConfig, appPreferences);
 
 		final String namespace = this.generateNamespace(request, appConfig);
 		app.setNamespace(namespace);
@@ -95,8 +102,9 @@ public class BasicAppFactory implements IAppFactory {
 		}
 
 		// Default
-		app.setWidth("700px");
-		app.setHeight("400px");
+		app.setTitle(appConfig.getDefaultTitle());
+		app.setWidth(appConfig.getDefaultWidth());
+		app.setHeight(appConfig.getDefaultHeight());
 
 		return app;
 	}

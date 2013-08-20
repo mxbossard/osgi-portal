@@ -17,8 +17,9 @@
 package fr.mby.portal.coreimpl.preferences;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
+
+import org.springframework.util.Assert;
 
 import fr.mby.portal.api.app.IAppPreferences;
 
@@ -30,12 +31,13 @@ public class BasicAppPreferences implements IAppPreferences {
 
 	private final Map<String, String[]> preferences;
 
-	/**
-	 * 
-	 */
-	protected BasicAppPreferences() {
+	/** Protected constructor. */
+	protected BasicAppPreferences(final Map<String, String[]> preferences) {
 		super();
-		this.preferences = new HashMap<String, String[]>();
+
+		Assert.notNull(preferences, "No preferences Map supplied !");
+
+		this.preferences = preferences;
 	}
 
 	@Override
@@ -49,8 +51,8 @@ public class BasicAppPreferences implements IAppPreferences {
 	}
 
 	@Override
-	public String getValue(String name, String def) {
-		String[] values = this.preferences.get(name);
+	public String getValue(final String name, final String def) {
+		final String[] values = this.preferences.get(name);
 		final String value;
 		if (values == null) {
 			value = def;
@@ -61,7 +63,7 @@ public class BasicAppPreferences implements IAppPreferences {
 	}
 
 	@Override
-	public String[] getValues(String name, String[] def) {
+	public String[] getValues(final String name, final String[] def) {
 		String[] values = this.preferences.get(name);
 		if (values == null) {
 			values = def;

@@ -31,6 +31,12 @@ public class BasicAppConfig implements IAppConfig {
 
 	private String version;
 
+	private String defaultTitle;
+
+	private String defaultWidth;
+
+	private String defaultHeight;
+
 	/** Protected constructor. */
 	protected BasicAppConfig() {
 		super();
@@ -94,6 +100,66 @@ public class BasicAppConfig implements IAppConfig {
 	 */
 	public void setVersion(final String version) {
 		this.version = version;
+	}
+
+	/**
+	 * Getter of defaultTitle.
+	 * 
+	 * @return the defaultTitle
+	 */
+	@Override
+	public String getDefaultTitle() {
+		return this.defaultTitle;
+	}
+
+	/**
+	 * Setter of defaultTitle.
+	 * 
+	 * @param defaultTitle
+	 *            the defaultTitle to set
+	 */
+	public void setDefaultTitle(final String defaultTitle) {
+		this.defaultTitle = defaultTitle;
+	}
+
+	/**
+	 * Getter of defaultWidth.
+	 * 
+	 * @return the defaultWidth
+	 */
+	@Override
+	public String getDefaultWidth() {
+		return this.defaultWidth;
+	}
+
+	/**
+	 * Setter of defaultWidth.
+	 * 
+	 * @param defaultWidth
+	 *            the defaultWidth to set
+	 */
+	public void setDefaultWidth(final String defaultWidth) {
+		this.defaultWidth = defaultWidth;
+	}
+
+	/**
+	 * Getter of defaultHeight.
+	 * 
+	 * @return the defaultHeight
+	 */
+	@Override
+	public String getDefaultHeight() {
+		return this.defaultHeight;
+	}
+
+	/**
+	 * Setter of defaultHeight.
+	 * 
+	 * @param defaultHeight
+	 *            the defaultHeight to set
+	 */
+	public void setDefaultHeight(final String defaultHeight) {
+		this.defaultHeight = defaultHeight;
 	}
 
 }

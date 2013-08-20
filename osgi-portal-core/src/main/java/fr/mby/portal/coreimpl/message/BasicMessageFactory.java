@@ -34,7 +34,7 @@ import fr.mby.portal.core.action.IUserActionFactory;
 import fr.mby.portal.core.context.IAppContextResolver;
 import fr.mby.portal.core.event.IEventFactory;
 import fr.mby.portal.core.message.IMessageFactory;
-import fr.mby.portal.core.preferences.IAppPreferencesResolver;
+import fr.mby.portal.core.preferences.IAppPreferencesManager;
 import fr.mby.portal.core.session.ISessionManager;
 import fr.mby.portal.core.session.SessionNotInitializedException;
 
@@ -51,7 +51,7 @@ public class BasicMessageFactory implements IMessageFactory, InitializingBean {
 	private IAppContextResolver<IUserAction> appContextResolver;
 
 	@Autowired
-	private IAppPreferencesResolver<IUserAction> appPreferencesResolver;
+	private IAppPreferencesManager<IUserAction> appPreferencesResolver;
 
 	@Autowired
 	private ISessionManager sessionManager;

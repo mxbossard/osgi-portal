@@ -19,6 +19,7 @@ package fr.mby.portal.core.app;
 import org.osgi.framework.Bundle;
 
 import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.coreimpl.context.AppConfigNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -26,6 +27,52 @@ import fr.mby.portal.api.app.IAppConfig;
  */
 public interface IAppConfigFactory {
 
-	IAppConfig build(Bundle appBundle);
+	public static final Object WEB_CONTEXT_PATH_BUNDLE_HEADER = "Web-ContextPath";
 
+	public static final String OPA_CONFIG_FILE_PATH = "/WEB-INF/opa.properties";
+
+	IAppConfig build(Bundle appBundle) throws AppConfigNotFoundException;
+
+	public enum OpaConfigKeys {
+
+		/** OPA display Title. */
+		DEFAULT_TITLE("opa.title.default"),
+
+		/** OPA default display width. */
+		DEFAULT_WIDTH("opa.width.default"),
+
+		/** OPA default display height. */
+		DEFAULT_HEIGHT("opa.height.default"),
+
+		/** OPA rendering mode : iframed / rendered */
+		RENDERING_MODE("opa.rendering.mode"),
+
+		/** List roles declared by the OPA. */
+		ACL_ROLES("opa.acl.roles"),
+
+		/** Roles able to render the OPA. */
+		ACL_CAN_RENDER("opa.acl.canRender"),
+
+		/** Roles able to edit the OPA preferences. */
+		ACL_CAN_EDIT("opa.acl.canEdit"),
+
+		/** List of preferences key declared by the OPA. */
+		PREFERENCES("opa.preferences");
+
+		private final String key;
+
+		OpaConfigKeys(final String key) {
+			this.key = key;
+		}
+
+		/**
+		 * Getter of key.
+		 * 
+		 * @return the key
+		 */
+		public String getKey() {
+			return this.key;
+		}
+
+	}
 }

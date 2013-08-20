@@ -21,11 +21,16 @@
 		<legend>Apps to render</legend>
 	
 		<c:forEach items="${appsToRender}" var="app">
-
-			<jsp:include page="app/displayApp.jsp">
-				<jsp:param value="${app}" name="app" />
-				<jsp:param value="iframed" name="displayMode" />
-			</jsp:include>
+			<c:set var="appConfig" value="${app.config}" />
+			<c:set var="appContext" value="${appConfig.context}" />
+			
+			<div id="${app.namespace}" class="portalApp">
+				<h2>${appConfig.symbolicName} - ${appConfig.version}</h2>
+				
+				<p>path: ${appContext.webContextPath}</p>
+				
+				<iframe src="${app.webPath}" style="width: ${app.width}; height: ${app.height};"></iframe>
+			</div>	
 		
 		</c:forEach>
 	
@@ -37,13 +42,18 @@
 		<c:forEach items="${renderedApps}" var="appEntry">
 			<c:set var="app" value="${appEntry.key}" />
 			<c:set var="appContent" value="${appEntry.value}" />
+			<c:set var="appConfig" value="${app.config}" />
+			<c:set var="appContext" value="${appConfig.context}" />
 		
-			<jsp:include page="app/displayApp.jsp">
-				<jsp:param value="${app}" name="app" />
-				<jsp:param value="rendered" name="displayMode" />
-				<jsp:param value="${appContent}" name="appContent" />
-			</jsp:include>
-			
+			<div id="${app.namespace}" class="portalApp">
+				<h2>${appConfig.symbolicName} - ${appConfig.version}</h2>
+				
+				<p>path: ${appContext.webContextPath}</p>
+				
+				<div class="appContent">
+					${appContent}
+				</div>
+			</div>	
 		</c:forEach>
 	
 	</fieldset>
