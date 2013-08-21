@@ -19,9 +19,6 @@ package fr.mby.portal.coreimpl.message;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.action.IUserAction;
-import fr.mby.portal.api.app.IAppContext;
-import fr.mby.portal.api.app.IAppPreferences;
-import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.event.IEvent;
 import fr.mby.portal.api.message.IEventMessage;
 
@@ -34,14 +31,11 @@ public class BasicEventMessage extends AbstractMessage implements IEventMessage 
 	private final IEvent event;
 
 	/**
-	 * @param appContext
-	 * @param sessionManager
-	 * @param appPreferences
 	 * @param userAction
+	 * @param event
 	 */
-	protected BasicEventMessage(final IAppContext appContext, final ISession appSession,
-			final IAppPreferences appPreferences, final IUserAction userAction, final IEvent event) {
-		super(appContext, appSession, appPreferences, userAction);
+	protected BasicEventMessage(final IUserAction userAction, final IEvent event) {
+		super(userAction);
 
 		Assert.notNull(event, "No IEvent provided !");
 

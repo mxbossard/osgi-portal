@@ -17,9 +17,6 @@
 package fr.mby.portal.coreimpl.message;
 
 import fr.mby.portal.api.action.IUserAction;
-import fr.mby.portal.api.app.IAppContext;
-import fr.mby.portal.api.app.IAppPreferences;
-import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.message.IRenderMessage;
 
 /**
@@ -29,14 +26,10 @@ import fr.mby.portal.api.message.IRenderMessage;
 public class BasicRenderMessage extends AbstractMessage implements IRenderMessage {
 
 	/**
-	 * @param appContext
-	 * @param appSession
-	 * @param appPreferences
 	 * @param userAction
 	 */
-	protected BasicRenderMessage(final IAppContext appContext, final ISession appSession,
-			final IAppPreferences appPreferences, final IUserAction userAction) {
-		super(appContext, appSession, appPreferences, userAction);
+	protected BasicRenderMessage(final IUserAction userAction) {
+		super(userAction);
 	}
 
 }

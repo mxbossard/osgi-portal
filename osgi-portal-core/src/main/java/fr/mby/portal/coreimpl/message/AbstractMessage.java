@@ -19,8 +19,7 @@ package fr.mby.portal.coreimpl.message;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.action.IUserAction;
-import fr.mby.portal.api.app.IAppContext;
-import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.message.IMessage;
 
@@ -30,24 +29,18 @@ import fr.mby.portal.api.message.IMessage;
  */
 public abstract class AbstractMessage implements IMessage {
 
-	private final IAppContext appContext;
-	private final ISession appSession;
-	private final IAppPreferences appPreferences;
+	private IApp targetedApp;
+
+	private ISession appSession;
+
 	private final IUserAction userAction;
 
 	/** Protected constructor. Use the factory. */
-	protected AbstractMessage(final IAppContext appContext, final ISession appSession,
-			final IAppPreferences appPreferences, final IUserAction userAction) {
+	protected AbstractMessage(final IUserAction userAction) {
 		super();
 
-		Assert.notNull(appContext, "No IAppContext provided !");
-		Assert.notNull(appSession, "No AppSession provided !");
-		Assert.notNull(appPreferences, "No IAppPreferences provided !");
 		Assert.notNull(userAction, "No IUserAction provided !");
 
-		this.appContext = appContext;
-		this.appSession = appSession;
-		this.appPreferences = appPreferences;
 		this.userAction = userAction;
 	}
 
@@ -56,19 +49,44 @@ public abstract class AbstractMessage implements IMessage {
 		return this.userAction;
 	}
 
+	/**
+	 * Getter of targetedApp.
+	 * 
+	 * @return the targetedApp
+	 */
 	@Override
-	public IAppContext getAppContext() {
-		return this.appContext;
+	public IApp getTargetedApp() {
+		return this.targetedApp;
 	}
 
+	/**
+	 * Setter of targetedApp.
+	 * 
+	 * @param targetedApp
+	 *            the targetedApp to set
+	 */
+	public void setTargetedApp(final IApp targetedApp) {
+		this.targetedApp = targetedApp;
+	}
+
+	/**
+	 * Getter of appSession.
+	 * 
+	 * @return the appSession
+	 */
 	@Override
-	public ISession getAppSession(final boolean create) {
+	public ISession getAppSession() {
 		return this.appSession;
 	}
 
-	@Override
-	public IAppPreferences getPreferences() {
-		return this.appPreferences;
+	/**
+	 * Setter of appSession.
+	 * 
+	 * @param appSession
+	 *            the appSession to set
+	 */
+	public void setAppSession(final ISession appSession) {
+		this.appSession = appSession;
 	}
 
 }

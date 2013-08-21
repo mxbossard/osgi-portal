@@ -13,50 +13,45 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.mby.portal.api.message;
 
 import fr.mby.portal.api.action.IUserAction;
-import fr.mby.portal.api.app.IAppContext;
-import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.ISession;
 
 /**
  * @author Maxime Bossard - 2013
- *
+ * 
  */
 public interface IMessage {
 
 	public enum MessageType {
-		ACTION,
-		RENDER,
-		EVENT;
+		ACTION, RENDER, EVENT;
 	}
-	
+
 	/**
 	 * Returns the user action origin of this application action.
 	 * 
 	 * @return the user action
 	 */
 	IUserAction getUserAction();
-	
-	
-	IAppContext getAppContext();
-	
+
 	/**
-	 * Returns the current app session or, if there is no current session and the given flag is true, creates one and returns the new session.
-	 * If the given flag is false and there is no current app session, this method returns null.
-	 * Creating a new portlet session will result in creating a new HttpSession on which the app session is based on.
+	 * Returns the instance of IApp targeted by this message.
 	 * 
-	 * @param create - true to create a new session, false to return null if there is no current session
+	 * @return the current IApp instance.
+	 */
+	IApp getTargetedApp();
+
+	/**
+	 * Returns the current app session or, if there is no current session and the given flag is true, creates one and
+	 * returns the new session. If the given flag is false and there is no current app session, this method returns
+	 * null. Creating a new portlet session will result in creating a new HttpSession on which the app session is based
+	 * on.
+	 * 
 	 * @return the app session
 	 */
-	ISession getAppSession(boolean create);
-	
-	/**
-	 * Returns the preferences object associated with the app.
-	 * 
-	 * @return the app preferences
-	 */
-	IAppPreferences getPreferences();
-	
+	ISession getAppSession();
+
 }

@@ -17,9 +17,6 @@
 package fr.mby.portal.coreimpl.message;
 
 import fr.mby.portal.api.action.IUserAction;
-import fr.mby.portal.api.app.IAppContext;
-import fr.mby.portal.api.app.IAppPreferences;
-import fr.mby.portal.api.app.ISession;
 import fr.mby.portal.api.message.IActionMessage;
 
 /**
@@ -29,14 +26,10 @@ import fr.mby.portal.api.message.IActionMessage;
 public class BasicActionMessage extends AbstractMessage implements IActionMessage {
 
 	/**
-	 * @param appContext
-	 * @param sessionManager
-	 * @param appPreferences
 	 * @param userAction
 	 */
-	protected BasicActionMessage(final IAppContext appContext, final ISession appSession,
-			final IAppPreferences appPreferences, final IUserAction userAction) {
-		super(appContext, appSession, appPreferences, userAction);
+	protected BasicActionMessage(final IUserAction userAction) {
+		super(userAction);
 	}
 
 }
