@@ -68,10 +68,10 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 		final String login = authentication.getName();
 		switch (login) {
 			case "admin" :
-				resultingAuth = this.performAuthentication(auth, BasicAclManager.ADMIN);
+				resultingAuth = this.performAuthentication(auth, "admin123", BasicAclManager.ADMIN);
 				break;
 			case "user" :
-				resultingAuth = this.performAuthentication(auth, BasicAclManager.LOGGED);
+				resultingAuth = this.performAuthentication(auth, "user123", BasicAclManager.LOGGED);
 				break;
 			default :
 				break;
@@ -88,11 +88,12 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 	 * @param auth
 	 * @param user
 	 */
-	protected PortalUserAuthentication performAuthentication(final PortalUserAuthentication auth, final Principal user) {
+	protected PortalUserAuthentication performAuthentication(final PortalUserAuthentication auth,
+			final String password, final Principal user) {
 		PortalUserAuthentication resultingAuth = null;
 
-		final String password = (String) auth.getCredentials();
-		if (password.equals(user.getName() + "123")) {
+		final String creds = (String) auth.getCredentials();
+		if (password.equals(creds)) {
 			Set<IRole> roles = null;
 			try {
 				roles = this.aclManager.retrievePrincipalRoles(user);
@@ -100,7 +101,7 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 				roles = Collections.emptySet();
 			}
 
-			resultingAuth = new PortalUserAuthentication(user.getName(), password, roles);
+			resultingAuth = new PortalUserAuthentication(user.getName(), creds, roles);
 		}
 
 		return resultingAuth;

@@ -41,47 +41,47 @@ import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
  */
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:basicAclTestContext.xml")
-@DirtiesContext(classMode=ClassMode.AFTER_EACH_TEST_METHOD)
+@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class BasicAclManagerTest {
 
-	@Autowired(required=true)
+	@Autowired(required = true)
 	private BasicAclManager basicAclManager;
 
-	@Autowired(required=true)
+	@Autowired(required = true)
 	private IRoleFactory roleFactory;
-	
+
 	@Test
 	public void testRetrievePrincipalRoles() throws Exception {
-		Set<IRole> roles = basicAclManager.retrievePrincipalRoles(BasicAclManager.ADMIN);
-		
+		final Set<IRole> roles = this.basicAclManager.retrievePrincipalRoles(BasicAclManager.ADMIN);
+
 		Assert.assertNotNull("Admin roles should not be null !", roles);
 		Assert.assertEquals("Admin roles set size should be 1 !", 1, roles.size());
-		Assert.assertEquals("Admin unique role should be 'admin' !", "admin", roles.iterator().next().getName());
+		Assert.assertEquals("Admin unique role should be 'special_admin' !", "special_admin", roles.iterator().next()
+				.getName());
 	}
-	
-	@Test(expected=PrincipalNotFoundException.class)
+
+	@Test(expected = PrincipalNotFoundException.class)
 	public void testRetrieveUnknownPrincipalRoles() throws Exception {
-		basicAclManager.retrievePrincipalRoles(new PortalUserPrincipal("unkown"));
+		this.basicAclManager.retrievePrincipalRoles(new PortalUserPrincipal("unkown"));
 	}
-	
-	@Test(expected=PrincipalAlreadyExistsException.class)
+
+	@Test(expected = PrincipalAlreadyExistsException.class)
 	public void testRegisterPrincipalWichAlreadyExists() throws Exception {
-		basicAclManager.registerPrincipal(BasicAclManager.ADMIN);
+		this.basicAclManager.registerPrincipal(BasicAclManager.ADMIN);
 	}
-	
-	@Test(expected=RoleNotFoundException.class)
+
+	@Test(expected = RoleNotFoundException.class)
 	public void testRegisterPrincipalRoleWhichDoesntExists() throws Exception {
-		Set<IRole> newRoles = new HashSet<IRole>();
-		newRoles.add(roleFactory.initializeRole("notRegisteredRole", null, null));
-		basicAclManager.registerPrincipalRoles(BasicAclManager.ADMIN, newRoles);
+		final Set<IRole> newRoles = new HashSet<IRole>();
+		newRoles.add(this.roleFactory.initializeRole("notRegisteredRole", null, null));
+		this.basicAclManager.registerPrincipalRoles(BasicAclManager.ADMIN, newRoles);
 	}
-	
-	@Test(expected=PrincipalNotFoundException.class)
+
+	@Test(expected = PrincipalNotFoundException.class)
 	public void testRegisterUnkownPrincipalRoles() throws Exception {
-		Set<IRole> newRoles = new HashSet<IRole>();
-		newRoles.add(roleFactory.initializeRole("notRegisteredRole", null, null));
-		basicAclManager.registerPrincipalRoles(new PortalUserPrincipal("unkown"), newRoles);
+		final Set<IRole> newRoles = new HashSet<IRole>();
+		newRoles.add(this.roleFactory.initializeRole("notRegisteredRole", null, null));
+		this.basicAclManager.registerPrincipalRoles(new PortalUserPrincipal("unkown"), newRoles);
 	}
-	
-	
+
 }
