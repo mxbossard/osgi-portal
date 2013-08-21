@@ -16,8 +16,14 @@
 
 package fr.mby.portal.coreimpl.context;
 
+import java.util.Map;
+import java.util.Set;
+
+import fr.mby.portal.api.acl.IPermission;
+import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IAppContext;
+import fr.mby.portal.api.app.IAppPreferences;
 
 /**
  * @author Maxime Bossard - 2013
@@ -37,9 +43,33 @@ public class BasicAppConfig implements IAppConfig {
 
 	private String defaultHeight;
 
+	private RenderingMode renderingMode;
+
+	private Set<IRole> declaredRoles;
+
+	private Map<SpecialRole, IRole> specialRoles;
+
+	private Set<IPermission> declaredPermissions;
+
+	private Map<SpecialPermission, IPermission> specialPermissions;
+
+	private Set<String> declaredPreferencesKey;
+
+	private IAppPreferences defaultPreferences;
+
 	/** Protected constructor. */
 	protected BasicAppConfig() {
 		super();
+	}
+
+	@Override
+	public IRole getSpecialRole(final SpecialRole specialRole) {
+		return this.specialRoles.get(specialRole);
+	}
+
+	@Override
+	public IPermission getSpecialPermission(final SpecialPermission specialPermission) {
+		return this.specialPermissions.get(specialPermission);
 	}
 
 	/**
@@ -58,7 +88,7 @@ public class BasicAppConfig implements IAppConfig {
 	 * @param context
 	 *            the appContext to set
 	 */
-	public void setContext(final IAppContext context) {
+	protected void setContext(final IAppContext context) {
 		this.context = context;
 	}
 
@@ -78,7 +108,7 @@ public class BasicAppConfig implements IAppConfig {
 	 * @param symbolicName
 	 *            the symbolicName to set
 	 */
-	public void setSymbolicName(final String symbolicName) {
+	protected void setSymbolicName(final String symbolicName) {
 		this.symbolicName = symbolicName;
 	}
 
@@ -98,7 +128,7 @@ public class BasicAppConfig implements IAppConfig {
 	 * @param version
 	 *            the version to set
 	 */
-	public void setVersion(final String version) {
+	protected void setVersion(final String version) {
 		this.version = version;
 	}
 
@@ -118,7 +148,7 @@ public class BasicAppConfig implements IAppConfig {
 	 * @param defaultTitle
 	 *            the defaultTitle to set
 	 */
-	public void setDefaultTitle(final String defaultTitle) {
+	protected void setDefaultTitle(final String defaultTitle) {
 		this.defaultTitle = defaultTitle;
 	}
 
@@ -138,7 +168,7 @@ public class BasicAppConfig implements IAppConfig {
 	 * @param defaultWidth
 	 *            the defaultWidth to set
 	 */
-	public void setDefaultWidth(final String defaultWidth) {
+	protected void setDefaultWidth(final String defaultWidth) {
 		this.defaultWidth = defaultWidth;
 	}
 
@@ -158,8 +188,128 @@ public class BasicAppConfig implements IAppConfig {
 	 * @param defaultHeight
 	 *            the defaultHeight to set
 	 */
-	public void setDefaultHeight(final String defaultHeight) {
+	protected void setDefaultHeight(final String defaultHeight) {
 		this.defaultHeight = defaultHeight;
+	}
+
+	/**
+	 * Getter of renderingMode.
+	 * 
+	 * @return the renderingMode
+	 */
+	@Override
+	public RenderingMode getRenderingMode() {
+		return this.renderingMode;
+	}
+
+	/**
+	 * Setter of renderingMode.
+	 * 
+	 * @param renderingMode
+	 *            the renderingMode to set
+	 */
+	protected void setRenderingMode(final RenderingMode renderingMode) {
+		this.renderingMode = renderingMode;
+	}
+
+	/**
+	 * Getter of declaredRoles.
+	 * 
+	 * @return the declaredRoles
+	 */
+	@Override
+	public Set<IRole> getDeclaredRoles() {
+		return this.declaredRoles;
+	}
+
+	/**
+	 * Setter of declaredRoles.
+	 * 
+	 * @param declaredRoles
+	 *            the declaredRoles to set
+	 */
+	protected void setDeclaredRoles(final Set<IRole> declaredRoles) {
+		this.declaredRoles = declaredRoles;
+	}
+
+	/**
+	 * Getter of declaredPermissions.
+	 * 
+	 * @return the declaredPermissions
+	 */
+	@Override
+	public Set<IPermission> getDeclaredPermissions() {
+		return this.declaredPermissions;
+	}
+
+	/**
+	 * Setter of declaredPermissions.
+	 * 
+	 * @param declaredPermissions
+	 *            the declaredPermissions to set
+	 */
+	protected void setDeclaredPermissions(final Set<IPermission> declaredPermissions) {
+		this.declaredPermissions = declaredPermissions;
+	}
+
+	/**
+	 * Getter of declaredPreferencesKey.
+	 * 
+	 * @return the declaredPreferencesKey
+	 */
+	@Override
+	public Set<String> getDeclaredPreferencesKey() {
+		return this.declaredPreferencesKey;
+	}
+
+	/**
+	 * Setter of declaredPreferencesKey.
+	 * 
+	 * @param declaredPreferencesKey
+	 *            the declaredPreferencesKey to set
+	 */
+	protected void setDeclaredPreferencesKey(final Set<String> declaredPreferencesKey) {
+		this.declaredPreferencesKey = declaredPreferencesKey;
+	}
+
+	/**
+	 * Getter of defaultPreferences.
+	 * 
+	 * @return the defaultPreferences
+	 */
+	@Override
+	public IAppPreferences getDefaultPreferences() {
+		return this.defaultPreferences;
+	}
+
+	/**
+	 * Setter of defaultPreferences.
+	 * 
+	 * @param defaultPreferences
+	 *            the defaultPreferences to set
+	 */
+	protected void setDefaultPreferences(final IAppPreferences defaultPreferences) {
+		this.defaultPreferences = defaultPreferences;
+	}
+
+	/**
+	 * Setter of specialRoles.
+	 * 
+	 * @param specialRoles
+	 *            the specialRoles to set
+	 */
+	protected void setSpecialRoles(final Map<SpecialRole, IRole> specialRoles) {
+		this.specialRoles = specialRoles;
+	}
+
+	/**
+	 * Setter of specialPermissions.
+	 * 
+	 * @param specialPermissions
+	 *            the specialPermissions to set
+	 */
+	protected void setSpecialPermissions(final Map<SpecialPermission, IPermission> specialPermissions) {
+		this.specialPermissions = specialPermissions;
 	}
 
 }

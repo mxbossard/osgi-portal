@@ -101,7 +101,7 @@ public class BasicAppFactory implements IAppFactory {
 			BasicAppFactory.LOG.error("Error while URL encoding IApp signature !", e);
 		}
 
-		// Default
+		// Display
 		app.setTitle(appConfig.getDefaultTitle());
 		app.setWidth(appConfig.getDefaultWidth());
 		app.setHeight(appConfig.getDefaultHeight());

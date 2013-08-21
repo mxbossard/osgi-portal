@@ -45,7 +45,7 @@ import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
  * <li>
  * GUEST : role guest with no permission</li>
  * <li>
- * USER : role user with "user permission"</li>
+ * LOGGED : role user with "logged permission"</li>
  * <li>
  * ADMIN : role admin with "all permissions" and sub-role USER</li>
  * </ul>
@@ -56,23 +56,27 @@ import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 @Service
 public class BasicAclManager implements IAclManager, InitializingBean {
 
-	public static final Principal ADMIN = new PortalUserPrincipal("admin");
+	public static final Principal ADMIN = new PortalUserPrincipal("special_admin");
 
-	public static final Principal GUEST = new PortalUserPrincipal("guest");
+	public static final Principal GUEST = new PortalUserPrincipal("special_guest");
 
-	public static final Principal USER = new PortalUserPrincipal("user");
+	public static final Principal LOGGED = new PortalUserPrincipal("special_logged");
 
 	public static final String ALL_PERMISSIONS = "allPermissions";
 
 	public static final String USER_PERMISSION = "userPermission";
 
-	@Autowired(required = true)
+	public static final String CAN_RENDER_PERMISSION = "special_canRender";
+
+	public static final String CAN_EDIT_PERMISSION = "special_canEdit";
+
+	@Autowired
 	private IRoleFactory roleFactory;
 
-	@Autowired(required = true)
+	@Autowired
 	private IPermissionFactory permissionFactory;
 
-	@Autowired(required = true)
+	@Autowired
 	private IAclDao aclDao;
 
 	@Override
@@ -123,13 +127,14 @@ public class BasicAclManager implements IAclManager, InitializingBean {
 		final Set<IPermission> userPermissionSet = new HashSet<IPermission>(1);
 		userPermissionSet.add(userPermission);
 
-		final IRole userRole = this.roleFactory.initializeRole(BasicAclManager.USER.getName(), userPermissionSet, null);
+		final IRole userRole = this.roleFactory.initializeRole(BasicAclManager.LOGGED.getName(), userPermissionSet,
+				null);
 		final Set<IRole> userRoleSet = new HashSet<IRole>(1);
 		userRoleSet.add(userRole);
 
-		this.registerPrincipal(BasicAclManager.USER);
+		this.registerPrincipal(BasicAclManager.LOGGED);
 		this.aclDao.createRole(userRole);
-		this.registerPrincipalRoles(BasicAclManager.USER, userRoleSet);
+		this.registerPrincipalRoles(BasicAclManager.LOGGED, userRoleSet);
 
 		// Admin with "all permissions"
 		final IPermission allPermissions = this.permissionFactory.build(BasicAclManager.ALL_PERMISSIONS);

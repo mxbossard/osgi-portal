@@ -18,6 +18,7 @@ package fr.mby.portal.api.app;
 
 import java.util.Set;
 
+import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
 
 /**
@@ -83,22 +84,25 @@ public interface IAppConfig {
 	Set<IRole> getDeclaredRoles();
 
 	/**
-	 * Test if the Role can render this OPA.
+	 * Retireve an OPA special role.
 	 * 
-	 * @param role
-	 *            the role to test.
-	 * @return true if the role is authorized to render the OPA.
+	 * @return the special role for this OPA.
 	 */
-	boolean canRender(IRole role);
+	IRole getSpecialRole(SpecialRole specialRole);
 
 	/**
-	 * Test if the role can edit this OPA.
+	 * OPA declared permissions.
 	 * 
-	 * @param role
-	 *            the role to test.
-	 * @return true if the role is authorized to edit the OPA.
+	 * @return the permissions declared to be used by the OPA.
 	 */
-	boolean canEdit(IRole role);
+	Set<IPermission> getDeclaredPermissions();
+
+	/**
+	 * Retireve an OPA special permission.
+	 * 
+	 * @return the special permission for this OPA.
+	 */
+	IPermission getSpecialPermission(SpecialPermission specialPermission);
 
 	/**
 	 * The list of preferences key declared by this App.
@@ -114,8 +118,34 @@ public interface IAppConfig {
 	 */
 	IAppPreferences getDefaultPreferences();
 
+	/**
+	 * Available OPA rendering modes.
+	 * 
+	 * @author Maxime Bossard - 2013
+	 * 
+	 */
 	public enum RenderingMode {
 		IFRAMED, RENDERED;
+	}
+
+	/**
+	 * Special roles always available for an OPA.
+	 * 
+	 * @author Maxime Bossard - 2013
+	 * 
+	 */
+	public enum SpecialRole {
+		GUEST, LOGGED, ADMIN;
+	}
+
+	/**
+	 * Special permissions always available for an OPA.
+	 * 
+	 * @author Maxime Bossard - 2013
+	 * 
+	 */
+	public enum SpecialPermission {
+		CAN_RENDER, CAN_EDIT;
 	}
 
 }

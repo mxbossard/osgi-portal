@@ -71,7 +71,7 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 				resultingAuth = this.performAuthentication(auth, BasicAclManager.ADMIN);
 				break;
 			case "user" :
-				resultingAuth = this.performAuthentication(auth, BasicAclManager.USER);
+				resultingAuth = this.performAuthentication(auth, BasicAclManager.LOGGED);
 				break;
 			default :
 				break;

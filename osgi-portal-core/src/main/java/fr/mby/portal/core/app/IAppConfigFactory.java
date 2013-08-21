@@ -20,6 +20,7 @@ import org.osgi.framework.Bundle;
 
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.coreimpl.context.AppConfigNotFoundException;
+import fr.mby.portal.coreimpl.context.BadAppConfigException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -31,7 +32,9 @@ public interface IAppConfigFactory {
 
 	public static final String OPA_CONFIG_FILE_PATH = "/WEB-INF/opa.properties";
 
-	IAppConfig build(Bundle appBundle) throws AppConfigNotFoundException;
+	public static final String OPA_CONFIG_LIST_SPLITER = ",";
+
+	IAppConfig build(Bundle appBundle) throws AppConfigNotFoundException, BadAppConfigException;
 
 	public enum OpaConfigKeys {
 
@@ -50,11 +53,14 @@ public interface IAppConfigFactory {
 		/** List roles declared by the OPA. */
 		ACL_ROLES("opa.acl.roles"),
 
-		/** Roles able to render the OPA. */
-		ACL_CAN_RENDER("opa.acl.canRender"),
+		/** List permissions declared by the OPA. */
+		ACL_PERMISSIONS("opa.acl.permissions"),
 
-		/** Roles able to edit the OPA preferences. */
-		ACL_CAN_EDIT("opa.acl.canEdit"),
+		/** Roles able to render the OPA. */
+		ACL_SUBROLES_ASSIGNMENT_SUFFIX(".subRoles"),
+
+		/** Roles able to render the OPA. */
+		ACL_PERMISSIONS_ASSIGNMENT_SUFFIX(".perms"),
 
 		/** List of preferences key declared by the OPA. */
 		PREFERENCES("opa.preferences");
