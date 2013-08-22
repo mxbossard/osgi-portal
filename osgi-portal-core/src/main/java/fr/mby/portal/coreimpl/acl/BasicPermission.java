@@ -67,6 +67,11 @@ public class BasicPermission implements IPermission {
 		return true;
 	}
 
+	@Override
+	public String toString() {
+		return "BasicPermission [name=" + this.name + "]";
+	}
+
 	/**
 	 * Getter of name.
 	 * 

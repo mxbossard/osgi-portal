@@ -100,7 +100,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 
 		// ---------- Preferences configuration ----------
 		final String preferencesKeysVal = this.getOptionalValue(opaConfig, OpaConfigKeys.PREFERENCES.getKey());
-		final String[] preferencesKeysArray = StringUtils.split(preferencesKeysVal,
+		final String[] preferencesKeysArray = StringUtils.delimitedListToStringArray(preferencesKeysVal,
 				IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
 		if (preferencesKeysArray != null) {
 			for (final String prefKey : preferencesKeysArray) {
@@ -162,7 +162,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 
 		// Declared Permissions
 		final String aclPermissionsVal = this.getOptionalValue(opaConfig, OpaConfigKeys.ACL_PERMISSIONS.getKey());
-		final String[] aclPermissionsArray = StringUtils.split(aclPermissionsVal,
+		final String[] aclPermissionsArray = StringUtils.delimitedListToStringArray(aclPermissionsVal,
 				IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
 		if (aclPermissionsArray != null) {
 			for (final String aclPermissionName : aclPermissionsArray) {
@@ -207,7 +207,8 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 		final Set<String> aclRolesNames = new HashSet<String>();
 		aclRolesNames.addAll(specialRolesNames);
 		final String aclRolesVal = this.getOptionalValue(opaConfig, OpaConfigKeys.ACL_ROLES.getKey());
-		final String[] aclRolesArray = StringUtils.split(aclRolesVal, IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
+		final String[] aclRolesArray = StringUtils.delimitedListToStringArray(aclRolesVal,
+				IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
 		if (aclRolesArray != null) {
 			for (final String aclRoleName : aclRolesArray) {
 				if (StringUtils.hasText(aclRoleName)) {
@@ -224,7 +225,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 			final String permKey = OpaConfigKeys.ACL_ROLES.getKey().concat(".").concat(aclRoleName)
 					.concat(OpaConfigKeys.ACL_PERMISSIONS_ASSIGNMENT_SUFFIX.getKey());
 			final String rolePermissionsVal = this.getOptionalValue(opaConfig, permKey);
-			final String[] rolePermissionsArray = StringUtils.split(rolePermissionsVal,
+			final String[] rolePermissionsArray = StringUtils.delimitedListToStringArray(rolePermissionsVal,
 					IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
 			if (rolePermissionsArray != null) {
 				// We found a perm assignment
@@ -256,7 +257,8 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 			final String key = OpaConfigKeys.ACL_ROLES.getKey().concat(".").concat(aclRoleName)
 					.concat(OpaConfigKeys.ACL_SUBROLES_ASSIGNMENT_SUFFIX.getKey());
 			final String subRolesVal = this.getOptionalValue(opaConfig, key);
-			final String[] subRolesArray = StringUtils.split(subRolesVal, IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
+			final String[] subRolesArray = StringUtils.delimitedListToStringArray(subRolesVal,
+					IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
 			if (subRolesArray != null) {
 				subRolesSet = new HashSet<String>();
 				for (final String subRoleName : subRolesArray) {
