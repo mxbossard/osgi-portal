@@ -17,8 +17,13 @@
 package fr.mby.portal.coreimpl.context;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -32,7 +37,10 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import fr.mby.portal.api.acl.IPermission;
+import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.api.app.IAppConfig.SpecialPermission;
+import fr.mby.portal.api.app.IAppConfig.SpecialRole;
+import fr.mby.portal.core.acl.IPermissionFactory;
 import fr.mby.portal.core.app.IAppConfigFactory;
 
 /**
@@ -49,6 +57,9 @@ public class BasicAppConfigFactoryTest {
 	@Autowired
 	private BasicAppConfigFactory basicAppConfigFactory;
 
+	@Autowired
+	private IPermissionFactory permissionFactory;
+
 	private Properties emptyConfig;
 
 	private Properties missingConfig;
@@ -56,6 +67,8 @@ public class BasicAppConfigFactoryTest {
 	private Properties koConfig;
 
 	private Properties okConfig;
+
+	private final Map<String, IPermission> permissionsMap = new HashMap<String, IPermission>();
 
 	public BasicAppConfigFactoryTest() {
 		super();
@@ -68,6 +81,13 @@ public class BasicAppConfigFactoryTest {
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@PostConstruct
+	public void init() {
+		this.permissionsMap.put("CAN_EDIT", this.permissionFactory.build("CAN_EDIT"));
+		this.permissionsMap.put("CAN_RENDER", this.permissionFactory.build("CAN_RENDER"));
+		this.permissionsMap.put("lambdaPerm", this.permissionFactory.build("lambdaPerm"));
 	}
 
 	@Test
@@ -118,6 +138,112 @@ public class BasicAppConfigFactoryTest {
 		Assert.assertEquals("Declared permissions should be 3 !", 3, declaredPerms.size());
 	}
 
+	@Test
+	public void testProcessAclRolesOnEmptyConf() throws Exception {
+		final BasicAppConfig appConfig = this.processAclRoles(this.emptyConfig);
+
+		this.assertSpecialRolesExistence(appConfig);
+
+		final Set<IRole> declaredRoles = appConfig.getDeclaredRoles();
+
+		Assert.assertNotNull("Declared permissions should not be null !", declaredRoles);
+		Assert.assertEquals("Declared permissions should be 3 (specials) !", 3, declaredRoles.size());
+
+		// Empty conf => no sub-role nor permission assignment
+		final IRole logged = appConfig.getSpecialRole(SpecialRole.LOGGED);
+		final IRole admin = appConfig.getSpecialRole(SpecialRole.ADMIN);
+
+		final Set<IPermission> loggedPerms = logged.getPermissions();
+		final Set<IPermission> adminPerms = admin.getPermissions();
+
+		Assert.assertTrue("Special logged role should be empty !", loggedPerms.isEmpty());
+		Assert.assertTrue("Special admin role should be empty !", adminPerms.isEmpty());
+	}
+
+	@Test(expected = BadAppConfigException.class)
+	public void testProcessAclRolesOnKoConf() throws Exception {
+		this.processAclRoles(this.koConfig);
+	}
+
+	@Test
+	public void testProcessAclRolesOnMissingConf() throws Exception {
+		final BasicAppConfig appConfig = this.processAclRoles(this.missingConfig);
+
+		this.assertSpecialRolesExistence(appConfig);
+
+		final Set<IRole> declaredRoles = appConfig.getDeclaredRoles();
+
+		Assert.assertNotNull("Declared permissions should not be null !", declaredRoles);
+		Assert.assertEquals("Declared permissions should be 3 (specials) !", 3, declaredRoles.size());
+
+		// Missing conf => No admin sub-role assignment nor lambda role declaration
+		final IRole logged = appConfig.getSpecialRole(SpecialRole.LOGGED);
+		final IRole admin = appConfig.getSpecialRole(SpecialRole.ADMIN);
+
+		final Set<IPermission> loggedPerms = logged.getPermissions();
+		final Set<IPermission> adminPerms = admin.getPermissions();
+
+		Assert.assertEquals("Special logged role should have 1 perm : CAN_RENDER !", 1, loggedPerms.size());
+		Assert.assertEquals("Special logged role should have 1 perm : CAN_RENDER !",
+				this.permissionsMap.get("CAN_RENDER"), loggedPerms.iterator().next());
+		Assert.assertTrue("Special admin role should be empty !", adminPerms.isEmpty());
+	}
+
+	@Test
+	public void testProcessAclRolesOnOkConf() throws Exception {
+		final BasicAppConfig appConfig = this.processAclRoles(this.okConfig);
+
+		this.assertSpecialRolesExistence(appConfig);
+
+		final Set<IRole> declaredRoles = appConfig.getDeclaredRoles();
+
+		Assert.assertNotNull("Declared permissions should not be null !", declaredRoles);
+		Assert.assertEquals("Declared permissions should be 4 !", 4, declaredRoles.size());
+
+		// Conf ok
+		final IRole guest = appConfig.getSpecialRole(SpecialRole.GUEST);
+		final IRole logged = appConfig.getSpecialRole(SpecialRole.LOGGED);
+		final IRole admin = appConfig.getSpecialRole(SpecialRole.ADMIN);
+
+		final Set<IPermission> loggedPerms = logged.getPermissions();
+		final Set<IPermission> adminPerms = admin.getPermissions();
+
+		// logged sub-role of admin
+		Assert.assertEquals("Special logged role should be sub-role of admin !", logged, admin.getSubRoles().iterator()
+				.next());
+
+		// logged has can_render
+		Assert.assertEquals("Special logged role should have 1 perm : CAN_RENDER !", 1, loggedPerms.size());
+		Assert.assertEquals("Special logged role should have 1 perm : CAN_RENDER !",
+				this.permissionsMap.get("CAN_RENDER"), loggedPerms.iterator().next());
+		Assert.assertTrue("Special logged role should have 1 perm : CAN_RENDER !",
+				logged.isGranted(this.permissionsMap.get("CAN_RENDER")));
+
+		// admin has can_edit and is granted of can_render by sub-roling
+		Assert.assertEquals("Special admin role should have 1 perm : CAN_EDIT !", 1, adminPerms.size());
+		Assert.assertEquals("Special admin role should have 1 perm : CAN_EDIT !", this.permissionsMap.get("CAN_EDIT"),
+				adminPerms.iterator().next());
+		Assert.assertTrue("Special admin role should be granted 2 perms : CAN_RENDER & CAN_EDIT !",
+				admin.isGranted(this.permissionsMap.get("CAN_RENDER")));
+		Assert.assertTrue("Special admin role should be granted 2 perms : CAN_RENDER & CAN_EDIT !",
+				admin.isGranted(this.permissionsMap.get("CAN_EDIT")));
+
+		// lambdaRole have lambaPerm and logged has sub-role
+		final Set<IRole> roles = new HashSet<IRole>(declaredRoles);
+		roles.remove(guest);
+		roles.remove(logged);
+		roles.remove(admin);
+
+		final IRole lambdaRole = roles.iterator().next();
+		Assert.assertEquals("Lanmda role should have 1 perm : lambdaPerm !", 1, lambdaRole.getPermissions().size());
+		Assert.assertEquals("Lanmda role should have 1 perm : lambdaPerm !", this.permissionsMap.get("lambdaPerm"),
+				lambdaRole.getPermissions().iterator().next());
+		Assert.assertTrue("Lambda role should be granted 2 perms : CAN_RENDER & lambdaPerm !",
+				lambdaRole.isGranted(this.permissionsMap.get("CAN_RENDER")));
+		Assert.assertTrue("Lambda role should be granted 2 perms : CAN_RENDER & lambdaPerm !",
+				lambdaRole.isGranted(this.permissionsMap.get("lambdaPerm")));
+	}
+
 	protected BasicAppConfig processAclPermissions(final Properties opaConfig) throws Exception {
 		final MockBundle bundleApp = new MockBundle(BasicAppConfigFactoryTest.BUNDLE_SN);
 		final BasicAppConfig appConfig = new BasicAppConfig();
@@ -133,6 +259,28 @@ public class BasicAppConfigFactoryTest {
 
 		Assert.assertNotNull("Special can-edit permission should not be null !", canEditPerm);
 		Assert.assertNotNull("Declared can-render permission should not be null !", canRenderPerm);
+	}
+
+	protected BasicAppConfig processAclRoles(final Properties opaConfig) throws Exception {
+		final MockBundle bundleApp = new MockBundle(BasicAppConfigFactoryTest.BUNDLE_SN);
+		final BasicAppConfig appConfig = new BasicAppConfig();
+
+		this.basicAppConfigFactory.processAclRoles(bundleApp, appConfig, opaConfig, this.permissionsMap);
+
+		return appConfig;
+	}
+
+	protected void assertSpecialRolesExistence(final BasicAppConfig appConfig) {
+		final IRole guest = appConfig.getSpecialRole(SpecialRole.GUEST);
+		final IRole logged = appConfig.getSpecialRole(SpecialRole.LOGGED);
+		final IRole admin = appConfig.getSpecialRole(SpecialRole.ADMIN);
+
+		Assert.assertNotNull("Special guest role should not be null !", guest);
+		Assert.assertNotNull("Special logged role should not be null !", logged);
+		Assert.assertNotNull("Special admin role should not be null !", admin);
+
+		final Set<IPermission> guestPerms = guest.getPermissions();
+		Assert.assertTrue("Special guest role should be empty !", guestPerms.isEmpty());
 	}
 
 	@Test

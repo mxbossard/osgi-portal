@@ -219,7 +219,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 
 		// Search permissions assignment
 		final Map<String, Set<IPermission>> permissionsAssignment = new HashMap<String, Set<IPermission>>(4);
-		for (final String aclRoleName : rolesByAclName.keySet()) {
+		for (final String aclRoleName : aclRolesNames) {
 			// For each role search perm assignment
 			final Set<IPermission> rolePermissionSet;
 			final String permKey = OpaConfigKeys.ACL_ROLES.getKey().concat(".").concat(aclRoleName)
@@ -262,7 +262,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 			if (subRolesArray != null) {
 				subRolesSet = new HashSet<String>();
 				for (final String subRoleName : subRolesArray) {
-					if (StringUtils.hasText(subRoleName) && rolesByAclName.containsKey(subRoleName)) {
+					if (StringUtils.hasText(subRoleName) && aclRolesNames.contains(subRoleName)) {
 						subRolesSet.add(subRoleName);
 					} else {
 						final String message = String.format(
