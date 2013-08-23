@@ -98,6 +98,17 @@ public class BasicLoginManager implements ILoginManager {
 	}
 
 	@Override
+	public IAuthentication getLoggedAuthentication(final HttpServletRequest request) {
+		final IAuthentication auth = null;
+
+		if (this.isLogged(request)) {
+
+		}
+
+		return auth;
+	}
+
+	@Override
 	public void logout(final HttpServletRequest request, final HttpServletResponse response) {
 		// Destroy Portal sessions and Http session
 		this.sessionManager.destroySessions(request, response);

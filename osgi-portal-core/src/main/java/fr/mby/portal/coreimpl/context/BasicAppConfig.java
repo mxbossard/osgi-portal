@@ -23,7 +23,6 @@ import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IAppContext;
-import fr.mby.portal.api.app.IAppPreferences;
 
 /**
  * @author Maxime Bossard - 2013
@@ -54,8 +53,6 @@ public class BasicAppConfig implements IAppConfig {
 	private Map<SpecialPermission, IPermission> specialPermissions;
 
 	private Set<String> declaredPreferencesKey;
-
-	private IAppPreferences defaultPreferences;
 
 	/** Protected constructor. */
 	protected BasicAppConfig() {
@@ -270,26 +267,6 @@ public class BasicAppConfig implements IAppConfig {
 	 */
 	protected void setDeclaredPreferencesKey(final Set<String> declaredPreferencesKey) {
 		this.declaredPreferencesKey = declaredPreferencesKey;
-	}
-
-	/**
-	 * Getter of defaultPreferences.
-	 * 
-	 * @return the defaultPreferences
-	 */
-	@Override
-	public IAppPreferences getDefaultPreferences() {
-		return this.defaultPreferences;
-	}
-
-	/**
-	 * Setter of defaultPreferences.
-	 * 
-	 * @param defaultPreferences
-	 *            the defaultPreferences to set
-	 */
-	protected void setDefaultPreferences(final IAppPreferences defaultPreferences) {
-		this.defaultPreferences = defaultPreferences;
 	}
 
 	/**

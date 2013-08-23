@@ -112,13 +112,6 @@ public interface IAppConfig {
 	Set<String> getDeclaredPreferencesKey();
 
 	/**
-	 * The default configured preferences.
-	 * 
-	 * @return The default configured preferences.
-	 */
-	IAppPreferences getDefaultPreferences();
-
-	/**
 	 * Available OPA rendering modes.
 	 * 
 	 * @author Maxime Bossard - 2013

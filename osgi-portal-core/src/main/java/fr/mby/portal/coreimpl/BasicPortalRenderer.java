@@ -19,7 +19,10 @@ package fr.mby.portal.coreimpl;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -31,14 +34,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import fr.mby.portal.api.acl.IPermission;
+import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
+import fr.mby.portal.core.acl.IPermissionFactory;
 import fr.mby.portal.core.app.IAppConfigFactory;
 import fr.mby.portal.core.app.IAppFactory;
 import fr.mby.portal.core.app.IAppStore;
+import fr.mby.portal.core.auth.IAuthentication;
+import fr.mby.portal.core.security.ILoginManager;
+import fr.mby.portal.coreimpl.acl.BasicAclManager;
 import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
 
 /**
@@ -60,6 +69,12 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 
 	@Autowired
 	private IAppStore appStore;
+
+	@Autowired
+	private ILoginManager loginManager;
+
+	@Autowired
+	private IPermissionFactory permissionFactory;
 
 	@Override
 	public void render(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -98,6 +113,14 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 	public List<IApp> getAppsToRender(final HttpServletRequest request) throws Exception {
 		final ArrayList<IApp> appsToRender = new ArrayList<IApp>(16);
 
+		final IAuthentication userAuth = this.loginManager.getLoggedAuthentication(request);
+		final Set<IRole> userRoles;
+		if (userAuth == null) {
+			userRoles = Collections.emptySet();
+		} else {
+			userRoles = userAuth.getRoles();
+		}
+
 		if (this.portalAppReferenceListener != null) {
 			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
 				final Bundle bundle = appRef.getBundle();
@@ -108,6 +131,15 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 					final IApp app = this.appFactory.build(request, appConfig);
 
 					this.appStore.storeApp(app, request);
+
+					boolean canRender = false;
+					final IPermission canRenderPerm = this.permissionFactory
+							.build(BasicAclManager.CAN_RENDER_PERMISSION);
+					final Iterator<IRole> userRolesIt = userRoles.iterator();
+					while (!canRender && userRolesIt.hasNext()) {
+						final IRole role = userRolesIt.next();
+						canRender = role.isGranted(canRenderPerm);
+					}
 
 					appsToRender.add(app);
 				}

@@ -50,12 +50,12 @@ import fr.mby.portal.core.app.IAppConfigFactory;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:basicAppConfigFactoryTestContext.xml")
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
-public class BasicAppConfigFactoryTest {
+public class PropertiesAppConfigFactoryTest {
 
 	private static final String BUNDLE_SN = "BUNDLE-TEST-1.2.3";
 
 	@Autowired
-	private BasicAppConfigFactory basicAppConfigFactory;
+	private PropertiesAppConfigFactory basicAppConfigFactory;
 
 	@Autowired
 	private IPermissionFactory permissionFactory;
@@ -70,9 +70,8 @@ public class BasicAppConfigFactoryTest {
 
 	private final Map<String, IPermission> permissionsMap = new HashMap<String, IPermission>();
 
-	public BasicAppConfigFactoryTest() {
-		super();
-
+	@PostConstruct
+	public void init() {
 		try {
 			this.emptyConfig = PropertiesLoaderUtils.loadAllProperties("appConfig/opa-empty.properties");
 			this.missingConfig = PropertiesLoaderUtils.loadAllProperties("appConfig/opa-missing.properties");
@@ -81,10 +80,7 @@ public class BasicAppConfigFactoryTest {
 		} catch (final IOException e) {
 			e.printStackTrace();
 		}
-	}
 
-	@PostConstruct
-	public void init() {
 		this.permissionsMap.put("CAN_EDIT", this.permissionFactory.build("CAN_EDIT"));
 		this.permissionsMap.put("CAN_RENDER", this.permissionFactory.build("CAN_RENDER"));
 		this.permissionsMap.put("lambdaPerm", this.permissionFactory.build("lambdaPerm"));
@@ -245,7 +241,7 @@ public class BasicAppConfigFactoryTest {
 	}
 
 	protected BasicAppConfig processAclPermissions(final Properties opaConfig) throws Exception {
-		final MockBundle bundleApp = new MockBundle(BasicAppConfigFactoryTest.BUNDLE_SN);
+		final MockBundle bundleApp = new MockBundle(PropertiesAppConfigFactoryTest.BUNDLE_SN);
 		final BasicAppConfig appConfig = new BasicAppConfig();
 
 		this.basicAppConfigFactory.processAclPermissions(bundleApp, appConfig, opaConfig);
@@ -262,7 +258,7 @@ public class BasicAppConfigFactoryTest {
 	}
 
 	protected BasicAppConfig processAclRoles(final Properties opaConfig) throws Exception {
-		final MockBundle bundleApp = new MockBundle(BasicAppConfigFactoryTest.BUNDLE_SN);
+		final MockBundle bundleApp = new MockBundle(PropertiesAppConfigFactoryTest.BUNDLE_SN);
 		final BasicAppConfig appConfig = new BasicAppConfig();
 
 		this.basicAppConfigFactory.processAclRoles(bundleApp, appConfig, opaConfig, this.permissionsMap);

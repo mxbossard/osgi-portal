@@ -25,8 +25,10 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -42,13 +44,17 @@ import fr.mby.portal.core.acl.IAclManager;
 import fr.mby.portal.core.acl.IPermissionFactory;
 import fr.mby.portal.core.acl.IRoleFactory;
 import fr.mby.portal.core.app.IAppConfigFactory;
+import fr.mby.portal.core.cache.ICachingService;
+import fr.mby.portal.core.preferences.IAppPreferencesManager;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Service
-public class BasicAppConfigFactory implements IAppConfigFactory {
+public class PropertiesAppConfigFactory implements IAppConfigFactory, ICachingService {
+
+	private final Map<BundleContext, IAppConfig> configCache = new WeakHashMap<BundleContext, IAppConfig>(8);
 
 	@Autowired
 	private IRoleFactory roleFactory;
@@ -59,10 +65,35 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 	@Autowired
 	private IAclManager aclManager;
 
+	@Autowired
+	private IAppPreferencesManager appPreferencesManager;
+
 	@Override
 	public IAppConfig build(final Bundle bundleApp) throws AppConfigNotFoundException, BadAppConfigException {
 		Assert.notNull(bundleApp, "No bunlde supplied !");
 
+		final BundleContext bundleContext = bundleApp.getBundleContext();
+		if (bundleContext == null) {
+			throw new IllegalStateException("No BundleCotext attache to this OPA !");
+		}
+
+		IAppConfig appConfig = this.configCache.get(bundleApp.getBundleContext());
+		if (appConfig == null) {
+			appConfig = this.buildConfig(bundleApp);
+			this.configCache.put(bundleContext, appConfig);
+		}
+
+		return appConfig;
+	}
+
+	/**
+	 * @param bundleApp
+	 * @return
+	 * @throws AppConfigNotFoundException
+	 * @throws BadAppConfigException
+	 */
+	protected BasicAppConfig buildConfig(final Bundle bundleApp) throws AppConfigNotFoundException,
+			BadAppConfigException {
 		final BasicAppConfig appConfig = new BasicAppConfig();
 
 		appConfig.setSymbolicName(bundleApp.getSymbolicName());
@@ -99,18 +130,14 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 		this.processAclRoles(bundleApp, appConfig, opaConfig, permissionsMap);
 
 		// ---------- Preferences configuration ----------
-		final String preferencesKeysVal = this.getOptionalValue(opaConfig, OpaConfigKeys.PREFERENCES.getKey());
-		final String[] preferencesKeysArray = StringUtils.delimitedListToStringArray(preferencesKeysVal,
-				IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
-		if (preferencesKeysArray != null) {
-			for (final String prefKey : preferencesKeysArray) {
-				// Search prefValue
-				final String preferenceVal = this.getOptionalValue(opaConfig, prefKey);
-				// TODO build IPreferences and inject it to appConfig
-			}
-		}
+		this.processPreferences(appConfig, opaConfig);
 
 		return appConfig;
+	}
+
+	@Override
+	public void clearCache() {
+		this.configCache.clear();
 	}
 
 	/**
@@ -146,8 +173,8 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 	 * @throws AppConfigNotFoundException
 	 */
 	protected Map<String, IPermission> processAclPermissions(final Bundle bundleApp, final BasicAppConfig appConfig,
-			final Properties opaConfig) throws AppConfigNotFoundException {
-		final Map<String, IPermission> permissionsMap = new HashMap<String, IPermission>(4);
+			final Properties opaConfig) {
+		final Map<String, IPermission> permissionsByAclName = new HashMap<String, IPermission>(4);
 
 		// Special Permissions
 		final Map<SpecialPermission, IPermission> specialPermissions = new HashMap<SpecialPermission, IPermission>(
@@ -156,7 +183,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 			final String finalPermissionName = this.buildFinalPermissionName(bundleApp, spEnum.name());
 			final IPermission specialPerm = this.permissionFactory.build(finalPermissionName);
 			specialPermissions.put(spEnum, specialPerm);
-			permissionsMap.put(spEnum.name(), specialPerm);
+			permissionsByAclName.put(spEnum.name(), specialPerm);
 		}
 		appConfig.setSpecialPermissions(Collections.unmodifiableMap(specialPermissions));
 
@@ -169,14 +196,14 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 				if (StringUtils.hasText(aclPermissionName)) {
 					final String finalPermissionName = this.buildFinalPermissionName(bundleApp, aclPermissionName);
 					final IPermission permission = this.permissionFactory.build(finalPermissionName);
-					permissionsMap.put(finalPermissionName, permission);
+					permissionsByAclName.put(aclPermissionName, permission);
 				}
 			}
 		}
-		final Set<IPermission> permissionsSet = new HashSet<IPermission>(permissionsMap.values());
+		final Set<IPermission> permissionsSet = new HashSet<IPermission>(permissionsByAclName.values());
 		appConfig.setDeclaredPermissions(Collections.unmodifiableSet(permissionsSet));
 
-		return permissionsMap;
+		return permissionsByAclName;
 	}
 
 	/**
@@ -192,8 +219,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 	 * @throws BadAppConfigException
 	 */
 	protected Map<String, IRole> processAclRoles(final Bundle bundleApp, final BasicAppConfig appConfig,
-			final Properties opaConfig, final Map<String, IPermission> permissionsMap)
-			throws AppConfigNotFoundException, BadAppConfigException {
+			final Properties opaConfig, final Map<String, IPermission> permissionsMap) throws BadAppConfigException {
 		final Map<String, IRole> rolesByAclName = new HashMap<String, IRole>(4);
 
 		// Special Roles
@@ -317,11 +343,36 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 		return rolesByAclName;
 	}
 
+	/**
+	 * Process default OPA permissions from config.
+	 * 
+	 * @param appConfig
+	 * @param opaConfig
+	 * @throws AppConfigNotFoundException
+	 */
+	protected void processPreferences(final BasicAppConfig appConfig, final Properties opaConfig) {
+		final String preferencesKeysVal = this.getOptionalValue(opaConfig, OpaConfigKeys.PREFERENCES.getKey());
+		final String[] preferencesKeysArray = StringUtils.delimitedListToStringArray(preferencesKeysVal,
+				IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
+		if (preferencesKeysArray != null) {
+			final Map<String, String[]> preferencesMap = new HashMap<String, String[]>(preferencesKeysArray.length);
+			for (final String prefKey : preferencesKeysArray) {
+				// Search prefValue
+				final String preferenceVal = this.getOptionalValue(opaConfig, prefKey);
+				final String[] preferenceValArray = StringUtils.delimitedListToStringArray(preferenceVal,
+						IAppConfigFactory.OPA_CONFIG_LIST_SPLITER);
+				preferencesMap.put(prefKey, preferenceValArray);
+			}
+
+			this.appPreferencesManager.init(appConfig, preferencesMap);
+		}
+	}
+
 	protected Properties loadOpaConfig(final Bundle opaBundle) throws AppConfigNotFoundException {
-		final URL opaPropertiesUrl = opaBundle.getResource(IAppConfigFactory.OPA_CONFIG_FILE_PATH);
+		final URL opaPropertiesUrl = opaBundle.getResource(IAppConfigFactory.OPA_CONFIG_PROPERTIES_FILE_PATH);
 		if (opaPropertiesUrl == null) {
 			final String message = String.format("No OPA configuration file (%1$s) found in OPA [%2$s] !",
-					IAppConfigFactory.OPA_CONFIG_FILE_PATH, opaBundle.getSymbolicName());
+					IAppConfigFactory.OPA_CONFIG_PROPERTIES_FILE_PATH, opaBundle.getSymbolicName());
 			throw new AppConfigNotFoundException(message);
 		}
 
@@ -330,7 +381,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 			props.load(opaPropertiesUrl.openStream());
 		} catch (final IOException e) {
 			final String message = String.format("Unable to open OPA configuration file (%1$s) found in OPA [%2$s] !",
-					IAppConfigFactory.OPA_CONFIG_FILE_PATH, opaBundle.getSymbolicName());
+					IAppConfigFactory.OPA_CONFIG_PROPERTIES_FILE_PATH, opaBundle.getSymbolicName());
 			throw new AppConfigNotFoundException(message, e);
 		}
 
@@ -352,8 +403,7 @@ public class BasicAppConfigFactory implements IAppConfigFactory {
 
 	}
 
-	protected String getOptionalValue(final Properties opaProps, final String propertyKey)
-			throws AppConfigNotFoundException {
+	protected String getOptionalValue(final Properties opaProps, final String propertyKey) {
 		final String propertyValue = opaProps.getProperty(propertyKey);
 
 		return propertyValue;

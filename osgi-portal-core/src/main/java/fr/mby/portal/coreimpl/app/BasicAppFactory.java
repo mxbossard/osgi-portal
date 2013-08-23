@@ -37,6 +37,7 @@ import fr.mby.portal.core.app.IAppFactory;
 import fr.mby.portal.core.app.IAppSigner;
 import fr.mby.portal.core.preferences.IAppPreferencesManager;
 import fr.mby.portal.core.session.ISessionManager;
+import fr.mby.portal.coreimpl.context.AppConfigNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -65,9 +66,14 @@ public class BasicAppFactory implements IAppFactory {
 		Assert.notNull(request, "No HttpServletRequest supplied !");
 		Assert.notNull(appConfig, "No IAppConfig supplied !");
 
-		final IAppPreferences appPreferences = this.appPreferencesManager.getAppPreferences(appConfig);
+		final BasicApp app = new BasicApp(appConfig);
 
-		final BasicApp app = new BasicApp(appConfig, appPreferences);
+		try {
+			final IAppPreferences appPrefs = this.appPreferencesManager.load(app);
+			app.setPreferences(appPrefs);
+		} catch (final AppConfigNotFoundException e) {
+			throw new IllegalStateException(e);
+		}
 
 		final String namespace = this.generateNamespace(request, appConfig);
 		app.setNamespace(namespace);

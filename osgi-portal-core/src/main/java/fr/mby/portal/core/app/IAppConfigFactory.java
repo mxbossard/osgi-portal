@@ -30,7 +30,7 @@ public interface IAppConfigFactory {
 
 	public static final Object WEB_CONTEXT_PATH_BUNDLE_HEADER = "Web-ContextPath";
 
-	public static final String OPA_CONFIG_FILE_PATH = "/WEB-INF/opa.properties";
+	public static final String OPA_CONFIG_PROPERTIES_FILE_PATH = "/WEB-INF/opa.properties";
 
 	public static final String OPA_CONFIG_LIST_SPLITER = ",";
 

@@ -28,7 +28,7 @@ public class BasicApp implements IApp {
 
 	private final IAppConfig config;
 
-	private final IAppPreferences preferences;
+	private IAppPreferences preferences;
 
 	private String namespace;
 
@@ -50,10 +50,9 @@ public class BasicApp implements IApp {
 	/**
 	 * @param appConfig
 	 */
-	protected BasicApp(final IAppConfig appConfig, final IAppPreferences appPreferences) {
+	protected BasicApp(final IAppConfig appConfig) {
 		super();
 		this.config = appConfig;
-		this.preferences = appPreferences;
 	}
 
 	/**
@@ -69,6 +68,16 @@ public class BasicApp implements IApp {
 	@Override
 	public IAppPreferences getPreferences() {
 		return this.preferences;
+	}
+
+	/**
+	 * Setter of preferences.
+	 * 
+	 * @param preferences
+	 *            the preferences to set
+	 */
+	public void setPreferences(final IAppPreferences preferences) {
+		this.preferences = preferences;
 	}
 
 	/**

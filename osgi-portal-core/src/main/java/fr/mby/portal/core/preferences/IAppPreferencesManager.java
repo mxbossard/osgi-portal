@@ -16,9 +16,12 @@
 
 package fr.mby.portal.core.preferences;
 
+import java.util.Map;
+
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IAppPreferences;
+import fr.mby.portal.coreimpl.context.AppConfigNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -26,8 +29,32 @@ import fr.mby.portal.api.app.IAppPreferences;
  */
 public interface IAppPreferencesManager {
 
-	IAppPreferences getAppPreferences(IAppConfig appConfig);
+	/**
+	 * Initialize the IAppPreferences of an IAppConfig instance.
+	 * 
+	 * @param appConfig
+	 * @param preferencesMap
+	 * @return the convenient IAppPreferences.
+	 */
+	void init(IAppConfig appConfig, Map<String, String[]> preferencesMap);
 
-	void storeAppPreferences(IApp app, IAppPreferences appPreferences);
+	/**
+	 * Load an IAppPreferences.
+	 * 
+	 * @param app
+	 * @return the correspondant IAppPreferences, cannot be null.
+	 * @throws AppConfigNotFoundException
+	 */
+	IAppPreferences load(IApp app) throws AppConfigNotFoundException;
+
+	/**
+	 * Save IAppPreferences modifications.
+	 * 
+	 * @param appPreferences
+	 * @param preferencesMap
+	 * @return the correspondant IAppPreferences, cannot be null.
+	 * @throws AppConfigNotFoundException
+	 */
+	IAppPreferences update(IApp app, Map<String, String[]> preferencesMap) throws AppConfigNotFoundException;
 
 }

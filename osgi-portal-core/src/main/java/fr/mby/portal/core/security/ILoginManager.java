@@ -53,6 +53,15 @@ public interface ILoginManager {
 	boolean isLogged(HttpServletRequest request);
 
 	/**
+	 * Retrieve the IAuthentication build when user authenticated.
+	 * 
+	 * @param request
+	 *            Http request
+	 * @return the logged auth objet or null
+	 */
+	IAuthentication getLoggedAuthentication(HttpServletRequest request);
+
+	/**
 	 * Perform a logout from the Portal.
 	 * 
 	 * @param request
