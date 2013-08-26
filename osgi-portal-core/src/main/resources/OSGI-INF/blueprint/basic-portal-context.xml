@@ -11,6 +11,9 @@
 	
 	<bean id="configManager" class="fr.mby.portal.coreimpl.configuration.PropertiesConfigurationManager" />
 
+	<!-- Listener to retrieve each App bundle ServiceReference -->
+	<bean id="portalAppReferenceListener" class="fr.mby.portal.coreimpl.app.PortalAppReferenceListener" />
+
 	<bean id="portalRenderer" class="fr.mby.portal.coreimpl.BasicPortalRenderer">
 		<property name="portalApps" ref="portalAppReferences" />
 		<property name="portalAppReferenceListener" ref="portalAppReferenceListener" />

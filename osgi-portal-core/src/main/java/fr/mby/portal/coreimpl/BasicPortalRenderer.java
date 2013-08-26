@@ -16,20 +16,19 @@
 
 package fr.mby.portal.coreimpl;
 
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 import fr.mby.portal.api.acl.IAuthorization;
 import fr.mby.portal.api.acl.IPermission;
@@ -37,7 +36,6 @@ import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IAppConfig.SpecialPermission;
 import fr.mby.portal.api.app.IAppConfig.SpecialRole;
-import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.acl.IPermissionFactory;
@@ -47,8 +45,12 @@ import fr.mby.portal.core.app.IAppStore;
 import fr.mby.portal.core.auth.IAuthentication;
 import fr.mby.portal.core.security.ILoginManager;
 import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
+import fr.mby.portal.coreimpl.context.AppConfigNotFoundException;
+import fr.mby.portal.coreimpl.context.BadAppConfigException;
 
 /**
+ * Basic rendering : render all app the user is authorized to render.
+ * 
  * @author Maxime Bossard - 2013
  * 
  */
@@ -75,119 +77,85 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 	private IPermissionFactory permissionFactory;
 
 	@Override
-	public void render(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
-
-		final PrintWriter writer = response.getWriter();
-
-		if (this.portalApps != null) {
-			for (final IPortalApp portalApp : this.portalApps) {
-				// Nothing
-				portalApp.processAction(null, null);
-			}
-		}
-
-		writer.append("<!doctype html>\n<html>\n<head>\n</head>\n<body>\n");
-		writer.append("<h1>OSGi Portal !</h1>\n");
-
-		if (this.portalAppReferenceListener != null) {
-			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
-				final Bundle bundle = appRef.getBundle();
-				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
-
-				// Each App is displayed 1 times
-				for (int k = 0; k < 1; k++) {
-					final IApp app = this.appFactory.build(request, appConfig);
-
-					this.renderApp(writer, app);
-				}
-			}
-		}
-
-		writer.append("</body>\n</html>\n");
-		writer.flush();
-	}
-
-	@Override
 	public List<IApp> getAppsToRender(final HttpServletRequest request) throws Exception {
 		final ArrayList<IApp> appsToRender = new ArrayList<IApp>(16);
 
-		if (this.portalAppReferenceListener != null) {
+		final IAuthentication userAuth = this.loginManager.getLoggedAuthentication(request);
 
-			final IAuthentication userAuth = this.loginManager.getLoggedAuthentication(request);
+		final Set<IAppConfig> startedAppConfigs = this.getStartedAppConfigs();
+		for (final IAppConfig appConfig : startedAppConfigs) {
+			final boolean canRenderApp = this.canRenderApp(userAuth, appConfig);
 
-			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
-				final Bundle bundle = appRef.getBundle();
-				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
-
-				// User roles
-				IAuthorization userAuthorizations = null;
-				if (userAuth != null) {
-					userAuthorizations = userAuth.getPermissionSet();
-				}
-
-				// Special roles
-				final IAuthorization specialAuthorizations;
-				if (userAuth != null && userAuth.isAuthenticated()) {
-					// User is logged
-					specialAuthorizations = appConfig.getSpecialRole(SpecialRole.LOGGED);
-				} else {
-					// User is a guest
-					specialAuthorizations = appConfig.getSpecialRole(SpecialRole.GUEST);
-				}
-
-				// Retrieve the App render permission
-				final IPermission canRenderPerm = appConfig.getSpecialPermission(SpecialPermission.CAN_RENDER);
-
-				final boolean canRenderApp = specialAuthorizations.isGranted(canRenderPerm)
-						|| userAuthorizations != null && userAuthorizations.isGranted(canRenderPerm);
-
-				if (canRenderApp) {
-					final IApp app = this.appFactory.build(request, appConfig);
-					this.appStore.storeApp(app, request);
-					appsToRender.add(app);
-				}
+			if (canRenderApp) {
+				final IApp app = this.appFactory.build(request, appConfig);
+				this.appStore.storeApp(app, request);
+				appsToRender.add(app);
 			}
 		}
 
 		return appsToRender;
 	}
 
+	/**
+	 * Retrieve the unordered set of all IAppConfig of started OPA.
+	 * 
+	 * @return
+	 * @throws AppConfigNotFoundException
+	 * @throws BadAppConfigException
+	 */
+	protected Set<IAppConfig> getStartedAppConfigs() throws AppConfigNotFoundException, BadAppConfigException {
+		final Set<IAppConfig> appConfigs = new HashSet<IAppConfig>(16);
+
+		if (this.portalAppReferenceListener != null) {
+
+			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
+				final Bundle bundle = appRef.getBundle();
+				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
+
+				appConfigs.add(appConfig);
+			}
+		}
+
+		return appConfigs;
+	}
+
+	/**
+	 * Test if user authentication is allowed to render the AppConfig. Check App special roles GUEST and LOGGED. Check
+	 * User roles.
+	 * 
+	 * @param userAuth
+	 * @param appConfig
+	 * @return true if allowed.
+	 */
+	protected boolean canRenderApp(final IAuthentication userAuth, final IAppConfig appConfig) {
+		// User roles
+		IAuthorization userAuthorizations = null;
+		if (userAuth != null) {
+			userAuthorizations = userAuth.getPermissionSet();
+		}
+
+		// Special roles
+		final IAuthorization specialAuthorizations;
+		if (userAuth != null && userAuth.isAuthenticated()) {
+			// User is logged
+			specialAuthorizations = appConfig.getSpecialRole(SpecialRole.LOGGED);
+		} else {
+			// User is a guest
+			specialAuthorizations = appConfig.getSpecialRole(SpecialRole.GUEST);
+		}
+
+		// Retrieve the App render permission
+		final IPermission canRenderPerm = appConfig.getSpecialPermission(SpecialPermission.CAN_RENDER);
+
+		final boolean canRenderApp = specialAuthorizations.isGranted(canRenderPerm) || userAuthorizations != null
+				&& userAuthorizations.isGranted(canRenderPerm);
+		return canRenderApp;
+	}
+
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		Assert.notNull(this.appConfigFactory, "No IAppConfigFactory configured !");
 		Assert.notNull(this.appFactory, "No IAppFactory configured !");
-	}
-
-	/**
-	 * @param writer
-	 * @param bundle
-	 */
-	protected void renderApp(final PrintWriter writer, final IApp app) {
-		final IAppConfig appConfig = app.getConfig();
-		final IAppContext appContext = appConfig.getContext();
-
-		final String webBundlePath = appContext.getWebContextPath();
-
-		if (StringUtils.hasText(webBundlePath)) {
-			writer.append("<div id=\"");
-			writer.append(app.getNamespace());
-			writer.append("\">\n");
-
-			final String symbolicName = appConfig.getSymbolicName();
-			writer.append("<h2>");
-			writer.append(symbolicName);
-			writer.append("</h2>\n");
-
-			writer.append("<iframe src=\"");
-			writer.append(webBundlePath);
-			writer.append("\" style=\"width: ");
-			writer.append(app.getWidth());
-			writer.append("; height: ");
-			writer.append(app.getHeight());
-			writer.append("\"></iframe>\n");
-
-			writer.append("</div>\n");
-		}
 	}
 
 	/**

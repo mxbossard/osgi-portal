@@ -19,7 +19,6 @@ package fr.mby.portal.core;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import fr.mby.portal.api.app.IApp;
 
@@ -36,8 +35,6 @@ public interface IPortalRenderer {
 	static final String PORTAL_SESSION_ID_PARAM_NAME = "portalSession";
 
 	static final String PORTAL_SESSION_ID_COOKIE_NAME = "portalSession";
-
-	void render(HttpServletRequest request, HttpServletResponse response) throws Exception;
 
 	List<IApp> getAppsToRender(HttpServletRequest request) throws Exception;
 

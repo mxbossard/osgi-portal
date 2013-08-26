@@ -31,27 +31,12 @@
 	<!-- LoginManager -->
 	<service id="loginManagerService" ref="loginManager" 
 		interface="fr.mby.portal.core.security.ILoginManager" />
-		
-	<bean id="portalAppReferenceListener" class="fr.mby.portal.coreimpl.app.PortalAppReferenceListener" />
-<!-- 	
-	<service ref="portalAppReferenceListener" interface="org.osgi.service.event.EventHandler">
-		<service-properties>
-            <entry key="event.topics" value="*"/>
-        </service-properties>
-	</service>
- -->
-	 
+
 	<!-- IPortalApp installed -->
 	<reference-list id="portalAppReferences" interface="fr.mby.portal.api.app.IPortalApp" availability="optional">
 		<reference-listener ref="portalAppReferenceListener" bind-method="onBind" unbind-method="onUnbind" />
 	</reference-list>
-	
-<!-- 	
-	<reference id="portalAppReferences" interface="fr.mby.portal.api.app.IPortalApp" availability="optional">
-		<reference-listener ref="portalAppReferenceListener" bind-method="onBind" unbind-method="onUnbind" />
-	</reference>
- -->
-	
+
 	<!-- IAuthenticationProvider installed -->
 	<reference-list id="authenticationProviderReferences" interface="fr.mby.portal.core.auth.IAuthenticationProvider" availability="optional">
 	</reference-list>
