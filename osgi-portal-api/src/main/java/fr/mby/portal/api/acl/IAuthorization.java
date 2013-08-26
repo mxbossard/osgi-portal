@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.auth;
-
-import java.io.Serializable;
-import java.security.Principal;
-
-import fr.mby.portal.api.acl.IAuthorization;
+package fr.mby.portal.api.acl;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAuthentication extends Principal, Serializable {
+public interface IAuthorization {
 
-	Principal getPrincipal();
-
-	Object getCredentials();
-
-	boolean isAuthenticated();
-
-	IAuthorization getPermissionSet();
+	/**
+	 * Test if the specified permission is granted by this Authorization.
+	 * 
+	 * @param permission
+	 * @return true if the specified permission is granted by this Role
+	 */
+	boolean isGranted(IPermission permission);
 
 }

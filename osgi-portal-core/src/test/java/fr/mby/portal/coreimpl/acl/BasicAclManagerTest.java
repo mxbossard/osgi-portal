@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,8 +29,12 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IRole;
+import fr.mby.portal.core.acl.IAclDao;
+import fr.mby.portal.core.acl.IPermissionFactory;
 import fr.mby.portal.core.acl.IRoleFactory;
+import fr.mby.portal.core.acl.RoleAlreadyExistsException;
 import fr.mby.portal.core.acl.RoleNotFoundException;
 import fr.mby.portal.core.security.PrincipalAlreadyExistsException;
 import fr.mby.portal.core.security.PrincipalNotFoundException;
@@ -44,11 +49,66 @@ import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 @DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
 public class BasicAclManagerTest {
 
-	@Autowired(required = true)
+	public static final String ALL_PERMISSIONS = "allPermissions";
+
+	public static final String USER_PERMISSION = "userPermission";
+
+	public static final String CAN_RENDER_PERMISSION = "special_canRender";
+
+	public static final String CAN_EDIT_PERMISSION = "special_canEdit";
+
+	private IAclDao aclDao;
+	private IRoleFactory roleFactory;
+	private IPermissionFactory permissionFactory;
+
+	@Autowired()
 	private BasicAclManager basicAclManager;
 
-	@Autowired(required = true)
-	private IRoleFactory roleFactory;
+	@Before
+	public void initializeAcl() throws PrincipalAlreadyExistsException, PrincipalNotFoundException,
+			RoleNotFoundException, RoleAlreadyExistsException {
+
+		this.aclDao = this.basicAclManager.getAclDao();
+		this.roleFactory = this.basicAclManager.getRoleFactory();
+		this.permissionFactory = this.basicAclManager.getPermissionFactory();
+
+		// Guest with no permission
+		final IRole guestRole = this.roleFactory.initializeRole(BasicAclManager.GUEST.getName(), null, null);
+		final Set<IRole> guestRolesSet = new HashSet<IRole>(1);
+		guestRolesSet.add(guestRole);
+
+		this.basicAclManager.registerPrincipal(BasicAclManager.GUEST);
+		this.aclDao.createRole(guestRole);
+		this.basicAclManager.registerPrincipalRoles(BasicAclManager.GUEST, guestRolesSet);
+
+		// User with "user permission"
+		final IPermission userPermission = this.permissionFactory.build(BasicAclManagerTest.USER_PERMISSION);
+		final Set<IPermission> userPermissionSet = new HashSet<IPermission>(1);
+		userPermissionSet.add(userPermission);
+
+		final IRole userRole = this.roleFactory.initializeRole(BasicAclManager.LOGGED.getName(), userPermissionSet,
+				null);
+		final Set<IRole> userRoleSet = new HashSet<IRole>(1);
+		userRoleSet.add(userRole);
+
+		this.basicAclManager.registerPrincipal(BasicAclManager.LOGGED);
+		this.aclDao.createRole(userRole);
+		this.basicAclManager.registerPrincipalRoles(BasicAclManager.LOGGED, userRoleSet);
+
+		// Admin with "all permissions"
+		final IPermission allPermissions = this.permissionFactory.build(BasicAclManagerTest.ALL_PERMISSIONS);
+		final Set<IPermission> allPermissionsSet = new HashSet<IPermission>(1);
+		allPermissionsSet.add(allPermissions);
+
+		final IRole adminRole = this.roleFactory.initializeRole(BasicAclManager.ADMIN.getName(), allPermissionsSet,
+				userRoleSet);
+		final Set<IRole> adminRolesSet = new HashSet<IRole>(1);
+		adminRolesSet.add(adminRole);
+
+		this.basicAclManager.registerPrincipal(BasicAclManager.ADMIN);
+		this.aclDao.createRole(adminRole);
+		this.basicAclManager.registerPrincipalRoles(BasicAclManager.ADMIN, adminRolesSet);
+	}
 
 	@Test
 	public void testRetrievePrincipalRoles() throws Exception {

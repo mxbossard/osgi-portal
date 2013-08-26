@@ -17,12 +17,10 @@
 package fr.mby.portal.core.auth;
 
 import java.security.Principal;
-import java.util.Collections;
-import java.util.Set;
 
 import org.springframework.util.Assert;
 
-import fr.mby.portal.api.acl.IRole;
+import fr.mby.portal.api.acl.IAuthorization;
 import fr.mby.portal.coreimpl.security.PortalUserPrincipal;
 
 /**
@@ -42,7 +40,7 @@ public class PortalUserAuthentication implements IAuthentication {
 
 	private final boolean authenticated;
 
-	private Set<IRole> roles;
+	private IAuthorization permissionSet;
 
 	/**
 	 * Normal constructor of PortalUserAuthentication.
@@ -67,20 +65,16 @@ public class PortalUserAuthentication implements IAuthentication {
 	 * @param principal
 	 * @param credentials
 	 */
-	public PortalUserAuthentication(final String username, final String password, final Set<IRole> roles) {
+	public PortalUserAuthentication(final String username, final String password, final IAuthorization permissionSet) {
 		super();
 
 		Assert.hasText(username, "No username supplied !");
 		Assert.hasText(password, "No password supplied !");
+		Assert.notNull(permissionSet, "No IPermissionSet supplied !");
 
 		this.principal = new PortalUserPrincipal(username);
 		this.credentials = password;
-
-		if (roles != null) {
-			this.roles = roles;
-		} else {
-			this.roles = Collections.emptySet();
-		}
+		this.permissionSet = permissionSet;
 
 		this.authenticated = true;
 	}
@@ -126,14 +120,14 @@ public class PortalUserAuthentication implements IAuthentication {
 	 * @return the roles
 	 */
 	@Override
-	public Set<IRole> getRoles() {
-		return this.roles;
+	public IAuthorization getPermissionSet() {
+		return this.permissionSet;
 	}
 
 	@Override
 	public String toString() {
 		return "PortalUserAuthentication [principal=" + this.principal + ", authenticated=" + this.authenticated
-				+ ", roles=" + this.roles + "]";
+				+ ", permissionSet=" + this.permissionSet.toString() + "]";
 	}
 
 }

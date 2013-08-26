@@ -118,7 +118,12 @@ public interface IAppConfig {
 	 * 
 	 */
 	public enum RenderingMode {
-		IFRAMED, RENDERED;
+
+		/** The App is rendered by the client in an iframe. */
+		IFRAMED,
+
+		/** The App is rendered by the server and integrated in the portal. */
+		RENDERED;
 	}
 
 	/**
@@ -128,7 +133,15 @@ public interface IAppConfig {
 	 * 
 	 */
 	public enum SpecialRole {
-		GUEST, LOGGED, ADMIN;
+
+		/** Guest is the common identifier of all not logged users. */
+		GUEST,
+
+		/** Logged represents any common logged user. */
+		LOGGED,
+
+		/** Admin represents an App administrator. */
+		ADMIN;
 	}
 
 	/**
@@ -138,7 +151,12 @@ public interface IAppConfig {
 	 * 
 	 */
 	public enum SpecialPermission {
-		CAN_RENDER, CAN_EDIT;
+
+		/** Allow the rendering of the App. */
+		CAN_RENDER,
+
+		/** Allow the edition of the App preferences. */
+		CAN_EDIT;
 	}
 
 }

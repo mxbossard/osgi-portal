@@ -18,7 +18,6 @@ package fr.mby.portal.coreimpl.acl;
 
 import java.security.Principal;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -26,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
-import fr.mby.portal.api.acl.IPermission;
+import fr.mby.portal.api.acl.IAuthorization;
 import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.core.acl.IAclDao;
 import fr.mby.portal.core.acl.IAclManager;
@@ -62,13 +61,15 @@ public class BasicAclManager implements IAclManager, InitializingBean {
 
 	public static final Principal LOGGED = new PortalUserPrincipal("special_logged");
 
-	public static final String ALL_PERMISSIONS = "allPermissions";
+	// public static final String ALL_PERMISSIONS = "allPermissions";
 
-	public static final String USER_PERMISSION = "userPermission";
+	// public static final String USER_PERMISSION = "userPermission";
 
-	public static final String CAN_RENDER_PERMISSION = "special_canRender";
+	// public static final String CAN_RENDER_PERMISSION = "special_canRender";
 
-	public static final String CAN_EDIT_PERMISSION = "special_canEdit";
+	// public static final String CAN_EDIT_PERMISSION = "special_canEdit";
+
+	public static final IAuthorization ALL_PERMISSION_WILDCARD = new AllPermissionsWildcard();
 
 	@Autowired
 	private IRoleFactory roleFactory;
@@ -113,42 +114,65 @@ public class BasicAclManager implements IAclManager, InitializingBean {
 
 	protected void initializeAcl() throws PrincipalAlreadyExistsException, PrincipalNotFoundException,
 			RoleNotFoundException, RoleAlreadyExistsException {
-		// Guest with no permission
-		final IRole guestRole = this.roleFactory.initializeRole(BasicAclManager.GUEST.getName(), null, null);
-		final Set<IRole> guestRolesSet = new HashSet<IRole>(1);
-		guestRolesSet.add(guestRole);
 
-		this.registerPrincipal(BasicAclManager.GUEST);
-		this.aclDao.createRole(guestRole);
-		this.registerPrincipalRoles(BasicAclManager.GUEST, guestRolesSet);
+		// Nothing
+	}
 
-		// User with "user permission"
-		final IPermission userPermission = this.permissionFactory.build(BasicAclManager.USER_PERMISSION);
-		final Set<IPermission> userPermissionSet = new HashSet<IPermission>(1);
-		userPermissionSet.add(userPermission);
+	/**
+	 * Getter of roleFactory.
+	 * 
+	 * @return the roleFactory
+	 */
+	public IRoleFactory getRoleFactory() {
+		return this.roleFactory;
+	}
 
-		final IRole userRole = this.roleFactory.initializeRole(BasicAclManager.LOGGED.getName(), userPermissionSet,
-				null);
-		final Set<IRole> userRoleSet = new HashSet<IRole>(1);
-		userRoleSet.add(userRole);
+	/**
+	 * Setter of roleFactory.
+	 * 
+	 * @param roleFactory
+	 *            the roleFactory to set
+	 */
+	public void setRoleFactory(final IRoleFactory roleFactory) {
+		this.roleFactory = roleFactory;
+	}
 
-		this.registerPrincipal(BasicAclManager.LOGGED);
-		this.aclDao.createRole(userRole);
-		this.registerPrincipalRoles(BasicAclManager.LOGGED, userRoleSet);
+	/**
+	 * Getter of permissionFactory.
+	 * 
+	 * @return the permissionFactory
+	 */
+	public IPermissionFactory getPermissionFactory() {
+		return this.permissionFactory;
+	}
 
-		// Admin with "all permissions"
-		final IPermission allPermissions = this.permissionFactory.build(BasicAclManager.ALL_PERMISSIONS);
-		final Set<IPermission> allPermissionsSet = new HashSet<IPermission>(1);
-		allPermissionsSet.add(allPermissions);
+	/**
+	 * Setter of permissionFactory.
+	 * 
+	 * @param permissionFactory
+	 *            the permissionFactory to set
+	 */
+	public void setPermissionFactory(final IPermissionFactory permissionFactory) {
+		this.permissionFactory = permissionFactory;
+	}
 
-		final IRole adminRole = this.roleFactory.initializeRole(BasicAclManager.ADMIN.getName(), allPermissionsSet,
-				userRoleSet);
-		final Set<IRole> adminRolesSet = new HashSet<IRole>(1);
-		adminRolesSet.add(adminRole);
+	/**
+	 * Getter of aclDao.
+	 * 
+	 * @return the aclDao
+	 */
+	public IAclDao getAclDao() {
+		return this.aclDao;
+	}
 
-		this.registerPrincipal(BasicAclManager.ADMIN);
-		this.aclDao.createRole(adminRole);
-		this.registerPrincipalRoles(BasicAclManager.ADMIN, adminRolesSet);
+	/**
+	 * Setter of aclDao.
+	 * 
+	 * @param aclDao
+	 *            the aclDao to set
+	 */
+	public void setAclDao(final IAclDao aclDao) {
+		this.aclDao = aclDao;
 	}
 
 }

@@ -25,7 +25,7 @@ import java.util.Set;
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IRole {
+public interface IRole extends IAuthorization {
 
 	/**
 	 * Return the role name.
@@ -33,14 +33,6 @@ public interface IRole {
 	 * @return the role name
 	 */
 	String getName();
-
-	/**
-	 * Test if the specified permission is granted by this Role.
-	 * 
-	 * @param permission
-	 * @return true if the specified permission is granted by this Role
-	 */
-	boolean isGranted(IPermission permission);
 
 	/**
 	 * Retrieve all permissions granted to this role.

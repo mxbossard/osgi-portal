@@ -14,25 +14,25 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.auth;
+package fr.mby.portal.coreimpl.acl;
 
-import java.io.Serializable;
-import java.security.Principal;
-
+import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IAuthorization;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAuthentication extends Principal, Serializable {
+public class AllPermissionsWildcard implements IAuthorization {
 
-	Principal getPrincipal();
+	@Override
+	public boolean isGranted(final IPermission permission) {
+		return true;
+	}
 
-	Object getCredentials();
-
-	boolean isAuthenticated();
-
-	IAuthorization getPermissionSet();
+	/** Hidden constructor. */
+	protected AllPermissionsWildcard() {
+		super();
+	}
 
 }

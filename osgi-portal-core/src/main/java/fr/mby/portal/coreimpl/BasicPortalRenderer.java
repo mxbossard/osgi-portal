@@ -19,10 +19,7 @@ package fr.mby.portal.coreimpl;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -34,10 +31,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import fr.mby.portal.api.acl.IAuthorization;
 import fr.mby.portal.api.acl.IPermission;
-import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
+import fr.mby.portal.api.app.IAppConfig.SpecialPermission;
+import fr.mby.portal.api.app.IAppConfig.SpecialRole;
 import fr.mby.portal.api.app.IAppContext;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.core.IPortalRenderer;
@@ -47,7 +46,6 @@ import fr.mby.portal.core.app.IAppFactory;
 import fr.mby.portal.core.app.IAppStore;
 import fr.mby.portal.core.auth.IAuthentication;
 import fr.mby.portal.core.security.ILoginManager;
-import fr.mby.portal.coreimpl.acl.BasicAclManager;
 import fr.mby.portal.coreimpl.app.PortalAppReferenceListener;
 
 /**
@@ -113,34 +111,39 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 	public List<IApp> getAppsToRender(final HttpServletRequest request) throws Exception {
 		final ArrayList<IApp> appsToRender = new ArrayList<IApp>(16);
 
-		final IAuthentication userAuth = this.loginManager.getLoggedAuthentication(request);
-		final Set<IRole> userRoles;
-		if (userAuth == null) {
-			userRoles = Collections.emptySet();
-		} else {
-			userRoles = userAuth.getRoles();
-		}
-
 		if (this.portalAppReferenceListener != null) {
+
+			final IAuthentication userAuth = this.loginManager.getLoggedAuthentication(request);
+
 			for (final ServiceReference appRef : this.portalAppReferenceListener.getPortalAppReferences()) {
 				final Bundle bundle = appRef.getBundle();
 				final IAppConfig appConfig = this.appConfigFactory.build(bundle);
 
-				// Each App is displayed 1 times
-				for (int k = 0; k < 1; k++) {
+				// User roles
+				IAuthorization userAuthorizations = null;
+				if (userAuth != null) {
+					userAuthorizations = userAuth.getPermissionSet();
+				}
+
+				// Special roles
+				final IAuthorization specialAuthorizations;
+				if (userAuth != null && userAuth.isAuthenticated()) {
+					// User is logged
+					specialAuthorizations = appConfig.getSpecialRole(SpecialRole.LOGGED);
+				} else {
+					// User is a guest
+					specialAuthorizations = appConfig.getSpecialRole(SpecialRole.GUEST);
+				}
+
+				// Retrieve the App render permission
+				final IPermission canRenderPerm = appConfig.getSpecialPermission(SpecialPermission.CAN_RENDER);
+
+				final boolean canRenderApp = specialAuthorizations.isGranted(canRenderPerm)
+						|| userAuthorizations != null && userAuthorizations.isGranted(canRenderPerm);
+
+				if (canRenderApp) {
 					final IApp app = this.appFactory.build(request, appConfig);
-
 					this.appStore.storeApp(app, request);
-
-					boolean canRender = false;
-					final IPermission canRenderPerm = this.permissionFactory
-							.build(BasicAclManager.CAN_RENDER_PERMISSION);
-					final Iterator<IRole> userRolesIt = userRoles.iterator();
-					while (!canRender && userRolesIt.hasNext()) {
-						final IRole role = userRolesIt.next();
-						canRender = role.isGranted(canRenderPerm);
-					}
-
 					appsToRender.add(app);
 				}
 			}

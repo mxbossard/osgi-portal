@@ -25,6 +25,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import fr.mby.portal.api.acl.IAuthorization;
 import fr.mby.portal.api.acl.IRole;
 import fr.mby.portal.core.acl.IAclManager;
 import fr.mby.portal.core.auth.AuthenticationException;
@@ -33,6 +34,7 @@ import fr.mby.portal.core.auth.IAuthenticationProvider;
 import fr.mby.portal.core.auth.PortalUserAuthentication;
 import fr.mby.portal.core.security.PrincipalNotFoundException;
 import fr.mby.portal.coreimpl.acl.BasicAclManager;
+import fr.mby.portal.coreimpl.acl.BasicAuthorization;
 
 /**
  * IAuthenticationProvider able to authenticate only 2 generic accounts :
@@ -101,7 +103,8 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 				roles = Collections.emptySet();
 			}
 
-			resultingAuth = new PortalUserAuthentication(user.getName(), creds, roles);
+			final IAuthorization authorizations = new BasicAuthorization(roles);
+			resultingAuth = new PortalUserAuthentication(user.getName(), creds, authorizations);
 		}
 
 		return resultingAuth;

@@ -99,10 +99,22 @@ public class BasicLoginManager implements ILoginManager {
 
 	@Override
 	public IAuthentication getLoggedAuthentication(final HttpServletRequest request) {
-		final IAuthentication auth = null;
+		IAuthentication auth = null;
 
 		if (this.isLogged(request)) {
+			try {
 
+				final ISession portalSession = this.sessionManager.getPortalSession(request);
+				final Object authInSession = portalSession
+						.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+				if (authInSession != null && IAuthentication.class.isAssignableFrom(authInSession.getClass())) {
+					auth = (IAuthentication) portalSession
+							.getAttribute(SessionPrincipalResolver.PRINCIPAL_SESSION_ATTR_NAME);
+				}
+
+			} catch (final SessionNotInitializedException e) {
+				// Error while retrieving Session
+			}
 		}
 
 		return auth;
