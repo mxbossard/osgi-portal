@@ -57,6 +57,14 @@ window.OsgiPortal = window.OsgiPortal || {};
 			return appClient;
 		}
 
+		function loadPortalApplication(signature) {
+			var app = loadAppBySignature(signature);
+
+			var appClient = _portalContext.getRegisteredAppClientById(app.id);
+
+			return appClient;
+		}
+
 		function loadAppBySignature(signature) {
 			var app = _appLoadingHook(signature);
 
@@ -90,6 +98,14 @@ window.OsgiPortal = window.OsgiPortal || {};
 			 */
 			registerPortalApplication : function(signature) {
 				return registerPortalApplication(signature);
+			},
+
+			/**
+			 * Load a Portal Application previously registered and return the client which will be responsible to
+			 * communicate with the portal.
+			 */
+			loadPortalApplication : function(signature) {
+				return loadPortalApplication(signature);
 			},
 
 			/** Do an Action on the Portal. */
