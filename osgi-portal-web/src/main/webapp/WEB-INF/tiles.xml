@@ -18,7 +18,6 @@
     </definition>
     
 	<definition name="app.container" template="/WEB-INF/tiles/app/appContainer.jsp">
-		<put-attribute name="displayMode" />
 		<put-attribute name="app" />
 		<put-attribute name="appContent" />
 		<put-attribute name="iframedContent" value="app.display.iframed" />
@@ -26,12 +25,12 @@
     </definition>
   
     <definition name="app.display.rendered" template="/WEB-INF/tiles/app/renderedApp.jsp">
-		<put-attribute name="app" cascade="true" />
-		<put-attribute name="appContent" cascade="true" />
+		<put-attribute name="app" />
+		<put-attribute name="appContent" />
     </definition>
   
     <definition name="app.display.iframed" template="/WEB-INF/tiles/app/iframedApp.jsp">
-		<put-attribute name="app" cascade="true" />
+		<put-attribute name="app" />
     </definition>
 
 </tiles-definitions>

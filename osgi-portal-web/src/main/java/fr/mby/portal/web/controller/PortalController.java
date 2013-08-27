@@ -39,6 +39,7 @@ import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.portal.api.app.IApp;
+import fr.mby.portal.api.app.IAppConfig.RenderingMode;
 import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.session.ISessionManager;
 import fr.mby.portal.servlet.http.OpaHttpServletRequest;
@@ -54,6 +55,8 @@ public class PortalController implements ServletContextAware {
 
 	/** Name of view attribute for Apps to render. */
 	private static final String APPS_TO_RENDER = "appsToRender";
+
+	private static final String APPS_TO_DISPLAY = "appsToDisplay";
 
 	private static final String APPS_RENDERED = "renderedApps";
 
@@ -75,12 +78,19 @@ public class PortalController implements ServletContextAware {
 		// Init portal session
 		this.sessionManager.initPortalSession(request, response);
 
+		final Map<IApp, String> appsToDisplay = new HashMap<IApp, String>(8);
+
 		final IPortalRenderer firstPortalRenderer = this.chooseOnePortalRenderer();
 
 		final List<IApp> appsToRender = firstPortalRenderer.getAppsToRender(request);
-		view.addObject(PortalController.APPS_TO_RENDER, appsToRender);
-
-		this.renderApp(request, response, view, appsToRender);
+		for (final IApp app : appsToRender) {
+			String appContent = "";
+			if (RenderingMode.RENDERED == app.getConfig().getRenderingMode()) {
+				appContent = this.preRenderApp(request, response, app);
+			}
+			appsToDisplay.put(app, appContent);
+		}
+		view.addObject(PortalController.APPS_TO_DISPLAY, appsToDisplay);
 
 		return view;
 	}
@@ -119,6 +129,38 @@ public class PortalController implements ServletContextAware {
 		}
 
 		view.addObject(PortalController.APPS_RENDERED, appsRendered);
+	}
+
+	/**
+	 * Perform internal rendering.
+	 * 
+	 * @param request
+	 * @param response
+	 * @param view
+	 * @param appsToRender
+	 * @throws ServletException
+	 * @throws IOException
+	 */
+	protected String preRenderApp(final HttpServletRequest request, final HttpServletResponse response,
+			final IApp appToRender) throws ServletException, IOException {
+		String appContent = "";
+
+		if (appToRender != null) {
+			final ServletContext loginContext = this.servletContext.getContext(appToRender.getWebPath());
+			if (loginContext != null) {
+				final Writer sout = new StringWriter(1024);
+
+				final OpaHttpServletRequest opaRequest = new OpaHttpServletRequest(request, appToRender);
+				final SwallowingHttpServletResponse swallowingResponse = new SwallowingHttpServletResponse(response,
+						sout, "UTF-8");
+				loginContext.getRequestDispatcher("/").forward(opaRequest, swallowingResponse);
+				final String appRendered = sout.toString();
+
+				appContent = this.stripHeaders(appRendered);
+			}
+		}
+
+		return appContent;
 	}
 
 	/**
