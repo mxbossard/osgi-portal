@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       
+<tiles-definitions>
+
+    <definition name="portal" template="/WEB-INF/tiles/index/template.jsp">
+        <put-attribute name="meta" value="/WEB-INF/tiles/index/meta.jsp" />
+        <put-attribute name="header" value="/WEB-INF/tiles/index/header.jsp" />
+        <put-attribute name="body" value="portal.body" />
+        <put-attribute name="footer" value="/WEB-INF/tiles/index/footer.jsp" />
+
+    </definition>
+    
+    <definition name="portal.body" template="/WEB-INF/tiles/index/body.jsp">
+		<put-attribute name="appContainer" value="app.container" />
+    </definition>
+    
+	<definition name="app.container" template="/WEB-INF/tiles/app/appContainer.jsp">
+		<put-attribute name="displayMode" />
+		<put-attribute name="app" />
+		<put-attribute name="appContent" />
+		<put-attribute name="iframedContent" value="app.display.iframed" />
+		<put-attribute name="renderedContent" value="app.display.rendered" />
+    </definition>
+  
+    <definition name="app.display.rendered" template="/WEB-INF/tiles/app/renderedApp.jsp">
+		<put-attribute name="app" cascade="true" />
+		<put-attribute name="appContent" cascade="true" />
+    </definition>
+  
+    <definition name="app.display.iframed" template="/WEB-INF/tiles/app/iframedApp.jsp">
+		<put-attribute name="app" cascade="true" />
+    </definition>
+
+</tiles-definitions>

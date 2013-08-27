@@ -21,6 +21,8 @@
 		<bundlor.template.webContextPath>/portal</bundlor.template.webContextPath>
 
 		<servlet.version>2.5</servlet.version>
+		<dwr.version>2.0.10</dwr.version>
+		<tiles.version>2.1.2</tiles.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
 	</properties>
 
@@ -45,6 +47,35 @@
 		    <version>1.2</version>
 		</dependency>
 
+		<!-- DWR -->
+		<dependency>
+		    <groupId>org.directwebremoting</groupId>
+		    <artifactId>dwr</artifactId>
+		    <version>${dwr.version}</version>
+		</dependency>
+
+		<!-- Tiles -->
+		<dependency>
+		    <groupId>org.apache.tiles</groupId>
+		    <artifactId>tiles-api</artifactId>
+		    <version>${tiles.version}</version>
+		    <type>jar</type>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.apache.tiles</groupId>
+		    <artifactId>tiles-core</artifactId>
+		    <version>${tiles.version}</version>
+		    <type>jar</type>
+		</dependency>
+				
+		<dependency>
+		    <groupId>org.apache.tiles</groupId>
+		    <artifactId>tiles-jsp</artifactId>
+		    <version>${tiles.version}</version>
+		    <type>jar</type>
+		</dependency>
+		
 		<!-- Spring dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
