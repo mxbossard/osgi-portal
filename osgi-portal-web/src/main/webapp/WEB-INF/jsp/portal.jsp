@@ -13,6 +13,7 @@
 	<script type="text/javascript" src="<c:url value="/resources/js/osgi-portal-min.js" />"></script>
 	<script type="text/javascript" src="<c:url value="/resources/js/portal.js" />"></script>
 	
+	<base href="http://localhost:8080/portal/action/" />
 </head>
 <body>
 	<h1>OSGi Portal</h1>

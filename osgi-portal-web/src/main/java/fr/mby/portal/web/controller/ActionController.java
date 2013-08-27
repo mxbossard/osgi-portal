@@ -23,8 +23,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.portal.core.IUserActionDispatcher;
@@ -44,8 +44,8 @@ public class ActionController {
 	/**
 	 * Process the request and return a ModelAndView object which the DispatcherServlet will render.
 	 */
-	@RequestMapping(method = RequestMethod.GET)
-	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+	@RequestMapping("/")
+	ModelAndView action(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		String viewName = "portal";
 
 		if (this.userActionDispatchers == null) {
@@ -56,7 +56,24 @@ public class ActionController {
 		}
 
 		return new ModelAndView(viewName);
+	}
 
+	/**
+	 * Process the request and return a ModelAndView object which the DispatcherServlet will render.
+	 */
+	@RequestMapping("/{action}")
+	ModelAndView namedAction(@PathVariable final String action, final HttpServletRequest request,
+			final HttpServletResponse response) throws Exception {
+		String viewName = "portal";
+
+		if (this.userActionDispatchers == null) {
+			viewName = "noUserActionDispatcher";
+		} else {
+			final IUserActionDispatcher userActionDispatcher = this.userActionDispatchers.iterator().next();
+			userActionDispatcher.dispatch(request, response);
+		}
+
+		return new ModelAndView(viewName);
 	}
 
 	/**

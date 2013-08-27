@@ -23,6 +23,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -55,6 +57,11 @@ public class PortalController implements ServletContextAware {
 
 	private static final String APPS_RENDERED = "renderedApps";
 
+	private static final String APP_CONTENT_REGEXP = "\\A.*<body>(.*)<\\/body>.*\\z";
+
+	private static final Pattern APP_CONTENT_PATTERN = Pattern.compile(PortalController.APP_CONTENT_REGEXP,
+			Pattern.DOTALL);
+
 	private Collection<IPortalRenderer> portalRenderers;
 
 	private ISessionManager sessionManager;
@@ -79,6 +86,8 @@ public class PortalController implements ServletContextAware {
 	}
 
 	/**
+	 * Perform internal rendering.
+	 * 
 	 * @param request
 	 * @param response
 	 * @param view
@@ -102,12 +111,29 @@ public class PortalController implements ServletContextAware {
 					loginContext.getRequestDispatcher("/").forward(opaRequest, swallowingResponse);
 					final String appRendered = sout.toString();
 
-					appsRendered.put(app, appRendered);
+					final String appContent = this.stripHeaders(appRendered);
+
+					appsRendered.put(app, appContent);
 				}
 			}
 		}
 
 		view.addObject(PortalController.APPS_RENDERED, appsRendered);
+	}
+
+	/**
+	 * @param appRendered
+	 * @return
+	 */
+	protected String stripHeaders(final String appRendered) {
+		String appContent = null;
+
+		final Matcher appContentMatcher = PortalController.APP_CONTENT_PATTERN.matcher(appRendered);
+		if (appContentMatcher.find()) {
+			appContent = appContentMatcher.group(1);
+		}
+
+		return appContent;
 	}
 
 	protected IPortalRenderer chooseOnePortalRenderer() throws Exception {
