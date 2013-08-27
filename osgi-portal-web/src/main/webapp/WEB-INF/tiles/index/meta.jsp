@@ -5,6 +5,4 @@
 
 <link rel="stylesheet" href="<c:url value="/resources/css/portal.css" />" />
 
-<script type="text/javascript" src="<c:url value="/resources/js/osgi-portal-min.js" />"></script>
-<script type="text/javascript" src="<c:url value="/resources/js/portal.js" />"></script>
 	

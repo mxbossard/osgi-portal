@@ -28,13 +28,14 @@ import org.springframework.util.Assert;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.core.app.IAppSigner;
 import fr.mby.portal.core.app.IAppStore;
+import fr.mby.portal.core.cache.ICachingService;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Service
-public class MemoryAppStore implements IAppStore {
+public class MemoryAppStore implements IAppStore, ICachingService {
 
 	/** TODO: replace the map by a cache. */
 	private final Map<String, IApp> appStore = new ConcurrentHashMap<String, IApp>(16);
@@ -64,5 +65,10 @@ public class MemoryAppStore implements IAppStore {
 		final IApp retrievedApp = this.appStore.get(signature);
 
 		return retrievedApp;
+	}
+
+	@Override
+	public void clearCache() {
+		this.appStore.clear();
 	}
 }

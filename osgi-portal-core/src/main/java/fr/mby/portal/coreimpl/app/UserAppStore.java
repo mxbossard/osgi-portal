@@ -27,12 +27,13 @@ import org.springframework.util.Assert;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.core.app.IAppSigner;
 import fr.mby.portal.core.app.IAppStore;
+import fr.mby.portal.core.cache.ICachingService;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class UserAppStore implements IAppStore {
+public class UserAppStore implements IAppStore, ICachingService {
 
 	/** TODO: need to clean the map : a cache ? */
 	/** The user IApp are stored by signature. */
@@ -59,6 +60,11 @@ public class UserAppStore implements IAppStore {
 		Assert.hasText(appSignature, "No App signature found in Http request !");
 
 		return this.userAppStore.get(appSignature);
+	}
+
+	@Override
+	public void clearCache() {
+		this.userAppStore.clear();
 	}
 
 }

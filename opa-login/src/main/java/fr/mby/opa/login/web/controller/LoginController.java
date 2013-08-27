@@ -56,6 +56,8 @@ public class LoginController implements IPortalApp {
 
 	private static final String LOGOUT_PAGE = "logout";
 
+	private static final String REFRESH_PORTAL_PAGE = "action_refresh_portal";
+
 	@Autowired(required = true)
 	private IPortalService portalService;
 
@@ -89,8 +91,7 @@ public class LoginController implements IPortalApp {
 			try {
 				// Try to login user
 				this.loginManager.login(request, response, authentication);
-				// If no error user is logged => display logout page
-				view = LoginController.LOGOUT_PAGE;
+				view = LoginController.REFRESH_PORTAL_PAGE;
 			} catch (final LoginException e) {
 				// If login exception return to login page
 			}
@@ -107,7 +108,7 @@ public class LoginController implements IPortalApp {
 
 		this.initView(model, request, response);
 
-		return LoginController.LOGIN_PAGE;
+		return LoginController.REFRESH_PORTAL_PAGE;
 	}
 
 	/*

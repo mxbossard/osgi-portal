@@ -4,7 +4,7 @@
 <tiles:useAttribute id="app" name="app" />
 <tiles:useAttribute id="appContent" name="appContent" />
 
-<div id="${app.namespace}" class="portalApp">
+<div id="${app.namespace}" class="portalApp" style="width: ${app.width}; height: ${app.height};">
 	<div class="title">${app.title} (mode: ${app.config.renderingMode})</div>
 
 	<c:if test="${'IFRAMED' == app.config.renderingMode}">

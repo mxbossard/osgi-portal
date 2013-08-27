@@ -10,7 +10,7 @@
         <put-attribute name="header" value="/WEB-INF/tiles/index/header.jsp" />
         <put-attribute name="body" value="portal.body" />
         <put-attribute name="footer" value="/WEB-INF/tiles/index/footer.jsp" />
-
+        <put-attribute name="scripts" value="/WEB-INF/tiles/index/scripts.jsp" />
     </definition>
     
     <definition name="portal.body" template="/WEB-INF/tiles/index/body.jsp">
