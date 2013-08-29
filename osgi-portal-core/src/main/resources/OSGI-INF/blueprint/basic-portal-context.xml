@@ -28,5 +28,9 @@
 	<bean id="sessionManager" class="fr.mby.portal.coreimpl.session.MemorySessionManager" />
 	
 	<bean id="loginManager" class="fr.mby.portal.coreimpl.security.BasicLoginManager" />
+	
+	<bean id="minimalPortalUserAuthProvider" class="fr.mby.portal.coreimpl.auth.MinimalPortalUserAuthenticationProvider">
+		<property name="portalUserEmf" ref="portalUserEmfRef" />
+	</bean>
 
 </beans>

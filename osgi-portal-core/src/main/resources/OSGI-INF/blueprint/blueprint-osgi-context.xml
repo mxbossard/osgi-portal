@@ -41,4 +41,8 @@
 	<reference-list id="authenticationProviderReferences" interface="fr.mby.portal.core.auth.IAuthenticationProvider" availability="optional">
 	</reference-list>
 	
+	<!-- JPA -->
+	<reference id="portalUserEmfRef" interface="javax.persistence.EntityManagerFactory" filter="(osgi.unit.name='portalUserPu')">
+	</reference>
+	
 </blueprint>

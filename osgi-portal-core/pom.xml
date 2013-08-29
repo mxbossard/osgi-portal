@@ -20,6 +20,7 @@
 		<servlet.version>2.5</servlet.version>
 		<spring-security.version>3.1.4.RELEASE</spring-security.version>
 		<osgi.version>4.2.0</osgi.version>
+		<jpa.version>2.1.0</jpa.version>
 	</properties>
 
 	<dependencies>
@@ -138,6 +139,12 @@
 			</exclusions>
 		</dependency>
 
+		<!-- JPA -->
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>javax.persistence</artifactId>
+		    <version>${jpa.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
