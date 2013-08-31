@@ -11,7 +11,6 @@
 		<groupId>fr.mby.maven</groupId>
 		<artifactId>spring-basic-bundle</artifactId>
 		<version>1.0.0.PARENT</version>
-		<relativePath>../../max-utils/maven-parents/spring-basic-bundle/pom.xml</relativePath>
 	</parent>
 
 	<properties>
@@ -21,6 +20,7 @@
 		<spring-security.version>3.1.4.RELEASE</spring-security.version>
 		<osgi.version>4.2.0</osgi.version>
 		<jpa.version>2.1.0</jpa.version>
+		<derby.version>10.10.1.1</derby.version>
 	</properties>
 
 	<dependencies>
@@ -145,6 +145,14 @@
 		    <artifactId>javax.persistence</artifactId>
 		    <version>${jpa.version}</version>
 		</dependency>
+		
+		<!-- Derby -->
+		<dependency>
+		    <groupId>org.apache.derby</groupId>
+		    <artifactId>derby</artifactId>
+		    <version>${derby.version}</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

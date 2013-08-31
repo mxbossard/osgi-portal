@@ -17,6 +17,7 @@
 package fr.mby.portal.model.user;
 
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -42,12 +43,15 @@ public class PortalUser {
 	public static final String FIND_PORTAL_USER = "FIND_PORTAL_USER";
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.TABLE)
 	private long id;
 
+	@Column(name = "login")
 	@Basic(fetch = FetchType.EAGER, optional = false)
 	private String login;
 
+	@Column(name = "password")
 	@Basic(fetch = FetchType.EAGER, optional = false)
 	private String password;
 
@@ -58,16 +62,6 @@ public class PortalUser {
 	 */
 	public long getId() {
 		return this.id;
-	}
-
-	/**
-	 * Setter of id.
-	 * 
-	 * @param id
-	 *            the id to set
-	 */
-	public void setId(final long id) {
-		this.id = id;
 	}
 
 	/**

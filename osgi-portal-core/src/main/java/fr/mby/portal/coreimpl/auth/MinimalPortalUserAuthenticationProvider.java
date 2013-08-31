@@ -20,11 +20,6 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Query;
-
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Service;
@@ -40,7 +35,6 @@ import fr.mby.portal.core.auth.PortalUserAuthentication;
 import fr.mby.portal.core.security.PrincipalNotFoundException;
 import fr.mby.portal.coreimpl.acl.BasicAclManager;
 import fr.mby.portal.coreimpl.acl.BasicAuthorization;
-import fr.mby.portal.model.user.PortalUser;
 
 /**
  * IAuthenticationProvider able to authenticate only 2 generic accounts :
@@ -54,13 +48,10 @@ import fr.mby.portal.model.user.PortalUser;
  */
 @Service
 @Order(value = 1000)
-public class MinimalPortalUserAuthenticationProvider implements IAuthenticationProvider, InitializingBean {
+public class MinimalPortalUserAuthenticationProvider implements IAuthenticationProvider {
 
 	@Autowired(required = true)
 	private IAclManager aclManager;
-
-	/** Wired by OSGi. */
-	private EntityManagerFactory portalUserEmf;
 
 	@Override
 	public boolean supports(final IAuthentication authentication) {
@@ -100,36 +91,6 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 		return resultingAuth;
 	}
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		final EntityManager entityManager = this.portalUserEmf.createEntityManager();
-
-		final PortalUser user = new PortalUser();
-		user.setLogin("user");
-		user.setPassword("user123");
-
-		entityManager.persist(user);
-
-		final PortalUser admin = new PortalUser();
-		admin.setLogin("admin");
-		admin.setPassword("admin123");
-
-		entityManager.persist(admin);
-
-		entityManager.flush();
-
-		final Query query1 = entityManager.createNamedQuery(PortalUser.FIND_PORTAL_USER);
-		query1.setParameter("login", "user");
-		final PortalUser found1 = (PortalUser) query1.getSingleResult();
-
-		final Query query2 = entityManager.createNamedQuery(PortalUser.FIND_PORTAL_USER);
-		query2.setParameter("login", "user");
-		final PortalUser found2 = (PortalUser) query2.getSingleResult();
-
-		final boolean test1 = user.getLogin().equals(found1.getLogin());
-		final boolean test2 = admin.getLogin().equals(found2.getLogin());
-	}
-
 	/**
 	 * @param auth
 	 * @param user
@@ -148,7 +109,7 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 			}
 
 			final IAuthorization authorizations = new BasicAuthorization(roles);
-			resultingAuth = new PortalUserAuthentication(user.getName(), creds, authorizations);
+			resultingAuth = new PortalUserAuthentication(auth, authorizations);
 		}
 
 		return resultingAuth;
@@ -171,25 +132,6 @@ public class MinimalPortalUserAuthenticationProvider implements IAuthenticationP
 	 */
 	public void setAclManager(final IAclManager aclManager) {
 		this.aclManager = aclManager;
-	}
-
-	/**
-	 * Getter of portalUserEmf.
-	 * 
-	 * @return the portalUserEmf
-	 */
-	public EntityManagerFactory getPortalUserEmf() {
-		return this.portalUserEmf;
-	}
-
-	/**
-	 * Setter of portalUserEmf.
-	 * 
-	 * @param portalUserEmf
-	 *            the portalUserEmf to set
-	 */
-	public void setPortalUserEmf(final EntityManagerFactory portalUserEmf) {
-		this.portalUserEmf = portalUserEmf;
 	}
 
 }

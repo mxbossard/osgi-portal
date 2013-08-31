@@ -42,7 +42,7 @@
 	</reference-list>
 	
 	<!-- JPA -->
-	<reference id="portalUserEmfRef" interface="javax.persistence.EntityManagerFactory" filter="(osgi.unit.name='portalUserPu')">
+	<reference id="portalUserEmfRef" interface="javax.persistence.EntityManagerFactory" filter="(osgi.unit.name=portalUserPu)" availability="mandatory">
 	</reference>
 	
 </blueprint>

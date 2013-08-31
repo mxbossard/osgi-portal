@@ -29,7 +29,7 @@
 	
 	<bean id="loginManager" class="fr.mby.portal.coreimpl.security.BasicLoginManager" />
 	
-	<bean id="minimalPortalUserAuthProvider" class="fr.mby.portal.coreimpl.auth.MinimalPortalUserAuthenticationProvider">
+	<bean id="dbPortalUserAuthProvider" class="fr.mby.portal.coreimpl.auth.DbPortalUserAuthenticationProvider">
 		<property name="portalUserEmf" ref="portalUserEmfRef" />
 	</bean>
 

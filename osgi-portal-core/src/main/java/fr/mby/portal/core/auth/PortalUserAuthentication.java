@@ -65,15 +65,14 @@ public class PortalUserAuthentication implements IAuthentication {
 	 * @param principal
 	 * @param credentials
 	 */
-	public PortalUserAuthentication(final String username, final String password, final IAuthorization permissionSet) {
+	public PortalUserAuthentication(final PortalUserAuthentication auth, final IAuthorization permissionSet) {
 		super();
 
-		Assert.hasText(username, "No username supplied !");
-		Assert.hasText(password, "No password supplied !");
+		Assert.notNull(auth, "No PortalUserAuthentication supplied !");
 		Assert.notNull(permissionSet, "No IPermissionSet supplied !");
 
-		this.principal = new PortalUserPrincipal(username);
-		this.credentials = password;
+		this.principal = auth.getPrincipal();
+		this.credentials = (String) auth.getCredentials();
 		this.permissionSet = permissionSet;
 
 		this.authenticated = true;
