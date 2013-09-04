@@ -14,25 +14,34 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.auth;
+package fr.mby.opa.pics.model;
 
-import java.io.Serializable;
-import java.security.Principal;
-
-import fr.mby.portal.api.acl.IAuthorization;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAuthentication extends Principal, Serializable {
+@Entity
+@Table(name = "tag")
+public class Tag {
 
-	Principal getPrincipal();
+	@Id
+	@Column(name = "id")
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long id;
 
-	Object getCredentials();
+	@Basic(optional = false)
+	@Column(name = "name")
+	private String name;
 
-	boolean isAuthenticated();
-
-	IAuthorization getAuthorization();
-
+	@Basic
+	@Column(name = "description")
+	private String description;
 }

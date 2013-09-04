@@ -1,8 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 <!doctype html>
 <html lang="fr">
@@ -18,16 +16,10 @@
 	<c:url var="appClientScriptUrl" value="/resources/js/portalAppClient.js" />
 	
 	<script type="text/javascript" src="${appClientScriptUrl}"></script>
-
 </head>
 <body>
-	<h2>You are logged !</h2>
-	<div>Principal: ${loggedAuth.principal.name}</div>
-	<div>Authorization: ${loggedAuth.authorization}</div>
-	<div>
-		<spring:url value="/logout" var="logoutUrl" htmlEscape="true" />
-		<a href="${logoutUrl}">Logout</a>
-	</div>
-	
+	<h2>Message : ${message}</h2>	
+	<p>userActionDispatcherCount : ${userActionDispatcherCount}</p>
+	<h2>App signature : ${app.signature} </h2>
 </body>
 </html>

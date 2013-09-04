@@ -12,7 +12,6 @@
 		<groupId>fr.mby.maven</groupId>
 		<version>1.0.0.PARENT</version>
 		<artifactId>spring-basic-bundle-web</artifactId>
-		<relativePath>../../max-utils/maven-parents/spring-basic-bundle-web/pom.xml</relativePath>
 	</parent>
 
 	<properties>

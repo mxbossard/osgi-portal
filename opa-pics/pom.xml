@@ -2,11 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>fr.mby.osgi-portal-app</groupId>
-	<artifactId>hello</artifactId>
+	<artifactId>pics</artifactId>
 	<version>0.0.1.SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>OSGi portal Wab Hello World</name>
-	<description>OPA Hello World</description>
+	<name>OSGi portal Wab Pics</name>
+	<description>OPA Pics : Sort, group, display your pictures.</description>
 
 	<parent>
 		<groupId>fr.mby.maven</groupId>
@@ -17,10 +17,12 @@
 	<properties>
 		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
 		
-		<bundlor.template.webContextPath>/hello</bundlor.template.webContextPath>
+		<bundlor.template.webContextPath>/pics</bundlor.template.webContextPath>
 
 		<servlet.version>2.5</servlet.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
+		<jpa.version>2.1.0</jpa.version>
+		<joda-time.version>2.3</joda-time.version>
 	</properties>
 
 	<dependencies>
@@ -75,6 +77,21 @@
 			<version>${spring-webflow.version}</version>
 			<scope>provided</scope>
 		</dependency>
+		
+		<!-- JPA -->
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>javax.persistence</artifactId>
+		    <version>${jpa.version}</version>
+		</dependency>
+		
+		<!-- Joda Time -->
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>${joda-time.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -4,18 +4,17 @@ Bundle-Name: ${bundle.name}
 Bundle-Version: ${bundle.version}
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: ${bundlor.template.classPath}
-Meta-Persistence: 
 Import-Package: 
+ fr.mby.portal.model.user,
  org.eclipse.virgo.web.dm,
  org.eclipse.gemini.blueprint.blueprint.config,
  org.springframework.context.config,
- org.springframework.stereotype,
- javax.persistence;jpa="2.0";version="1.1.0",
- javax.persistence.spi;jpa="2.0";version="1.1.0"
-Excluded-Exports: fr.mby.portal.coreimpl.*
+ org.springframework.stereotype
+Excluded-Exports: 
+ fr.mby.portal.coreimpl.*
 Excluded-Imports: 
-Export-Template: fr.mby.portal.core.*,
- fr.mby.portal.model.*
+Export-Template: 
+ fr.mby.portal.core.*
 Ignored-Existing-Headers: 
 Import-Template: 
  fr.mby.portal.api.*;version="${osgi-portal-api.version:medium-range}",

@@ -27,6 +27,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.opa.login.web.model.LoginForm;
 import fr.mby.portal.api.IPortalService;
@@ -58,6 +59,8 @@ public class LoginController implements IPortalApp {
 
 	private static final String REFRESH_PORTAL_PAGE = "action_refresh_portal";
 
+	private static final String LOGGED_AUTH_PARAM = "loggedAuth";
+
 	@Autowired(required = true)
 	private IPortalService portalService;
 
@@ -65,18 +68,22 @@ public class LoginController implements IPortalApp {
 	private ILoginManager loginManager;
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public String display(final ModelMap model, final HttpServletRequest request, final HttpServletResponse response) {
-		String view = LoginController.LOGIN_PAGE;
+	public ModelAndView display(final ModelMap model, final HttpServletRequest request,
+			final HttpServletResponse response) {
+		final ModelAndView mv = new ModelAndView(LoginController.LOGIN_PAGE);
 
 		// On basic GET which page do we display ?
-		final boolean logged = this.loginManager.isLogged(request);
-		if (logged) {
-			view = LoginController.LOGOUT_PAGE;
+		final boolean isLogged = this.loginManager.isLogged(request);
+		if (isLogged) {
+			mv.setViewName(LoginController.LOGOUT_PAGE);
+
+			final IAuthentication loggedAuth = this.loginManager.getLoggedAuthentication(request);
+			mv.addObject(LoginController.LOGGED_AUTH_PARAM, loggedAuth);
 		}
 
 		this.initView(model, request, response);
 
-		return view;
+		return mv;
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.POST)

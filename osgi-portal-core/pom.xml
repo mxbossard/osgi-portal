@@ -15,12 +15,14 @@
 
 	<properties>
 		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
+		<osgi-portal-model.version>0.0.1.SNAPSHOT</osgi-portal-model.version>
 
 		<servlet.version>2.5</servlet.version>
 		<spring-security.version>3.1.4.RELEASE</spring-security.version>
 		<osgi.version>4.2.0</osgi.version>
 		<jpa.version>2.1.0</jpa.version>
-		<derby.version>10.10.1.1</derby.version>
+		
+		<bundlor.version>1.1.2.RELEASE</bundlor.version>
 	</properties>
 
 	<dependencies>
@@ -31,6 +33,13 @@
 			<artifactId>osgi-portal-api</artifactId>
 			<version>${osgi-portal-api.version}</version>
 			<scope>compile</scope>
+		</dependency>
+		
+		<!-- OSGi portal Model -->
+		<dependency>
+			<groupId>fr.mby.osgi-portal</groupId>
+			<artifactId>osgi-portal-model</artifactId>
+			<version>${osgi-portal-model.version}</version>
 		</dependency>
 
 		<!-- Max utils -->
@@ -145,14 +154,7 @@
 		    <artifactId>javax.persistence</artifactId>
 		    <version>${jpa.version}</version>
 		</dependency>
-		
-		<!-- Derby -->
-		<dependency>
-		    <groupId>org.apache.derby</groupId>
-		    <artifactId>derby</artifactId>
-		    <version>${derby.version}</version>
-		</dependency>
-		
+
 	</dependencies>
 
 	<build>

@@ -119,7 +119,7 @@ public class PortalUserAuthentication implements IAuthentication {
 	 * @return the roles
 	 */
 	@Override
-	public IAuthorization getPermissionSet() {
+	public IAuthorization getAuthorization() {
 		return this.permissionSet;
 	}
 

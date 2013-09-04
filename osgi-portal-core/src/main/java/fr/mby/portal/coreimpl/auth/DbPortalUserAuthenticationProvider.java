@@ -17,11 +17,11 @@
 package fr.mby.portal.coreimpl.auth;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
-import javax.persistence.NoResultException;
 import javax.persistence.Query;
 
 import org.eclipse.gemini.blueprint.context.BundleContextAware;
@@ -157,11 +157,10 @@ public class DbPortalUserAuthenticationProvider
 		final Query query = this.portalUserEm.createNamedQuery(PortalUser.FIND_PORTAL_USER);
 		query.setParameter("login", login);
 
-		PortalUser found;
-		try {
-			found = (PortalUser) query.getSingleResult();
-		} catch (final NoResultException e) {
-			found = null;
+		PortalUser found = null;
+		final List<?> founds = query.getResultList();
+		if (founds != null && founds.size() == 1) {
+			found = (PortalUser) founds.iterator().next();
 		}
 
 		return found;

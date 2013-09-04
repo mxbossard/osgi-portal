@@ -52,6 +52,11 @@ public class BasicAuthorization implements IAuthorization {
 		return this.permissions.contains(permission);
 	}
 
+	@Override
+	public String toString() {
+		return "BasicAuthorization [permissions=" + this.permissions.toString() + "]";
+	}
+
 	public void addPermission(final IPermission permission) {
 		if (permission != null) {
 			this.permissions.add(permission);

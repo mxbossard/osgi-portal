@@ -1,0 +1,13 @@
+Bundle-ManifestVersion: 2
+Bundle-SymbolicName: ${bundle.symbolicName}
+Bundle-Name: ${bundle.name}		
+Bundle-Version: ${bundle.version}
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: ${bundlor.template.classPath}
+Meta-Persistence: 
+Import-Package: 
+ javax.persistence;jpa="2.0";version="1.1.0"
+Version-Patterns:
+ major-range;pattern="[=.=.=.=, +1.0.0.=)",
+ medium-range;pattern="[=.=.=.=, =.+1.0.=)",
+ exact-range;pattern="[=.=.=, =.=.=]"

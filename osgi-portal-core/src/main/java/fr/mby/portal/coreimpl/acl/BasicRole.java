@@ -70,6 +70,11 @@ public class BasicRole extends BasicPermission implements IRole {
 		return this.permissions;
 	}
 
+	@Override
+	public String toString() {
+		return "BasicRole [name: " + this.getName() + "]";
+	}
+
 	/**
 	 * Setter of permissions.
 	 * 

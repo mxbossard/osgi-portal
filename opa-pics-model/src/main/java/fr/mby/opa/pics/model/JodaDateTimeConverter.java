@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core.auth;
+package fr.mby.opa.pics.model;
 
-import java.io.Serializable;
-import java.security.Principal;
+import java.sql.Timestamp;
 
-import fr.mby.portal.api.acl.IAuthorization;
+import javax.persistence.AttributeConverter;
+import javax.persistence.Converter;
+
+import org.joda.time.DateTime;
+import org.joda.time.ReadableDateTime;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAuthentication extends Principal, Serializable {
+@Converter
+public class JodaDateTimeConverter implements AttributeConverter<ReadableDateTime, Timestamp> {
 
-	Principal getPrincipal();
+	@Override
+	public Timestamp convertToDatabaseColumn(final ReadableDateTime attribute) {
+		return new Timestamp(attribute.getMillis());
+	}
 
-	Object getCredentials();
-
-	boolean isAuthenticated();
-
-	IAuthorization getAuthorization();
+	@Override
+	public ReadableDateTime convertToEntityAttribute(final Timestamp dbData) {
+		return new DateTime(dbData.getTime());
+	}
 
 }

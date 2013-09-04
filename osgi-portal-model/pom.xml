@@ -1,0 +1,31 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.mby.osgi-portal</groupId>
+	<artifactId>osgi-portal-model</artifactId>
+	<version>0.0.1.SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>OSGi Portal Model</name>
+	
+	<parent>
+		<groupId>fr.mby.maven</groupId>
+		<artifactId>basic-bundle</artifactId>
+		<version>1.0.0.PARENT</version>
+	</parent>
+
+	<properties>
+		<jpa.version>2.1.0</jpa.version>
+	</properties>
+
+	<dependencies>
+	
+		<!-- JPA -->
+		<dependency>
+		    <groupId>org.eclipse.persistence</groupId>
+		    <artifactId>javax.persistence</artifactId>
+		    <version>${jpa.version}</version>
+		</dependency>
+
+	</dependencies>
+
+</project>

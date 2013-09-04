@@ -1,0 +1,39 @@
+<?xml version="1.0"  encoding="UTF-8"?>
+<persistence  xmlns="http://java.sun.com/xml/ns/persistence"  
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+              version="1.0"  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+              http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd">
+	<persistence-unit  name="portalUserPu" transaction-type="RESOURCE_LOCAL">
+		<!-- <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider> -->
+		
+		<class>fr.mby.portal.model.user.PortalUser</class>
+		
+		<exclude-unlisted-classes>true</exclude-unlisted-classes>
+		
+		<properties>
+			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:derby:c:/osgiPortal.db;create=true"/>
+            <property name="javax.persistence.jdbc.user" value="test"/>
+            <property name="javax.persistence.jdbc.password" value="test"/>
+           
+            <!-- 
+             -->
+             
+            <property name="eclipselink.target-database" value="Derby"/>
+            <property name="eclipselink.logging.level" value="FINE"/>
+            <property name="eclipselink.logging.timestamp" value="false"/>
+            <property name="eclipselink.logging.thread" value="false"/>
+            <property name="eclipselink.logging.exceptions" value="true"/>
+            <property name="eclipselink.orm.throw.exceptions" value="true"/>
+            <property name="eclipselink.jdbc.read-connections.min" value="1"/>
+            <property name="eclipselink.jdbc.write-connections.min" value="1"/>
+            <property name="eclipselink.weaving" value="false"/>
+
+            <property name="eclipselink.ddl-generation" value="create-tables"/>
+            <property name="eclipselink.ddl-generation.output-mode" value="database" />
+            
+            <property name="javax.persistence.lock.timeout" value="5"/>
+		</properties>
+		
+    </persistence-unit>
+</persistence>

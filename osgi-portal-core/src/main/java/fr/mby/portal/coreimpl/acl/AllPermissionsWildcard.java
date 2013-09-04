@@ -16,8 +16,8 @@
 
 package fr.mby.portal.coreimpl.acl;
 
-import fr.mby.portal.api.acl.IPermission;
 import fr.mby.portal.api.acl.IAuthorization;
+import fr.mby.portal.api.acl.IPermission;
 
 /**
  * @author Maxime Bossard - 2013
@@ -33,6 +33,11 @@ public class AllPermissionsWildcard implements IAuthorization {
 	/** Hidden constructor. */
 	protected AllPermissionsWildcard() {
 		super();
+	}
+
+	@Override
+	public String toString() {
+		return "[AllPermissionsWildcard]";
 	}
 
 }

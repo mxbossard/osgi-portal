@@ -131,7 +131,7 @@ public class BasicPortalRenderer implements IPortalRenderer, InitializingBean {
 		// User roles
 		IAuthorization userAuthorizations = null;
 		if (userAuth != null) {
-			userAuthorizations = userAuth.getPermissionSet();
+			userAuthorizations = userAuth.getAuthorization();
 		}
 
 		// Special roles
