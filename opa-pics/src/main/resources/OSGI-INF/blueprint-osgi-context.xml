@@ -4,7 +4,7 @@
            default-activation="eager">
     
     <!-- Implementation of IPortal App. -->
-	<service id="helloAppService" ref="helloController" interface="fr.mby.portal.api.app.IPortalApp" activation="eager" />
+	<service id="picsAppService" ref="picsController" interface="fr.mby.portal.api.app.IPortalApp" activation="eager" />
 
 	<!-- Portal Service reference. -->
 	<reference id="portalServiceRef" interface="fr.mby.portal.api.IPortalService" activation="eager" />

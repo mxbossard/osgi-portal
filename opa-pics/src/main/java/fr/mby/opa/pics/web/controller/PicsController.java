@@ -18,15 +18,24 @@ package fr.mby.opa.pics.web.controller;
 
 import java.util.Collection;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 
+import fr.mby.opa.pics.model.Picture;
+import fr.mby.opa.pics.service.IPicsDao;
 import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
@@ -35,7 +44,6 @@ import fr.mby.portal.api.message.IActionMessage;
 import fr.mby.portal.api.message.IActionReply;
 import fr.mby.portal.api.message.IRenderMessage;
 import fr.mby.portal.api.message.IRenderReply;
-import fr.mby.portal.core.IUserActionDispatcher;
 
 /**
  * @author Maxime Bossard - 2013
@@ -44,13 +52,14 @@ import fr.mby.portal.core.IUserActionDispatcher;
 
 @Controller
 @RequestMapping("/")
-public class PicsController implements IPortalApp {
+public class PicsController implements IPortalApp, ServletContextAware {
 
-	@Autowired
-	private Collection<IUserActionDispatcher> userActionDispatchers;
-
-	@Autowired
 	private IPortalService portalService;
+
+	private ServletContext servletContext;
+
+	@Autowired
+	private IPicsDao picsDao;
 
 	@RequestMapping(method = RequestMethod.GET)
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -59,8 +68,45 @@ public class PicsController implements IPortalApp {
 		final IApp helloApp = this.portalService.getTargetedApp(request);
 		mv.addObject("app", helloApp);
 
-		return mv;
+		final Collection<Picture> allPictures = this.picsDao.findAllPictures();
 
+		mv.addObject("pictures", allPictures);
+
+		return mv;
+	}
+
+	@RequestMapping(value = "thumbnail/{id}", method = RequestMethod.GET)
+	ResponseEntity<byte[]> renderThumbnail(@PathVariable final Long id, final HttpServletRequest request,
+			final HttpServletResponse response) throws Exception {
+
+		ResponseEntity<byte[]> responseEntity = null;
+
+		if (id != null) {
+
+			final Picture picture = this.picsDao.findPictureById(id);
+			if (picture != null) {
+				final byte[] thumbnail = picture.getThumbnail();
+
+				final HttpHeaders responseHeaders = new HttpHeaders();
+				responseHeaders.setContentType(MediaType.parseMediaType("image/"
+						+ PicturesUploadController.THUMBNAIL_FORMAT));
+				responseHeaders.setContentLength(thumbnail.length);
+				responseHeaders.set("Content-Disposition", "filename=\"" + picture.getFilename() + '\"');
+
+				responseEntity = new ResponseEntity<byte[]>(thumbnail, responseHeaders, HttpStatus.OK);
+			}
+		}
+
+		if (responseEntity == null) {
+			responseEntity = new ResponseEntity<byte[]>(null, null, HttpStatus.NOT_FOUND);
+		}
+
+		return responseEntity;
+	}
+
+	@Override
+	public void setServletContext(final ServletContext servletContext) {
+		this.servletContext = servletContext;
 	}
 
 	/*
@@ -107,25 +153,6 @@ public class PicsController implements IPortalApp {
 	public void render(final IRenderMessage request, final IRenderReply response) {
 		// TODO Auto-generated method stub
 
-	}
-
-	/**
-	 * Getter of userActionDispatchers.
-	 * 
-	 * @return the userActionDispatchers
-	 */
-	public Collection<IUserActionDispatcher> getUserActionDispatchers() {
-		return this.userActionDispatchers;
-	}
-
-	/**
-	 * Setter of userActionDispatchers.
-	 * 
-	 * @param userActionDispatchers
-	 *            the userActionDispatchers to set
-	 */
-	public void setUserActionDispatchers(final Collection<IUserActionDispatcher> userActionDispatchers) {
-		this.userActionDispatchers = userActionDispatchers;
 	}
 
 	/**

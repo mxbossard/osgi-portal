@@ -33,9 +33,14 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-
-	<bean id="helloController" class="fr.mby.opa.pics.web.controller.PicsController">
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+ 
+	<bean id="picsController" class="fr.mby.opa.pics.web.controller.PicsController">
 		<property name="portalService" ref="portalServiceRef" />
+	</bean>
+	
+	<bean id="picturesUploadController" class="fr.mby.opa.pics.web.controller.PicturesUploadController">
+	
 	</bean>
 
 </beans>

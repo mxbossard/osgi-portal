@@ -21,11 +21,21 @@
 
 		<servlet.version>2.5</servlet.version>
 		<spring-webflow.version>2.3.2.RELEASE</spring-webflow.version>
+		<jstl.version>1.2</jstl.version>
+		
 		<jpa.version>2.1.0</jpa.version>
 		<joda-time.version>2.3</joda-time.version>
 	</properties>
 
 	<dependencies>
+	
+		<dependency>
+			<groupId>fr.mby.osgi-portal-app</groupId>
+			<artifactId>pics-model</artifactId>
+			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
+			<scope>provided</scope>
+		</dependency>
+	
 		<dependency>
 			<groupId>fr.mby.osgi-portal</groupId>
 			<artifactId>osgi-portal-core</artifactId>
@@ -40,11 +50,25 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- Web -->
 		<dependency>
 		    <groupId>javax.servlet</groupId>
 		    <artifactId>jstl</artifactId>
 		    <version>1.2</version>
 		</dependency>
+	
+	    <!-- Apache Commons file upload  -->
+	    <dependency>
+	        <groupId>commons-fileupload</groupId>
+	        <artifactId>commons-fileupload</artifactId>
+	        <version>1.2.2</version>
+	    </dependency>
+	    <!-- Apache Commons IO -->
+	    <dependency>
+	        <groupId>org.apache.commons</groupId>
+	        <artifactId>commons-io</artifactId>
+	        <version>1.3.2</version>
+	    </dependency>
 
 		<!-- Spring dependencies -->
 		<dependency>
