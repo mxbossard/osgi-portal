@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -30,6 +29,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
 /**
@@ -37,6 +38,7 @@ import org.joda.time.ReadableDateTime;
  * 
  */
 @Entity
+@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "album")
 public class Album {
 
@@ -55,7 +57,7 @@ public class Album {
 
 	@Basic(optional = false)
 	@Column(name = "creationTime", columnDefinition = "TIMESTAMP")
-	@Convert(converter = JodaDateTimeConverter.class)
+	@Convert("jodaDateTime")
 	private ReadableDateTime creationTime;
 
 	@ManyToMany(fetch = FetchType.EAGER)

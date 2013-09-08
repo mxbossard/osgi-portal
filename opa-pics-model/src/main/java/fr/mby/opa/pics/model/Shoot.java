@@ -20,7 +20,6 @@ import java.util.Collection;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -31,6 +30,8 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
 /**
@@ -38,6 +39,7 @@ import org.joda.time.ReadableDateTime;
  * 
  */
 @Entity
+@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "shoot")
 public class Shoot {
 
@@ -48,12 +50,12 @@ public class Shoot {
 
 	@Basic(optional = false)
 	@Column(name = "startTime", columnDefinition = "TIMESTAMP")
-	@Convert(converter = JodaDateTimeConverter.class)
+	@Convert("jodaDateTime")
 	private ReadableDateTime startTime;
 
 	@Basic(optional = false)
 	@Column(name = "endTime", columnDefinition = "TIMESTAMP")
-	@Convert(converter = JodaDateTimeConverter.class)
+	@Convert("jodaDateTime")
 	private ReadableDateTime endTime;
 
 	@ManyToMany(fetch = FetchType.EAGER)

@@ -16,20 +16,13 @@
 
 package fr.mby.opa.pics.service;
 
-import java.util.Collection;
-
-import fr.mby.opa.pics.model.Picture;
-
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPicsDao {
+public class PictureAlreadyExistsException extends Exception {
 
-	void savePicture(Picture picture);
-
-	Picture findPictureById(long id);
-
-	Collection<Picture> findAllPictures();
+	/** Svuid. */
+	private static final long serialVersionUID = 124596910270874219L;
 
 }

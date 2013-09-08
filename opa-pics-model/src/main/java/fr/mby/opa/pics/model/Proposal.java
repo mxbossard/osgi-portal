@@ -18,7 +18,6 @@ package fr.mby.opa.pics.model;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
-import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -28,6 +27,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.eclipse.persistence.annotations.Convert;
+import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
 /**
@@ -35,6 +36,7 @@ import org.joda.time.ReadableDateTime;
  * 
  */
 @Entity
+@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "proposal")
 public class Proposal {
 
@@ -53,7 +55,7 @@ public class Proposal {
 
 	@Basic(optional = false)
 	@Column(name = "time", columnDefinition = "TIMESTAMP")
-	@Convert(converter = JodaDateTimeConverter.class)
+	@Convert("jodaDateTime")
 	private ReadableDateTime time;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)

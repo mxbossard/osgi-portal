@@ -25,6 +25,8 @@
 		
 		<jpa.version>2.1.0</jpa.version>
 		<joda-time.version>2.3</joda-time.version>
+		
+		<metadata-extractor.version>2.6.4</metadata-extractor.version>
 	</properties>
 
 	<dependencies>
@@ -50,6 +52,12 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>fr.mby.utils</groupId>
+			<artifactId>common-utils</artifactId>
+			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
+		</dependency>
+		
 		<!-- Web -->
 		<dependency>
 		    <groupId>javax.servlet</groupId>
@@ -116,6 +124,19 @@
 		    <version>${joda-time.version}</version>
 		</dependency>
 
+		<!-- Metadata extractor -->
+		<dependency>
+			<groupId>com.drewnoakes</groupId>
+			<artifactId>metadata-extractor-osgi</artifactId>
+			<version>${metadata-extractor.version}</version>
+		</dependency>
+		
+		<!-- org.json -->
+		<dependency>
+		    <groupId>org.json</groupId>
+		    <artifactId>com.springsource.org.json</artifactId>
+		    <version>1.0.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

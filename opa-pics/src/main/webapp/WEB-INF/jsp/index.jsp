@@ -25,8 +25,9 @@
 	<spring:url value="/upload" var="uploadFormUrl" />
 	<a href="${uploadFormUrl}">Upload pics form</a>
 	
+	<h3>Uploaded pics (thumbnails) :</h3>
+	
 	<div>
-		Uploaded pics (thumbnails) :
 		<c:forEach items="${pictures}" var="picture">
 			<spring:url value="/thumbnail/${picture.id}" var="picUrl" />
 			<img src="${picUrl}" />

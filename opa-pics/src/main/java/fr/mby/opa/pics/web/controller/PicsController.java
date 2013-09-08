@@ -18,7 +18,6 @@ package fr.mby.opa.pics.web.controller;
 
 import java.util.Collection;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -31,11 +30,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.ServletContextAware;
 import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.IPicsDao;
+import fr.mby.opa.pics.model.PictureContents;
+import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
@@ -52,14 +51,12 @@ import fr.mby.portal.api.message.IRenderReply;
 
 @Controller
 @RequestMapping("/")
-public class PicsController implements IPortalApp, ServletContextAware {
+public class PicsController implements IPortalApp {
 
 	private IPortalService portalService;
 
-	private ServletContext servletContext;
-
 	@Autowired
-	private IPicsDao picsDao;
+	private IPictureDao picsDao;
 
 	@RequestMapping(method = RequestMethod.GET)
 	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -88,8 +85,7 @@ public class PicsController implements IPortalApp, ServletContextAware {
 				final byte[] thumbnail = picture.getThumbnail();
 
 				final HttpHeaders responseHeaders = new HttpHeaders();
-				responseHeaders.setContentType(MediaType.parseMediaType("image/"
-						+ PicturesUploadController.THUMBNAIL_FORMAT));
+				responseHeaders.setContentType(MediaType.parseMediaType("image/" + picture.getThumbnailFormat()));
 				responseHeaders.setContentLength(thumbnail.length);
 				responseHeaders.set("Content-Disposition", "filename=\"" + picture.getFilename() + '\"');
 
@@ -104,9 +100,34 @@ public class PicsController implements IPortalApp, ServletContextAware {
 		return responseEntity;
 	}
 
-	@Override
-	public void setServletContext(final ServletContext servletContext) {
-		this.servletContext = servletContext;
+	@RequestMapping(value = "picture/{id}", method = RequestMethod.GET)
+	ResponseEntity<byte[]> renderPicture(@PathVariable final Long id, final HttpServletRequest request,
+			final HttpServletResponse response) throws Exception {
+
+		ResponseEntity<byte[]> responseEntity = null;
+
+		if (id != null) {
+
+			final PictureContents pictureContents = this.picsDao.findContentsById(id);
+			if (pictureContents != null) {
+				final Picture picture = pictureContents.getPicture();
+
+				final byte[] contents = pictureContents.getData();
+
+				final HttpHeaders responseHeaders = new HttpHeaders();
+				responseHeaders.setContentType(MediaType.parseMediaType("image/" + picture.getFormat()));
+				responseHeaders.setContentLength(contents.length);
+				responseHeaders.set("Content-Disposition", "filename=\"" + picture.getFilename() + '\"');
+
+				responseEntity = new ResponseEntity<byte[]>(contents, responseHeaders, HttpStatus.OK);
+			}
+		}
+
+		if (responseEntity == null) {
+			responseEntity = new ResponseEntity<byte[]>(null, null, HttpStatus.NOT_FOUND);
+		}
+
+		return responseEntity;
 	}
 
 	/*

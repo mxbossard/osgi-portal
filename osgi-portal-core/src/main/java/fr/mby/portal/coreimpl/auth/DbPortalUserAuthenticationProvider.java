@@ -28,7 +28,6 @@ import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.InvalidSyntaxException;
 import org.osgi.framework.ServiceReference;
-import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
@@ -45,6 +44,7 @@ import fr.mby.portal.core.auth.PortalUserAuthentication;
 import fr.mby.portal.core.security.PrincipalNotFoundException;
 import fr.mby.portal.coreimpl.acl.BasicAuthorization;
 import fr.mby.portal.model.user.PortalUser;
+import fr.mby.utils.common.jpa.OsgiJpaHelper;
 
 /**
  * IAuthenticationProvider able to authenticate accounts in DB with JPA (see PortalUser entity).
@@ -58,16 +58,13 @@ public class DbPortalUserAuthenticationProvider
 		implements
 			IAuthenticationProvider,
 			BundleContextAware,
-			InitializingBean,
-			DisposableBean {
+			InitializingBean {
 
 	@Autowired(required = true)
 	private IAclManager aclManager;
 
 	/** Wired by Spring. */
 	private EntityManagerFactory portalUserEmf;
-
-	private EntityManager portalUserEm;
 
 	private BundleContext bundleContext;
 
@@ -91,7 +88,10 @@ public class DbPortalUserAuthenticationProvider
 		IAuthentication resultingAuth = null;
 
 		final String login = authentication.getName();
-		final PortalUser portalUser = this.findPortalUserByLogin(login);
+		final EntityManager portalUserEm = this.portalUserEmf.createEntityManager();
+		final PortalUser portalUser = this.findPortalUserByLogin(portalUserEm, login);
+		portalUserEm.close();
+
 		if (portalUser != null) {
 			// We found the user in the DB => we can authenticate him
 			resultingAuth = this.performAuthentication(auth, portalUser);
@@ -113,15 +113,9 @@ public class DbPortalUserAuthenticationProvider
 	public void afterPropertiesSet() throws Exception {
 
 		// Load EntityManager
-		final EntityManagerFactory portalUserEmf = this.retrieveEntityManagerFactory("portalUserPu");
-		this.portalUserEm = portalUserEmf.createEntityManager();
+		this.portalUserEmf = OsgiJpaHelper.retrieveEmfByName(this.bundleContext, "portalUserPu");
 
 		this.initDefaultUsers();
-	}
-
-	@Override
-	public void destroy() throws Exception {
-		this.portalUserEm.close();
 	}
 
 	/** Init the DB with default users : user:user456 & admin:admin456 */
@@ -129,32 +123,36 @@ public class DbPortalUserAuthenticationProvider
 		final PortalUser user = this.buildPortalUser("user", "user456");
 		final PortalUser admin = this.buildPortalUser("admin", "admin456");
 
+		final EntityManager portalUserEm = this.portalUserEmf.createEntityManager();
+
 		// Remove transaction
-		this.portalUserEm.getTransaction().begin();
+		portalUserEm.getTransaction().begin();
 
-		final PortalUser foundAdmin = this.findPortalUserByLogin("admin");
+		final PortalUser foundAdmin = this.findPortalUserByLogin(portalUserEm, "admin");
 		if (foundAdmin != null) {
-			this.portalUserEm.remove(foundAdmin);
+			portalUserEm.remove(foundAdmin);
 		}
 
-		final PortalUser foundUser = this.findPortalUserByLogin("user");
+		final PortalUser foundUser = this.findPortalUserByLogin(portalUserEm, "user");
 		if (foundUser != null) {
-			this.portalUserEm.remove(foundUser);
+			portalUserEm.remove(foundUser);
 		}
 
-		this.portalUserEm.getTransaction().commit();
+		portalUserEm.getTransaction().commit();
 
 		// Insert transaction
-		this.portalUserEm.getTransaction().begin();
+		portalUserEm.getTransaction().begin();
 
-		this.portalUserEm.persist(user);
-		this.portalUserEm.persist(admin);
+		portalUserEm.persist(user);
+		portalUserEm.persist(admin);
 
-		this.portalUserEm.getTransaction().commit();
+		portalUserEm.getTransaction().commit();
+
+		portalUserEm.close();
 	}
 
-	protected PortalUser findPortalUserByLogin(final String login) {
-		final Query query = this.portalUserEm.createNamedQuery(PortalUser.FIND_PORTAL_USER);
+	protected PortalUser findPortalUserByLogin(final EntityManager portalUserEm, final String login) {
+		final Query query = portalUserEm.createNamedQuery(PortalUser.FIND_PORTAL_USER);
 		query.setParameter("login", login);
 
 		PortalUser found = null;

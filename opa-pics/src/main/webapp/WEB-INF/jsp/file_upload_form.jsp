@@ -11,7 +11,7 @@
 	$(document).ready(function() {
 	    //add more file components if Add is clicked
 	    $('#addPicture').click(function() {
-	        var fileIndex = $('#fileTable tr').children().length - 1;
+	        var fileIndex = $('#fileTable tr').children().length;
 	        $('#fileTable').append(
 	                '<tr><td>'+
 	                '   <input type="file" name="pictures['+ fileIndex +']" />'+

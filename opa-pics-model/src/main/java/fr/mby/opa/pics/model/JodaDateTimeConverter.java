@@ -18,27 +18,38 @@ package fr.mby.opa.pics.model;
 
 import java.sql.Timestamp;
 
-import javax.persistence.AttributeConverter;
-import javax.persistence.Converter;
-
+import org.eclipse.persistence.mappings.DatabaseMapping;
+import org.eclipse.persistence.mappings.converters.Converter;
+import org.eclipse.persistence.sessions.Session;
 import org.joda.time.DateTime;
-import org.joda.time.ReadableDateTime;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-@Converter
-public class JodaDateTimeConverter implements AttributeConverter<ReadableDateTime, Timestamp> {
+public class JodaDateTimeConverter implements Converter {
+
+	/** Svuid. */
+	private static final long serialVersionUID = -6865762913757496067L;
 
 	@Override
-	public Timestamp convertToDatabaseColumn(final ReadableDateTime attribute) {
-		return new Timestamp(attribute.getMillis());
+	public Object convertDataValueToObjectValue(final Object obj, final Session session) {
+		return new DateTime(Timestamp.valueOf(((String) obj)).getTime());
 	}
 
 	@Override
-	public ReadableDateTime convertToEntityAttribute(final Timestamp dbData) {
-		return new DateTime(dbData.getTime());
+	public Object convertObjectValueToDataValue(final Object obj, final Session session) {
+		return new Timestamp(((DateTime) obj).getMillis());
+	}
+
+	@Override
+	public void initialize(final DatabaseMapping obj, final Session session) {
+		// Nothhig to do
+	}
+
+	@Override
+	public boolean isMutable() {
+		return false;
 	}
 
 }
