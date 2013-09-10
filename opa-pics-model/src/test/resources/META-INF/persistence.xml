@@ -3,7 +3,7 @@
               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
               version="2.0"  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
               http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-	<persistence-unit  name="opaPicsPu" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit  name="test-opaPicsPu" transaction-type="RESOURCE_LOCAL">
 		<provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
 		
 		<class>fr.mby.opa.pics.model.Album</class>
@@ -18,7 +18,7 @@
 		
 		<properties>
 			<property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
-            <property name="javax.persistence.jdbc.url" value="jdbc:derby:c:/osgiPortal.db;create=true;upgrade=true"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:derby:c:/test.db;create=true;upgrade=true"/>
             <property name="javax.persistence.jdbc.user" value="test"/>
             <property name="javax.persistence.jdbc.password" value="test"/>
            
@@ -33,7 +33,7 @@
             <property name="eclipselink.orm.throw.exceptions" value="true"/>
             <property name="eclipselink.jdbc.read-connections.min" value="1"/>
             <property name="eclipselink.jdbc.write-connections.min" value="1"/>
-            <property name="eclipselink.weaving" value="true"/>
+            <property name="eclipselink.weaving" value="false"/>
 
             <property name="eclipselink.ddl-generation" value="create-tables"/>
             <property name="eclipselink.ddl-generation.output-mode" value="database" />

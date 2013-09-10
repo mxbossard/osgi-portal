@@ -39,7 +39,7 @@
 		<property name="portalService" ref="portalServiceRef" />
 	</bean>
 	
-	<bean id="picturesUploadController" class="fr.mby.opa.pics.web.controller.PicturesUploadController">
+	<bean id="picturesUploadController" class="fr.mby.opa.pics.web.controller.UploadPicturesController">
 	
 	</bean>
 

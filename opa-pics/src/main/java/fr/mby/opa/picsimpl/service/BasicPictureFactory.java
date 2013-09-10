@@ -18,7 +18,6 @@ package fr.mby.opa.picsimpl.service;
 
 import java.awt.AlphaComposite;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
@@ -52,8 +51,8 @@ import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
 
+import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.model.PictureContents;
 import fr.mby.opa.pics.service.IPictureFactory;
 
 /**
@@ -106,9 +105,6 @@ public class BasicPictureFactory implements IPictureFactory {
 
 	protected void loadPicture(final Picture picture, final byte[] contents, final BufferedInputStream stream)
 			throws IOException {
-		final PictureContents pc = new PictureContents();
-		pc.setData(contents);
-		picture.setContents(pc);
 
 		// Generate picture hash
 		final byte[] uniqueHash = this.generateHash(contents);
@@ -117,8 +113,11 @@ public class BasicPictureFactory implements IPictureFactory {
 		// Load BufferedImage
 		stream.reset();
 		final BufferedImage originalImage = ImageIO.read(stream);
-		picture.setWidth(originalImage.getWidth());
-		picture.setHeigth(originalImage.getHeight());
+		final int width = originalImage.getWidth();
+		final int height = originalImage.getHeight();
+		picture.setWidth(width);
+		picture.setHeight(height);
+		picture.setSize(contents.length);
 
 		// Load thumbnail
 		this.loadThumbnail(picture, originalImage);
@@ -141,6 +140,15 @@ public class BasicPictureFactory implements IPictureFactory {
 			format = BasicPictureFactory.DEFAULT_PICTURE_FORMAT;
 		}
 		picture.setFormat(format.toLowerCase());
+
+		// Build Contents
+		final BinaryImage image = new BinaryImage();
+		image.setData(contents);
+		image.setFilename(picture.getFilename());
+		image.setFormat(format);
+		image.setWidth(width);
+		image.setHeight(height);
+		picture.setImage(image);
 	}
 
 	protected void loadThumbnail(final Picture picture, final BufferedImage originalImage) throws IOException {
@@ -152,10 +160,23 @@ public class BasicPictureFactory implements IPictureFactory {
 		final ByteArrayOutputStream output = new ByteArrayOutputStream();
 		ImageIO.write(resizedImage, thumbnailFormat, output);
 
-		picture.setThumbnail(output.toByteArray());
-		picture.setThumbnailWidth(resizedImage.getWidth());
-		picture.setThumbnailHeigth(resizedImage.getHeight());
+		final byte[] thumbnailData = output.toByteArray();
+
+		final int width = resizedImage.getWidth();
+		final int height = resizedImage.getHeight();
+		picture.setThumbnailWidth(width);
+		picture.setThumbnailHeigth(height);
+		picture.setThumbnailSize(thumbnailData.length);
 		picture.setThumbnailFormat(thumbnailFormat);
+
+		// Build Thumbnail
+		final BinaryImage thumbnail = new BinaryImage();
+		thumbnail.setData(thumbnailData);
+		thumbnail.setFilename(picture.getFilename());
+		thumbnail.setFormat(thumbnailFormat);
+		thumbnail.setWidth(width);
+		thumbnail.setHeight(height);
+		picture.setThumbnail(thumbnail);
 	}
 
 	protected void loadMetadata(final Picture picture, final BufferedInputStream stream) throws IOException {
@@ -273,8 +294,8 @@ public class BasicPictureFactory implements IPictureFactory {
 				image, newWidth, newHeight, type);
 	}
 
-	protected BufferedImage resizeImageWithoutHint(final Image originalImage, final int width, final int height,
-			final int type) {
+	protected BufferedImage resizeImageWithoutHint(final java.awt.Image originalImage, final int width,
+			final int height, final int type) {
 		final BufferedImage resizedImage = new BufferedImage(width, height, type);
 
 		final Graphics2D graphics2D = resizedImage.createGraphics();
@@ -284,7 +305,7 @@ public class BasicPictureFactory implements IPictureFactory {
 		return resizedImage;
 	}
 
-	protected BufferedImage resizeImageWithHint(final Image originalImage, final int width, final int height,
+	protected BufferedImage resizeImageWithHint(final java.awt.Image originalImage, final int width, final int height,
 			final int type) {
 		final BufferedImage resizedImage = new BufferedImage(width, height, type);
 

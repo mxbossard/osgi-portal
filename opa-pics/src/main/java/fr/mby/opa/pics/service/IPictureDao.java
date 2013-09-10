@@ -18,8 +18,8 @@ package fr.mby.opa.pics.service;
 
 import java.util.Collection;
 
+import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.model.PictureContents;
 
 /**
  * @author Maxime Bossard - 2013
@@ -33,9 +33,9 @@ public interface IPictureDao {
 
 	void deletePicture(Picture picture) throws PictureNotFoundException;
 
-	Picture findPictureById(long id) throws PictureNotFoundException;
+	Picture findPictureById(Long id);
 
-	PictureContents findContentsById(long id) throws PictureNotFoundException;
+	BinaryImage findImageById(Long id);
 
 	Collection<Picture> findAllPictures();
 

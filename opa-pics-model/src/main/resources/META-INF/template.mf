@@ -7,7 +7,14 @@ Bundle-ClassPath: ${bundlor.template.classPath}
 Meta-Persistence: 
 Import-Package: 
  javax.persistence;jpa="2.0";version="1.1.0",
- org.eclipse.persistence.internal.jpa.rs.metadata.model;version="2.4.2"
+ org.eclipse.persistence.internal.jpa.rs.metadata.model;version="2.4.2",
+ org.eclipse.persistence.internal.weaving;version="2.4.2",
+ org.eclipse.persistence.internal.descriptors;version="2.4.2",
+ org.eclipse.persistence.queries;version="2.4.2",
+ org.eclipse.persistence.descriptors.changetracking;version="2.4.2",
+ org.eclipse.persistence.indirection;version="2.4.2",
+ org.eclipse.persistence.internal.identitymaps;version="2.4.2",
+ org.eclipse.persistence.exceptions;version="2.4.2"
 Version-Patterns:
  major-range;pattern="[=.=.=.=, +1.0.0.=)",
  medium-range;pattern="[=.=.=.=, =.+1.0.=)",

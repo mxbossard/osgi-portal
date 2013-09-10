@@ -17,6 +17,8 @@
 	<properties>
 		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
 		
+		<opa-pics-model.version>0.0.1.SNAPSHOT</opa-pics-model.version>
+		
 		<bundlor.template.webContextPath>/pics</bundlor.template.webContextPath>
 
 		<servlet.version>2.5</servlet.version>
@@ -34,22 +36,19 @@
 		<dependency>
 			<groupId>fr.mby.osgi-portal-app</groupId>
 			<artifactId>pics-model</artifactId>
-			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
-			<scope>provided</scope>
+			<version>${opa-pics-model.version}</version>
 		</dependency>
 	
 		<dependency>
 			<groupId>fr.mby.osgi-portal</groupId>
 			<artifactId>osgi-portal-core</artifactId>
 			<version>${osgi-portal-api.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>fr.mby.utils</groupId>
 			<artifactId>web-utils</artifactId>
 			<version>[0.0.1.SNAPSHOT, 2.0.0.RELEASE)</version>
-			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
@@ -83,31 +82,26 @@
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
 			<version>${spring.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
 			<version>${spring.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
 			<version>${spring.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.webflow</groupId>
 			<artifactId>spring-webflow</artifactId>
 			<version>${spring-webflow.version}</version>
-			<scope>provided</scope>
 		</dependency>
 		
 		<!-- JPA -->

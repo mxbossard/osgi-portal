@@ -38,8 +38,8 @@ import fr.mby.opa.pics.web.form.PicturesUploadForm;
  * 
  */
 @Controller
-@RequestMapping("/upload")
-public class PicturesUploadController {
+@RequestMapping("upload")
+public class UploadPicturesController {
 
 	@Autowired
 	private IPictureFactory pictureFactory;

@@ -27,12 +27,13 @@ import javax.persistence.Query;
 
 import org.eclipse.gemini.blueprint.context.BundleContextAware;
 import org.osgi.framework.BundleContext;
+import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.model.PictureContents;
 import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.PictureNotFoundException;
@@ -43,11 +44,9 @@ import fr.mby.utils.common.jpa.OsgiJpaHelper;
  * 
  */
 @Service
-public class DbPictureDao implements IPictureDao, BundleContextAware, InitializingBean {
+public class DbPictureDao implements IPictureDao, BundleContextAware, InitializingBean, DisposableBean {
 
 	private static final String PICTURE_PU_NAME = "opaPicsPu";
-
-	private static final String SELECT_CONTENTS_WITH_PICTURE = "select pc from PictureContents pc join fetch pc.picture where pc.id = :id";
 
 	private BundleContext bundleContext;
 
@@ -56,11 +55,11 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 	@Override
 	public Picture createPicture(final Picture picture) throws PictureAlreadyExistsException {
 		Assert.notNull(picture, "No Picture supplied !");
-		Assert.state(picture.getId() == 0, "Id should not be set for creation !");
+		Assert.isNull(picture.getId(), "Id should not be set for creation !");
 
 		EntityManager em = null;
 		try {
-			em = this.emf.createEntityManager();
+			em = this.getNewEntityManager();
 
 			this.testHashUniqueness(picture, em);
 
@@ -84,13 +83,13 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 	@Override
 	public Picture updatePicture(final Picture picture) throws PictureNotFoundException {
 		Assert.notNull(picture, "No Picture supplied !");
-		Assert.state(picture.getId() != 0, "Id should be set for update !");
+		Assert.notNull(picture.getId(), "Id should be set for update !");
 
 		Picture updatedPicture = null;
 
 		EntityManager em = null;
 		try {
-			em = this.emf.createEntityManager();
+			em = this.getNewEntityManager();
 
 			em.getTransaction().begin();
 
@@ -119,11 +118,11 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 	@Override
 	public void deletePicture(final Picture picture) throws PictureNotFoundException {
 		Assert.notNull(picture, "No Picture supplied !");
-		Assert.state(picture.getId() != 0, "Id should be set for update !");
+		Assert.notNull(picture.getId(), "Id should be set for delete !");
 
 		EntityManager em = null;
 		try {
-			em = this.emf.createEntityManager();
+			em = this.getNewEntityManager();
 
 			em.getTransaction().begin();
 
@@ -148,12 +147,14 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 	}
 
 	@Override
-	public Picture findPictureById(final long id) {
+	public Picture findPictureById(final Long id) {
+		Assert.notNull(id, "Picture Id should be supplied !");
+
 		Picture picture = null;
 
 		EntityManager em = null;
 		try {
-			em = this.emf.createEntityManager();
+			em = this.getNewEntityManager();
 
 			final Query findByIdQuery = em.createNamedQuery(Picture.FIND_PIC_BY_ID);
 			findByIdQuery.setParameter("id", id);
@@ -171,25 +172,23 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 	}
 
 	@Override
-	public PictureContents findContentsById(final long id) throws PictureNotFoundException {
-		PictureContents contents = null;
+	public BinaryImage findImageById(final Long id) {
+		Assert.notNull(id, "Image Id should be supplied !");
+
+		BinaryImage image = null;
 
 		EntityManager em = null;
 		try {
-			em = this.emf.createEntityManager();
-			final Query query = em.createQuery(DbPictureDao.SELECT_CONTENTS_WITH_PICTURE);
-			query.setParameter("id", id);
-			final List<?> results = query.getResultList();
-			if (!results.isEmpty()) {
-				contents = (PictureContents) results.iterator().next();
-			}
+			em = this.getNewEntityManager();
+
+			image = em.find(BinaryImage.class, id);
 		} finally {
 			if (em != null) {
 				em.close();
 			}
 		}
 
-		return contents;
+		return image;
 	}
 
 	@Override
@@ -199,7 +198,7 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 
 		EntityManager em = null;
 		try {
-			em = this.emf.createEntityManager();
+			em = this.getNewEntityManager();
 
 			final Query findAllQuery = em.createNamedQuery(Picture.FIND_ALL_ORDER_BY_DATE);
 			pictures = findAllQuery.getResultList();
@@ -222,8 +221,24 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 	}
 
 	@Override
+	public void destroy() throws Exception {
+		this.emf.close();
+		this.emf = null;
+	}
+
+	@Override
 	public void setBundleContext(final BundleContext bundleContext) {
 		this.bundleContext = bundleContext;
+	}
+
+	/**
+	 * Get a new EntityManager.
+	 * 
+	 * @return
+	 */
+	protected EntityManager getNewEntityManager() {
+		this.emf.getCache().evictAll();
+		return this.emf.createEntityManager();
 	}
 
 	/**

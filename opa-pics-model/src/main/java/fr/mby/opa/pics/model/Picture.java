@@ -23,13 +23,13 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.MapKey;
-import javax.persistence.MapsId;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -53,7 +53,7 @@ import org.joda.time.DateTime;
 				+ " FROM Picture record ORDER BY record.creationTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
-@Table(name = "picture", uniqueConstraints = @UniqueConstraint(columnNames = {"uniqueHash"}))
+@Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"uniqueHash"}))
 // indexes = {@Index(columnList = "id"), @Index(columnList = "uniqueHash"), @Index(columnList = "creationTime")}
 public class Picture {
 
@@ -67,76 +67,83 @@ public class Picture {
 	public static final String FIND_ALL_ORDER_BY_DATE = "FIND_ALL_ORDER_BY_DATE";
 
 	@Id
-	@Column(name = "id")
-	private long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "ID")
+	private Long id;
 
 	@Basic(optional = false)
-	@Column(name = "uniqueHash", nullable = false, updatable = false, unique = true)
+	@Column(name = "HASH", nullable = false, updatable = false, unique = true)
 	private String uniqueHash;
 
 	@Basic(optional = false)
-	@Column(name = "filename", nullable = false, updatable = false)
+	@Column(name = "FILENAME", nullable = false, updatable = false)
 	private String filename;
 
 	@Basic(optional = false)
-	@Column(name = "name")
+	@Column(name = "NAME")
 	private String name;
 
 	@Basic(optional = false)
-	@Column(name = "creationTime", nullable = false, updatable = false)
+	@Column(name = "CREATION_TIME", nullable = false, updatable = false)
 	@Convert("jodaDateTime")
 	private DateTime creationTime;
 
 	@Basic(optional = false)
-	@Column(name = "width", nullable = false, updatable = false)
+	@Column(name = "WIDTH", nullable = false, updatable = false)
 	private int width;
 
 	@Basic(optional = false)
-	@Column(name = "heigth", nullable = false, updatable = false)
-	private int heigth;
+	@Column(name = "HEIGHT", nullable = false, updatable = false)
+	private Integer height;
 
 	@Basic(optional = false)
-	@Column(name = "format", nullable = false, updatable = false)
+	@Column(name = "SIZE", nullable = false, updatable = false)
+	private Integer size;
+
+	@Basic(optional = false)
+	@Column(name = "FORMAT", nullable = false, updatable = false)
 	private String format;
 
-	@Lob
 	@Basic(optional = false)
-	@Column(name = "thumbnail", nullable = false, updatable = false)
-	private byte[] thumbnail;
+	@Column(name = "THUMBNAIL_WIDTH", nullable = false, updatable = false)
+	private Integer thumbnailWidth;
 
 	@Basic(optional = false)
-	@Column(name = "thumbnailWidth", nullable = false, updatable = false)
-	private int thumbnailWidth;
+	@Column(name = "THUMBNAIL_HEIGHT", nullable = false, updatable = false)
+	private Integer thumbnailHeigth;
 
 	@Basic(optional = false)
-	@Column(name = "thumbnailHeigth", nullable = false, updatable = false)
-	private int thumbnailHeigth;
+	@Column(name = "THUMBNAIL_SIZE", nullable = false, updatable = false)
+	private Integer thumbnailSize;
 
 	@Basic(optional = false)
-	@Column(name = "thumbnailFormat", nullable = false, updatable = false)
+	@Column(name = "THUMBNAIL_FORMAT", nullable = false, updatable = false)
 	private String thumbnailFormat;
 
 	@Basic(optional = true)
-	@Column(name = "jsonMetadata", length = 8192)
+	@Column(name = "JSON_METADATA", length = 8192)
 	private String jsonMetadata;
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "tagsOnPicture")
 	@MapKey(name = "id")
-	@JoinColumn(name = "tags")
+	@JoinColumn(name = "TAGS_ID")
 	private Map<Long, Tag> tags;
 
-	@MapsId
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false, mappedBy = "picture")
-	@JoinColumn(name = "id", nullable = false, updatable = false)
-	private PictureContents contents;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "IMAGE_ID", nullable = false, updatable = false)
+	private BinaryImage image;
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "THUMBNAIL_ID", nullable = false, updatable = false)
+	private BinaryImage thumbnail;
 
 	/**
 	 * Getter of id.
 	 * 
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -146,7 +153,7 @@ public class Picture {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 
@@ -227,22 +234,22 @@ public class Picture {
 	}
 
 	/**
-	 * Getter of contents.
+	 * Getter of image.
 	 * 
-	 * @return the contents
+	 * @return the image
 	 */
-	public PictureContents getContents() {
-		return this.contents;
+	public BinaryImage getImage() {
+		return this.image;
 	}
 
 	/**
-	 * Setter of contents.
+	 * Setter of image.
 	 * 
-	 * @param contents
-	 *            the contents to set
+	 * @param image
+	 *            the image to set
 	 */
-	public void setContents(final PictureContents contents) {
-		this.contents = contents;
+	public void setImage(final BinaryImage image) {
+		this.image = image;
 	}
 
 	/**
@@ -250,7 +257,7 @@ public class Picture {
 	 * 
 	 * @return the thumbnail
 	 */
-	public byte[] getThumbnail() {
+	public BinaryImage getThumbnail() {
 		return this.thumbnail;
 	}
 
@@ -260,7 +267,7 @@ public class Picture {
 	 * @param thumbnail
 	 *            the thumbnail to set
 	 */
-	public void setThumbnail(final byte[] thumbnail) {
+	public void setThumbnail(final BinaryImage thumbnail) {
 		this.thumbnail = thumbnail;
 	}
 
@@ -322,60 +329,41 @@ public class Picture {
 	}
 
 	/**
-	 * Getter of heigth.
+	 * Getter of height.
 	 * 
-	 * @return the heigth
+	 * @return the height
 	 */
-	public int getHeigth() {
-		return this.heigth;
+	public Integer getHeight() {
+		return this.height;
 	}
 
 	/**
-	 * Setter of heigth.
+	 * Setter of height.
 	 * 
-	 * @param heigth
-	 *            the heigth to set
+	 * @param height
+	 *            the height to set
 	 */
-	public void setHeigth(final int heigth) {
-		this.heigth = heigth;
+	public void setHeight(final Integer height) {
+		this.height = height;
 	}
 
 	/**
-	 * Getter of thumbnailWidth.
+	 * Getter of size.
 	 * 
-	 * @return the thumbnailWidth
+	 * @return the size
 	 */
-	public int getThumbnailWidth() {
-		return this.thumbnailWidth;
+	public Integer getSize() {
+		return this.size;
 	}
 
 	/**
-	 * Setter of thumbnailWidth.
+	 * Setter of size.
 	 * 
-	 * @param thumbnailWidth
-	 *            the thumbnailWidth to set
+	 * @param size
+	 *            the size to set
 	 */
-	public void setThumbnailWidth(final int thumbnailWidth) {
-		this.thumbnailWidth = thumbnailWidth;
-	}
-
-	/**
-	 * Getter of thumbnailHeigth.
-	 * 
-	 * @return the thumbnailHeigth
-	 */
-	public int getThumbnailHeigth() {
-		return this.thumbnailHeigth;
-	}
-
-	/**
-	 * Setter of thumbnailHeigth.
-	 * 
-	 * @param thumbnailHeigth
-	 *            the thumbnailHeigth to set
-	 */
-	public void setThumbnailHeigth(final int thumbnailHeigth) {
-		this.thumbnailHeigth = thumbnailHeigth;
+	public void setSize(final Integer size) {
+		this.size = size;
 	}
 
 	/**
@@ -395,6 +383,63 @@ public class Picture {
 	 */
 	public void setFormat(final String format) {
 		this.format = format;
+	}
+
+	/**
+	 * Getter of thumbnailWidth.
+	 * 
+	 * @return the thumbnailWidth
+	 */
+	public Integer getThumbnailWidth() {
+		return this.thumbnailWidth;
+	}
+
+	/**
+	 * Setter of thumbnailWidth.
+	 * 
+	 * @param thumbnailWidth
+	 *            the thumbnailWidth to set
+	 */
+	public void setThumbnailWidth(final Integer thumbnailWidth) {
+		this.thumbnailWidth = thumbnailWidth;
+	}
+
+	/**
+	 * Getter of thumbnailHeigth.
+	 * 
+	 * @return the thumbnailHeigth
+	 */
+	public Integer getThumbnailHeigth() {
+		return this.thumbnailHeigth;
+	}
+
+	/**
+	 * Setter of thumbnailHeigth.
+	 * 
+	 * @param thumbnailHeigth
+	 *            the thumbnailHeigth to set
+	 */
+	public void setThumbnailHeigth(final Integer thumbnailHeigth) {
+		this.thumbnailHeigth = thumbnailHeigth;
+	}
+
+	/**
+	 * Getter of thumbnailSize.
+	 * 
+	 * @return the thumbnailSize
+	 */
+	public Integer getThumbnailSize() {
+		return this.thumbnailSize;
+	}
+
+	/**
+	 * Setter of thumbnailSize.
+	 * 
+	 * @param thumbnailSize
+	 *            the thumbnailSize to set
+	 */
+	public void setThumbnailSize(final Integer thumbnailSize) {
+		this.thumbnailSize = thumbnailSize;
 	}
 
 	/**

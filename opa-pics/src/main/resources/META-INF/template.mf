@@ -30,12 +30,14 @@ Import-Package:
  org.springframework.web.context
 Excluded-Exports: 
 Excluded-Imports: 
-Export-Template: fr.mby.opa.pics.model
-Ignored-Existing-Headers: 
+Export-Template: 
 Import-Template: 
+ fr.mby.opa.pics.model;version="${opa-pics-model.version:medium-range}",
  fr.mby.portal.api.*;version="${osgi-portal-api.version:medium-range}",
  fr.mby.portal.core.*;version="${osgi-portal-api.version:medium-range}",
  fr.mby.utils.web.*;version="[0.0.1, 2.0.0)",
+ com.drew.*;version="${metadata-extractor.version:apache-range}",
+ com.drew.metadata.*;version="${metadata-extractor.version:apache-range}",
  javax.servlet.*;version="${servlet.version:[=.=.=, +1.0.0)}",
  javax.servlet.jsp.*;version="[2.2.0,3.0.0)",
  javax.servlet.jsp.jstl.*;version="[1.2.0,2.0.0)",
@@ -55,7 +57,9 @@ Import-Template:
  org.springframework.web.servlet.tags.*;version="${spring.version:major-range}",
  org.springframework.security.*;version="${spring-security.version:major-range}",
  org.springframework.webflow.*;version="${spring-webflow.version:major-range}"
+Ignored-Existing-Headers: 
 Version-Patterns: 
  major-range;pattern="[=.=.=.=, +1.0.0.=)",
  medium-range;pattern="[=.=.=.=, =.+1.0.=)",
- exact-range;pattern="[=.=.=, =.=.=]"
+ exact-range;pattern="[=.=.=, =.=.=]",
+ apache-range;pattern="[=.=.=, =.+1.0)"

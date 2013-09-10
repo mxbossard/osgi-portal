@@ -32,8 +32,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.model.PictureContents;
 import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.app.IApp;
@@ -50,7 +50,7 @@ import fr.mby.portal.api.message.IRenderReply;
  */
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("")
 public class PicsController implements IPortalApp {
 
 	private IPortalService portalService;
@@ -72,54 +72,24 @@ public class PicsController implements IPortalApp {
 		return mv;
 	}
 
-	@RequestMapping(value = "thumbnail/{id}", method = RequestMethod.GET)
-	ResponseEntity<byte[]> renderThumbnail(@PathVariable final Long id, final HttpServletRequest request,
+	@RequestMapping(value = "image/{id}", method = RequestMethod.GET)
+	ResponseEntity<byte[]> renderImage(@PathVariable final Long id, final HttpServletRequest request,
 			final HttpServletResponse response) throws Exception {
 
 		ResponseEntity<byte[]> responseEntity = null;
 
 		if (id != null) {
 
-			final Picture picture = this.picsDao.findPictureById(id);
-			if (picture != null) {
-				final byte[] thumbnail = picture.getThumbnail();
+			final BinaryImage image = this.picsDao.findImageById(id);
+			if (image != null) {
+				final byte[] thumbnailData = image.getData();
 
 				final HttpHeaders responseHeaders = new HttpHeaders();
-				responseHeaders.setContentType(MediaType.parseMediaType("image/" + picture.getThumbnailFormat()));
-				responseHeaders.setContentLength(thumbnail.length);
-				responseHeaders.set("Content-Disposition", "filename=\"" + picture.getFilename() + '\"');
+				responseHeaders.setContentType(MediaType.parseMediaType("image/" + image.getFormat()));
+				responseHeaders.setContentLength(thumbnailData.length);
+				responseHeaders.set("Content-Disposition", "filename=\"" + image.getFilename() + '\"');
 
-				responseEntity = new ResponseEntity<byte[]>(thumbnail, responseHeaders, HttpStatus.OK);
-			}
-		}
-
-		if (responseEntity == null) {
-			responseEntity = new ResponseEntity<byte[]>(null, null, HttpStatus.NOT_FOUND);
-		}
-
-		return responseEntity;
-	}
-
-	@RequestMapping(value = "picture/{id}", method = RequestMethod.GET)
-	ResponseEntity<byte[]> renderPicture(@PathVariable final Long id, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
-
-		ResponseEntity<byte[]> responseEntity = null;
-
-		if (id != null) {
-
-			final PictureContents pictureContents = this.picsDao.findContentsById(id);
-			if (pictureContents != null) {
-				final Picture picture = pictureContents.getPicture();
-
-				final byte[] contents = pictureContents.getData();
-
-				final HttpHeaders responseHeaders = new HttpHeaders();
-				responseHeaders.setContentType(MediaType.parseMediaType("image/" + picture.getFormat()));
-				responseHeaders.setContentLength(contents.length);
-				responseHeaders.set("Content-Disposition", "filename=\"" + picture.getFilename() + '\"');
-
-				responseEntity = new ResponseEntity<byte[]>(contents, responseHeaders, HttpStatus.OK);
+				responseEntity = new ResponseEntity<byte[]>(thumbnailData, responseHeaders, HttpStatus.OK);
 			}
 		}
 
