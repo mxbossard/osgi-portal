@@ -34,12 +34,24 @@ public class JodaDateTimeConverter implements Converter {
 
 	@Override
 	public Object convertDataValueToObjectValue(final Object obj, final Session session) {
-		return new DateTime(Timestamp.valueOf(((String) obj)).getTime());
+		Object result = null;
+
+		if (obj != null) {
+			result = new DateTime(Timestamp.valueOf(((String) obj)).getTime());
+		}
+
+		return result;
 	}
 
 	@Override
 	public Object convertObjectValueToDataValue(final Object obj, final Session session) {
-		return new Timestamp(((DateTime) obj).getMillis());
+		Object result = null;
+
+		if (obj != null) {
+			result = new Timestamp(((DateTime) obj).getMillis());
+		}
+
+		return result;
 	}
 
 	@Override

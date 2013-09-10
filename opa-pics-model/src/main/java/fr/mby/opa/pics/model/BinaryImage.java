@@ -41,24 +41,24 @@ public class BinaryImage {
 	private Long id;
 
 	@Basic(optional = false)
-	@Column(name = "FILENAME", nullable = false, updatable = false)
+	@Column(name = "FILENAME", nullable = false, updatable = true)
 	private String filename;
 
 	@Basic(optional = false)
-	@Column(name = "WIDTH", nullable = false, updatable = false)
+	@Column(name = "WIDTH", nullable = false, updatable = true)
 	private Integer width;
 
 	@Basic(optional = false)
-	@Column(name = "HEIGHT", nullable = false, updatable = false)
+	@Column(name = "HEIGHT", nullable = false, updatable = true)
 	private Integer height;
 
 	@Basic(optional = false)
-	@Column(name = "FORMAT", nullable = false, updatable = false)
+	@Column(name = "FORMAT", nullable = false, updatable = true)
 	private String format;
 
 	@Lob
 	@Basic(optional = false)
-	@Column(name = "DATA")
+	@Column(name = "DATA", nullable = false, updatable = true)
 	private byte[] data;
 
 	/**

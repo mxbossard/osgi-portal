@@ -18,27 +18,24 @@ package fr.mby.opa.pics.service;
 
 import java.util.Collection;
 
-import fr.mby.opa.pics.model.BinaryImage;
-import fr.mby.opa.pics.model.Picture;
+import fr.mby.opa.pics.model.Album;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPictureDao {
+public interface IAlbumDao {
 
-	Picture createPicture(Picture picture) throws PictureAlreadyExistsException;
+	Album createAlbum(Album album);
 
-	Picture updatePicture(Picture picture) throws PictureNotFoundException;
+	Album updateAlbum(Album album) throws AlbumNotFoundException;
 
-	void deletePicture(Picture picture) throws PictureNotFoundException;
+	void deleteAlbum(Album picture) throws AlbumNotFoundException;
 
-	Picture findPictureById(Long id);
+	Album findAlbumById(Long id);
 
-	Picture loadFullPictureById(Long id);
+	Album loadAlbumById(Long id);
 
-	BinaryImage findImageById(Long id);
-
-	Collection<Picture> findAllPictures();
+	Collection<Album> findAllAlbums();
 
 }

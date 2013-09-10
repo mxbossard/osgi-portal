@@ -48,9 +48,82 @@ public class PictureMappingTest {
 
 	@Test
 	public void testPersistPicture() throws Exception {
+
+		final Album album = new Album();
+		album.setName("Album");
+		album.setCreationTime(new DateTime());
+
+		final Picture picture = this.buildPicture(album);
+
+		final EntityManager em1 = PictureMappingTest.emf.createEntityManager();
+		em1.getTransaction().begin();
+
+		em1.persist(album);
+
+		em1.persist(picture);
+
+		em1.getTransaction().commit();
+
+		em1.close();
+
+		Assert.assertNotNull("Picture Id should be set !", picture.getId());
+		Assert.assertNotNull("Picture Id should be set !", picture.getImage().getId());
+		Assert.assertNotNull("Picture Id should be set !", picture.getThumbnail().getId());
+
+		final EntityManager em2 = PictureMappingTest.emf.createEntityManager();
+
+		PictureMappingTest.emf.getCache().evictAll();
+
+		// final Picture foundPicture = em2.find(Picture.class, picture.getId());
+		// Assert.assertNotNull("Found picture should not be null !", foundPicture);
+
+		PictureMappingTest.emf.getCache().evictAll();
+
+		final BinaryImage foundContents = em2.find(BinaryImage.class, picture.getImage().getId());
+		Assert.assertNotNull("Found contents should not be null !", foundContents);
+	}
+
+	@Test
+	public void testPersistProposals() throws Exception {
 		final DateTime now = new DateTime();
 
+		final Album a1 = new Album();
+		a1.setCreationTime(now);
+		a1.setName("a1");
+
+		final OrderingProposal op1 = new OrderingProposal();
+		op1.setCreationTime(now);
+		op1.setName("op1");
+
+		final Session s1 = new Session();
+		s1.setName("s1");
+
+		final Picture p1 = this.buildPicture(a1);
+
+		final UnitProposal up1 = new UnitProposal();
+		up1.setCreationTime(now);
+		up1.setRank(0);
+		up1.setSession(s1);
+		up1.setPicture(p1);
+		up1.setOrderingProposal(op1);
+
+		final EntityManager em1 = PictureMappingTest.emf.createEntityManager();
+		em1.getTransaction().begin();
+
+		em1.persist(a1);
+
+		em1.persist(up1);
+
+		em1.getTransaction().commit();
+
+		em1.close();
+	}
+
+	protected Picture buildPicture(final Album album) {
 		final Picture picture = new Picture();
+
+		final DateTime now = new DateTime();
+
 		picture.setCreationTime(now);
 		picture.setFilename("filename");
 		picture.setFormat("jpg");
@@ -62,9 +135,6 @@ public class PictureMappingTest {
 		picture.setUniqueHash(String.valueOf(now.getMillis()));
 		picture.setWidth(300);
 
-		final EntityManager em1 = PictureMappingTest.emf.createEntityManager();
-		em1.getTransaction().begin();
-
 		final BinaryImage image = new BinaryImage();
 		final byte[] picData = {0x00, 0x01, 0x02};
 		image.setData(picData);
@@ -72,6 +142,7 @@ public class PictureMappingTest {
 		image.setHeight(200);
 		image.setWidth(300);
 		image.setFilename("filename");
+		picture.setSize(picData.length);
 
 		final BinaryImage thumbnail = new BinaryImage();
 		final byte[] thumbnailData = {0x10, 0x11, 0x12};
@@ -80,31 +151,14 @@ public class PictureMappingTest {
 		thumbnail.setHeight(50);
 		thumbnail.setWidth(100);
 		thumbnail.setFilename("filename");
+		picture.setThumbnailSize(thumbnailData.length);
 
 		picture.setImage(image);
 
 		picture.setThumbnail(thumbnail);
 
-		em1.persist(picture);
+		picture.setAlbum(album);
 
-		em1.getTransaction().commit();
-
-		em1.close();
-
-		Assert.assertNotNull("Picture Id should be set !", picture.getId());
-		Assert.assertNotNull("Picture Id should be set !", image.getId());
-		Assert.assertNotNull("Picture Id should be set !", thumbnail.getId());
-
-		final EntityManager em2 = PictureMappingTest.emf.createEntityManager();
-
-		PictureMappingTest.emf.getCache().evictAll();
-
-		// final Picture foundPicture = em2.find(Picture.class, picture.getId());
-		// Assert.assertNotNull("Found picture should not be null !", foundPicture);
-
-		PictureMappingTest.emf.getCache().evictAll();
-
-		final BinaryImage foundContents = em2.find(BinaryImage.class, image.getId());
-		Assert.assertNotNull("Found contents should not be null !", foundContents);
+		return picture;
 	}
 }

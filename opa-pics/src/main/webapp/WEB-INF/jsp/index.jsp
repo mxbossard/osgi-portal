@@ -27,17 +27,20 @@
 				var updatedImageUrl = imageUrl.replace(/[^\/]*$/, imageId);
 				imgElement.attr('src', updatedImageUrl);
 				
-				var imageWidth = $('#image').css('width');
-				var imageHeight = $('#image').css('height');
+				$("#picture").show();
+				
+				var imageWidth = $('#image').innerWidth();
+				var imageHeight = $('#image').innerHeight();
 				
 				imgElement.attr('height', imageHeight);
-				$('#image').css('width', imgElement.attr('width'));
+				//$('#image').css('width', imgElement.attr('width'));
 				
-				$("#picture").show();
+				
 			});
 			
 			$("#picture").click(function(e) {
 				$("#picture").hide();
+				var updatedImageUrl = imageUrl.replace(/[^\/]*$/, 0);
 			});
 		});
 

@@ -9,7 +9,8 @@
 		<class>fr.mby.opa.pics.model.Album</class>
 		<class>fr.mby.opa.pics.model.Picture</class>
 		<class>fr.mby.opa.pics.model.BinaryImage</class>
-		<class>fr.mby.opa.pics.model.Proposal</class>
+		<class>fr.mby.opa.pics.model.UnitProposal</class>
+		<class>fr.mby.opa.pics.model.OrderingProposal</class>
 		<class>fr.mby.opa.pics.model.Session</class>
 		<class>fr.mby.opa.pics.model.Shoot</class>
 		<class>fr.mby.opa.pics.model.Tag</class>

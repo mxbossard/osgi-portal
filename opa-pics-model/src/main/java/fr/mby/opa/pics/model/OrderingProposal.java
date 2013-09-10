@@ -16,12 +16,19 @@
 
 package fr.mby.opa.pics.model;
 
+import java.util.Collection;
+
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
@@ -34,38 +41,44 @@ import org.joda.time.ReadableDateTime;
  */
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
-@Table(name = "SESSION")
-public class Session {
+@Table(name = "ORDERING_PROPOSAL")
+public class OrderingProposal {
 
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
-	@Basic(optional = false)
+	@Basic(optional = true)
 	@Column(name = "NAME")
 	private String name;
 
-	@Basic
+	@Basic(optional = true)
 	@Column(name = "DESCRIPTION")
 	private String description;
 
-	@Basic(optional = true)
-	@Column(name = "START_TIME", columnDefinition = "TIMESTAMP")
-	@Convert("jodaDateTime")
-	private ReadableDateTime startTime;
+	@Basic(optional = false)
+	@Column(name = "LOCKED")
+	private Boolean locked;
 
-	@Basic(optional = true)
-	@Column(name = "END_TIME", columnDefinition = "TIMESTAMP")
+	@Basic(optional = false)
+	@Column(name = "CREATION_TIME")
 	@Convert("jodaDateTime")
-	private ReadableDateTime endTime;
+	private ReadableDateTime creationTime;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "BASE_PROPOSAL_ID", updatable = false)
+	private OrderingProposal baseProposal;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "orderingProposal")
+	private Collection<UnitProposal> unitProposals;
 
 	/**
 	 * Getter of id.
 	 * 
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -75,7 +88,7 @@ public class Session {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 
@@ -118,41 +131,79 @@ public class Session {
 	}
 
 	/**
-	 * Getter of startTime.
+	 * Getter of locked.
 	 * 
-	 * @return the startTime
+	 * @return the locked
 	 */
-	public ReadableDateTime getStartTime() {
-		return this.startTime;
+	public Boolean getLocked() {
+		return this.locked;
 	}
 
 	/**
-	 * Setter of startTime.
+	 * Setter of locked.
 	 * 
-	 * @param startTime
-	 *            the startTime to set
+	 * @param locked
+	 *            the locked to set
 	 */
-	public void setStartTime(final ReadableDateTime startTime) {
-		this.startTime = startTime;
+	public void setLocked(final Boolean locked) {
+		this.locked = locked;
 	}
 
 	/**
-	 * Getter of endTime.
+	 * Getter of creationTime.
 	 * 
-	 * @return the endTime
+	 * @return the creationTime
 	 */
-	public ReadableDateTime getEndTime() {
-		return this.endTime;
+	public ReadableDateTime getCreationTime() {
+		return this.creationTime;
 	}
 
 	/**
-	 * Setter of endTime.
+	 * Setter of creationTime.
 	 * 
-	 * @param endTime
-	 *            the endTime to set
+	 * @param creationTime
+	 *            the creationTime to set
 	 */
-	public void setEndTime(final ReadableDateTime endTime) {
-		this.endTime = endTime;
+	public void setCreationTime(final ReadableDateTime creationTime) {
+		this.creationTime = creationTime;
+	}
+
+	/**
+	 * Getter of baseProposal.
+	 * 
+	 * @return the baseProposal
+	 */
+	public OrderingProposal getBaseProposal() {
+		return this.baseProposal;
+	}
+
+	/**
+	 * Setter of baseProposal.
+	 * 
+	 * @param baseProposal
+	 *            the baseProposal to set
+	 */
+	public void setBaseProposal(final OrderingProposal baseProposal) {
+		this.baseProposal = baseProposal;
+	}
+
+	/**
+	 * Getter of unitProposals.
+	 * 
+	 * @return the unitProposals
+	 */
+	public Collection<UnitProposal> getUnitProposals() {
+		return this.unitProposals;
+	}
+
+	/**
+	 * Setter of unitProposals.
+	 * 
+	 * @param unitProposals
+	 *            the unitProposals to set
+	 */
+	public void setUnitProposals(final Collection<UnitProposal> unitProposals) {
+		this.unitProposals = unitProposals;
 	}
 
 }

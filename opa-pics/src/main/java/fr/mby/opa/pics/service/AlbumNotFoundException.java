@@ -16,29 +16,13 @@
 
 package fr.mby.opa.pics.service;
 
-import java.util.Collection;
-
-import fr.mby.opa.pics.model.BinaryImage;
-import fr.mby.opa.pics.model.Picture;
-
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPictureDao {
+public class AlbumNotFoundException extends Exception {
 
-	Picture createPicture(Picture picture) throws PictureAlreadyExistsException;
-
-	Picture updatePicture(Picture picture) throws PictureNotFoundException;
-
-	void deletePicture(Picture picture) throws PictureNotFoundException;
-
-	Picture findPictureById(Long id);
-
-	Picture loadFullPictureById(Long id);
-
-	BinaryImage findImageById(Long id);
-
-	Collection<Picture> findAllPictures();
+	/** Svuid. */
+	private static final long serialVersionUID = 7963992473509879236L;
 
 }

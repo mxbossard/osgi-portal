@@ -29,6 +29,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.MapKey;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -45,12 +46,12 @@ import org.joda.time.DateTime;
  * 
  */
 @NamedQueries({
-		@NamedQuery(name = Picture.FIND_PIC_BY_ID, query = "SELECT record"
-				+ " FROM Picture record WHERE record.id = :id"),
-		@NamedQuery(name = Picture.FIND_PIC_ID_BY_HASH, query = "SELECT record.id"
-				+ " FROM Picture record WHERE record.uniqueHash = :uniqueHash"),
-		@NamedQuery(name = Picture.FIND_ALL_ORDER_BY_DATE, query = "SELECT record"
-				+ " FROM Picture record ORDER BY record.creationTime ASC")})
+		@NamedQuery(name = Picture.LOAD_FULL_PIC_BY_ID, query = "SELECT p"
+				+ " FROM Picture p JOIN FETCH p.image JOIN FETCH p.thumbnail WHERE p.id = :id"),
+		@NamedQuery(name = Picture.FIND_PIC_ID_BY_HASH, query = "SELECT p.id"
+				+ " FROM Picture p WHERE p.uniqueHash = :uniqueHash"),
+		@NamedQuery(name = Picture.FIND_ALL_ORDER_BY_DATE, query = "SELECT p"
+				+ " FROM Picture p ORDER BY p.creationTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"uniqueHash"}))
@@ -58,7 +59,7 @@ import org.joda.time.DateTime;
 public class Picture {
 
 	/** Find a Picture by Id. Params: id */
-	public static final String FIND_PIC_BY_ID = "FIND_PIC_BY_ID";
+	public static final String LOAD_FULL_PIC_BY_ID = "LOAD_FULL_PIC_BY_ID";
 
 	/** Find a Picture by Hash. Params: uniqueHash */
 	public static final String FIND_PIC_ID_BY_HASH = "FIND_PIC_ID_BY_HASH";
@@ -137,6 +138,10 @@ public class Picture {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "THUMBNAIL_ID", nullable = false, updatable = false)
 	private BinaryImage thumbnail;
+
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "ALBUM_ID", nullable = false, updatable = false)
+	private Album album;
 
 	/**
 	 * Getter of id.
@@ -459,6 +464,25 @@ public class Picture {
 	 */
 	public void setThumbnailFormat(final String thumbnailFormat) {
 		this.thumbnailFormat = thumbnailFormat;
+	}
+
+	/**
+	 * Getter of album.
+	 * 
+	 * @return the album
+	 */
+	public Album getAlbum() {
+		return this.album;
+	}
+
+	/**
+	 * Setter of album.
+	 * 
+	 * @param album
+	 *            the album to set
+	 */
+	public void setAlbum(final Album album) {
+		this.album = album;
 	}
 
 }

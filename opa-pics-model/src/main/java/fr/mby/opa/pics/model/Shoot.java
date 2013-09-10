@@ -16,18 +16,12 @@
 
 package fr.mby.opa.pics.model;
 
-import java.util.Collection;
-
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.eclipse.persistence.annotations.Convert;
@@ -40,29 +34,79 @@ import org.joda.time.ReadableDateTime;
  */
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
-@Table(name = "shoot")
+@Table(name = "SHOOT")
 public class Shoot {
 
 	@Id
-	@Column(name = "id")
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name = "ID")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
 	@Basic(optional = false)
-	@Column(name = "startTime", columnDefinition = "TIMESTAMP")
+	@Column(name = "START_TIME", columnDefinition = "TIMESTAMP")
 	@Convert("jodaDateTime")
 	private ReadableDateTime startTime;
 
 	@Basic(optional = false)
-	@Column(name = "endTime", columnDefinition = "TIMESTAMP")
+	@Column(name = "END_TIME", columnDefinition = "TIMESTAMP")
 	@Convert("jodaDateTime")
 	private ReadableDateTime endTime;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "picturesInShoot")
-	private Collection<Picture> pictures;
+	/**
+	 * Getter of id.
+	 * 
+	 * @return the id
+	 */
+	public long getId() {
+		return this.id;
+	}
 
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "shoot")
-	private Collection<Proposal> proposals;
+	/**
+	 * Setter of id.
+	 * 
+	 * @param id
+	 *            the id to set
+	 */
+	public void setId(final long id) {
+		this.id = id;
+	}
+
+	/**
+	 * Getter of startTime.
+	 * 
+	 * @return the startTime
+	 */
+	public ReadableDateTime getStartTime() {
+		return this.startTime;
+	}
+
+	/**
+	 * Setter of startTime.
+	 * 
+	 * @param startTime
+	 *            the startTime to set
+	 */
+	public void setStartTime(final ReadableDateTime startTime) {
+		this.startTime = startTime;
+	}
+
+	/**
+	 * Getter of endTime.
+	 * 
+	 * @return the endTime
+	 */
+	public ReadableDateTime getEndTime() {
+		return this.endTime;
+	}
+
+	/**
+	 * Setter of endTime.
+	 * 
+	 * @param endTime
+	 *            the endTime to set
+	 */
+	public void setEndTime(final ReadableDateTime endTime) {
+		this.endTime = endTime;
+	}
 
 }

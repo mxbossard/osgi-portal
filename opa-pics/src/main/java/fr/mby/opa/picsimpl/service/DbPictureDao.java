@@ -156,7 +156,27 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 		try {
 			em = this.getNewEntityManager();
 
-			final Query findByIdQuery = em.createNamedQuery(Picture.FIND_PIC_BY_ID);
+			picture = em.find(Picture.class, id);
+		} finally {
+			if (em != null) {
+				em.close();
+			}
+		}
+
+		return picture;
+	}
+
+	@Override
+	public Picture loadFullPictureById(final Long id) {
+		Assert.notNull(id, "Picture Id should be supplied !");
+
+		Picture picture = null;
+
+		EntityManager em = null;
+		try {
+			em = this.getNewEntityManager();
+
+			final Query findByIdQuery = em.createNamedQuery(Picture.LOAD_FULL_PIC_BY_ID);
 			findByIdQuery.setParameter("id", id);
 			final List<?> pictures = findByIdQuery.getResultList();
 			if (!pictures.isEmpty()) {
