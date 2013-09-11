@@ -63,13 +63,13 @@ public class Album {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SELECTED_ORDERING_PROPOSAL_ID")
-	private OrderingProposal selectedOrderingProposal;
+	private ProposalBag selectedOrderingProposal;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	private List<OrderingProposal> submitedOrderingProposals;
+	private List<ProposalBag> submitedOrderingProposals;
 
 	@OneToMany(fetch = FetchType.LAZY)
-	private List<OrderingProposal> validatedOrderingProposals;
+	private List<ProposalBag> validatedOrderingProposals;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "album")
 	private List<Picture> pictures;
@@ -155,7 +155,7 @@ public class Album {
 	 * 
 	 * @return the selectedOrderingProposal
 	 */
-	public OrderingProposal getSelectedOrderingProposal() {
+	public ProposalBag getSelectedOrderingProposal() {
 		return this.selectedOrderingProposal;
 	}
 
@@ -165,7 +165,7 @@ public class Album {
 	 * @param selectedOrderingProposal
 	 *            the selectedOrderingProposal to set
 	 */
-	public void setSelectedOrderingProposal(final OrderingProposal selectedOrderingProposal) {
+	public void setSelectedOrderingProposal(final ProposalBag selectedOrderingProposal) {
 		this.selectedOrderingProposal = selectedOrderingProposal;
 	}
 
@@ -174,7 +174,7 @@ public class Album {
 	 * 
 	 * @return the submitedOrderingProposals
 	 */
-	public List<OrderingProposal> getSubmitedOrderingProposals() {
+	public List<ProposalBag> getSubmitedOrderingProposals() {
 		return this.submitedOrderingProposals;
 	}
 
@@ -184,7 +184,7 @@ public class Album {
 	 * @param submitedOrderingProposals
 	 *            the submitedOrderingProposals to set
 	 */
-	public void setSubmitedOrderingProposals(final List<OrderingProposal> submitedOrderingProposals) {
+	public void setSubmitedOrderingProposals(final List<ProposalBag> submitedOrderingProposals) {
 		this.submitedOrderingProposals = submitedOrderingProposals;
 	}
 
@@ -193,7 +193,7 @@ public class Album {
 	 * 
 	 * @return the validatedOrderingProposals
 	 */
-	public List<OrderingProposal> getValidatedOrderingProposals() {
+	public List<ProposalBag> getValidatedOrderingProposals() {
 		return this.validatedOrderingProposals;
 	}
 
@@ -203,7 +203,7 @@ public class Album {
 	 * @param validatedOrderingProposals
 	 *            the validatedOrderingProposals to set
 	 */
-	public void setValidatedOrderingProposals(final List<OrderingProposal> validatedOrderingProposals) {
+	public void setValidatedOrderingProposals(final List<ProposalBag> validatedOrderingProposals) {
 		this.validatedOrderingProposals = validatedOrderingProposals;
 	}
 

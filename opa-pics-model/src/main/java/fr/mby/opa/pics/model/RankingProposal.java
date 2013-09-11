@@ -27,19 +27,29 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
 /**
+ * A RankingProposal rank a Picture in a Shoot. Multiple RankingProposal are grouped in a ProposalBag.
+ * 
+ * Unique constraints :
+ * <ul>
+ * <li>(ProposalBag, Picture) : cannot rank multiple time the same in Picture in a ProposalBag.</li>
+ * <li>(ProposalBag, Shoot, Rank) : cannot attribute 2 identical Rank in same Shoot in same ProposalBag.</li>
+ * </ul>
+ * 
  * @author Maxime Bossard - 2013
  * 
  */
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
-@Table(name = "UNIT_PROPOSAL")
-public class UnitProposal {
+@Table(name = "RANKING_PROPOSAL", uniqueConstraints = {@UniqueConstraint(columnNames = "PROPOSAL_BAG_ID,PICTURE_ID"),
+		@UniqueConstraint(columnNames = "PROPOSAL_BAG_ID,SHOOT_ID,RANK")})
+public class RankingProposal {
 
 	@Id
 	@Column(name = "ID")
@@ -51,28 +61,16 @@ public class UnitProposal {
 	private Integer rank;
 
 	@Basic(optional = false)
-	@Column(name = "VALID")
-	private Boolean valid;
-
-	@Basic(optional = false)
-	@Column(name = "LOCKED")
-	private Boolean locked;
-
-	@Basic(optional = false)
 	@Column(name = "CREATION_TIME")
 	@Convert("jodaDateTime")
 	private ReadableDateTime creationTime;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "ORDERING_PROPOSAL_ID", nullable = false, updatable = false)
-	private OrderingProposal orderingProposal;
+	@JoinColumn(name = "PROPOSAL_BAG_ID", nullable = false, updatable = false)
+	private ProposalBag proposalBag;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
-	@JoinColumn(name = "SESSION_ID", nullable = false)
-	private Session session;
-
-	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = true)
-	@JoinColumn(name = "SHOOT_ID", nullable = true)
+	@JoinColumn(name = "SHOOT_ID", nullable = false, updatable = false)
 	private Shoot shoot;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
@@ -118,44 +116,6 @@ public class UnitProposal {
 	}
 
 	/**
-	 * Getter of valid.
-	 * 
-	 * @return the valid
-	 */
-	public Boolean getValid() {
-		return this.valid;
-	}
-
-	/**
-	 * Setter of valid.
-	 * 
-	 * @param valid
-	 *            the valid to set
-	 */
-	public void setValid(final Boolean valid) {
-		this.valid = valid;
-	}
-
-	/**
-	 * Getter of locked.
-	 * 
-	 * @return the locked
-	 */
-	public Boolean getLocked() {
-		return this.locked;
-	}
-
-	/**
-	 * Setter of locked.
-	 * 
-	 * @param locked
-	 *            the locked to set
-	 */
-	public void setLocked(final Boolean locked) {
-		this.locked = locked;
-	}
-
-	/**
 	 * Getter of creationTime.
 	 * 
 	 * @return the creationTime
@@ -175,22 +135,22 @@ public class UnitProposal {
 	}
 
 	/**
-	 * Getter of orderingProposal.
+	 * Getter of proposalBag.
 	 * 
-	 * @return the orderingProposal
+	 * @return the proposalBag
 	 */
-	public OrderingProposal getOrderingProposal() {
-		return this.orderingProposal;
+	public ProposalBag getProposalBag() {
+		return this.proposalBag;
 	}
 
 	/**
-	 * Setter of orderingProposal.
+	 * Setter of proposalBag.
 	 * 
-	 * @param orderingProposal
-	 *            the orderingProposal to set
+	 * @param proposalBag
+	 *            the proposalBag to set
 	 */
-	public void setOrderingProposal(final OrderingProposal orderingProposal) {
-		this.orderingProposal = orderingProposal;
+	public void setProposalBag(final ProposalBag proposalBag) {
+		this.proposalBag = proposalBag;
 	}
 
 	/**
@@ -229,25 +189,6 @@ public class UnitProposal {
 	 */
 	public void setShoot(final Shoot shoot) {
 		this.shoot = shoot;
-	}
-
-	/**
-	 * Getter of session.
-	 * 
-	 * @return the session
-	 */
-	public Session getSession() {
-		return this.session;
-	}
-
-	/**
-	 * Setter of session.
-	 * 
-	 * @param session
-	 *            the session to set
-	 */
-	public void setSession(final Session session) {
-		this.session = session;
 	}
 
 }

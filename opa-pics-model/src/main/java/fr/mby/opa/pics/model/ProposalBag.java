@@ -36,13 +36,17 @@ import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
 /**
+ * Proposal to Order an Album.
+ * 
+ * Contains some Set of unit Proposals of different types.
+ * 
  * @author Maxime Bossard - 2013
  * 
  */
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
-@Table(name = "ORDERING_PROPOSAL")
-public class OrderingProposal {
+@Table(name = "PROPOSAL_BAG")
+public class ProposalBag {
 
 	@Id
 	@Column(name = "ID")
@@ -68,10 +72,16 @@ public class OrderingProposal {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BASE_PROPOSAL_ID", updatable = false)
-	private OrderingProposal baseProposal;
+	private ProposalBag baseProposal;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "orderingProposal")
-	private Collection<UnitProposal> unitProposals;
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
+	private Collection<CasingProposal> casingProposals;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
+	private Collection<RankingProposal> rankingProposals;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
+	private Collection<EraseProposal> eraseProposals;
 
 	/**
 	 * Getter of id.
@@ -173,7 +183,7 @@ public class OrderingProposal {
 	 * 
 	 * @return the baseProposal
 	 */
-	public OrderingProposal getBaseProposal() {
+	public ProposalBag getBaseProposal() {
 		return this.baseProposal;
 	}
 
@@ -183,27 +193,65 @@ public class OrderingProposal {
 	 * @param baseProposal
 	 *            the baseProposal to set
 	 */
-	public void setBaseProposal(final OrderingProposal baseProposal) {
+	public void setBaseProposal(final ProposalBag baseProposal) {
 		this.baseProposal = baseProposal;
 	}
 
 	/**
-	 * Getter of unitProposals.
+	 * Getter of casingProposals.
 	 * 
-	 * @return the unitProposals
+	 * @return the casingProposals
 	 */
-	public Collection<UnitProposal> getUnitProposals() {
-		return this.unitProposals;
+	public Collection<CasingProposal> getCasingProposals() {
+		return this.casingProposals;
 	}
 
 	/**
-	 * Setter of unitProposals.
+	 * Setter of casingProposals.
 	 * 
-	 * @param unitProposals
-	 *            the unitProposals to set
+	 * @param casingProposals
+	 *            the casingProposals to set
 	 */
-	public void setUnitProposals(final Collection<UnitProposal> unitProposals) {
-		this.unitProposals = unitProposals;
+	public void setCasingProposals(final Collection<CasingProposal> casingProposals) {
+		this.casingProposals = casingProposals;
+	}
+
+	/**
+	 * Getter of rankingProposals.
+	 * 
+	 * @return the rankingProposals
+	 */
+	public Collection<RankingProposal> getRankingProposals() {
+		return this.rankingProposals;
+	}
+
+	/**
+	 * Setter of rankingProposals.
+	 * 
+	 * @param rankingProposals
+	 *            the rankingProposals to set
+	 */
+	public void setRankingProposals(final Collection<RankingProposal> rankingProposals) {
+		this.rankingProposals = rankingProposals;
+	}
+
+	/**
+	 * Getter of eraseProposals.
+	 * 
+	 * @return the eraseProposals
+	 */
+	public Collection<EraseProposal> getEraseProposals() {
+		return this.eraseProposals;
+	}
+
+	/**
+	 * Setter of eraseProposals.
+	 * 
+	 * @param eraseProposals
+	 *            the eraseProposals to set
+	 */
+	public void setEraseProposals(final Collection<EraseProposal> eraseProposals) {
+		this.eraseProposals = eraseProposals;
 	}
 
 }

@@ -91,21 +91,20 @@ public class PictureMappingTest {
 		a1.setCreationTime(now);
 		a1.setName("a1");
 
-		final OrderingProposal op1 = new OrderingProposal();
-		op1.setCreationTime(now);
-		op1.setName("op1");
+		final ProposalBag pb1 = new ProposalBag();
+		pb1.setCreationTime(now);
+		pb1.setName("op1");
 
 		final Session s1 = new Session();
 		s1.setName("s1");
 
 		final Picture p1 = this.buildPicture(a1);
 
-		final UnitProposal up1 = new UnitProposal();
+		final CasingProposal up1 = new CasingProposal();
 		up1.setCreationTime(now);
-		up1.setRank(0);
 		up1.setSession(s1);
 		up1.setPicture(p1);
-		up1.setOrderingProposal(op1);
+		up1.setProposalBag(pb1);
 
 		final EntityManager em1 = PictureMappingTest.emf.createEntityManager();
 		em1.getTransaction().begin();

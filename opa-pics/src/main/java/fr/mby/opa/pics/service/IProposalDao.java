@@ -16,30 +16,24 @@
 
 package fr.mby.opa.pics.service;
 
-import java.util.Collection;
-
 import fr.mby.opa.pics.model.Album;
-import fr.mby.opa.pics.model.BinaryImage;
-import fr.mby.opa.pics.model.Picture;
+import fr.mby.opa.pics.model.ProposalBag;
+import fr.mby.opa.pics.model.Session;
+import fr.mby.opa.pics.model.Shoot;
+import fr.mby.opa.pics.model.CasingProposal;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPictureDao {
+public interface IProposalDao {
 
-	Picture createPicture(Picture picture, Album album) throws PictureAlreadyExistsException;
+	ProposalBag createOrderingProposal(ProposalBag proposal, Album album);
 
-	Picture updatePicture(Picture picture) throws PictureNotFoundException;
+	CasingProposal createUnitProposal(CasingProposal proposal);
 
-	void deletePicture(Picture picture) throws PictureNotFoundException;
+	Session createSession(Session session);
 
-	Picture findPictureById(Long id);
-
-	Picture loadFullPictureById(Long id);
-
-	BinaryImage findImageById(Long id);
-
-	Collection<Picture> findAllPictures();
+	Shoot createShoot(Shoot session);
 
 }
