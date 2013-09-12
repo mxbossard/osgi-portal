@@ -20,7 +20,7 @@ package fr.mby.opa.pics.service;
  * @author Maxime Bossard - 2013
  * 
  */
-public class AlbumNotFoundException extends Exception {
+public class AlbumNotFoundException extends RuntimeException {
 
 	/** Svuid. */
 	private static final long serialVersionUID = 7963992473509879236L;

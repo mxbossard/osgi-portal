@@ -31,7 +31,7 @@ import org.osgi.framework.ServiceReference;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
 import fr.mby.portal.api.acl.IAuthorization;
@@ -52,7 +52,7 @@ import fr.mby.utils.common.jpa.OsgiJpaHelper;
  * @author Maxime Bossard - 2013
  * 
  */
-@Service
+@Repository
 @Order(value = 900)
 public class DbPortalUserAuthenticationProvider
 		implements

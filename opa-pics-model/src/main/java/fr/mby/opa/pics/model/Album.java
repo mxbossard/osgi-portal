@@ -26,6 +26,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -38,10 +40,21 @@ import org.joda.time.ReadableDateTime;
  * @author Maxime Bossard - 2013
  * 
  */
+@NamedQueries({
+		@NamedQuery(name = Album.LOAD_FULL_ALBUM_BY_ID, query = "SELECT a FROM Album a "
+				+ "JOIN FETCH a.selectedOrderingProposal JOIN FETCH a.pictures WHERE p.id = :id"),
+		@NamedQuery(name = Album.FIND_ALL_ORDER_BY_DATE, query = "SELECT a"
+				+ " FROM Album a ORDER BY a.creationTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "ALBUM")
 public class Album {
+
+	/** Load an Album and its surronding objects by Id. Params: id */
+	public static final String LOAD_FULL_ALBUM_BY_ID = "LOAD_FULL_ALBUM_BY_ID";
+
+	/** Find an Album by Id ordered by Date. Params: id */
+	public static final String FIND_ALL_ORDER_BY_DATE = "FIND_ALL_ORDER_BY_DATE";
 
 	@Id
 	@Column(name = "ID")

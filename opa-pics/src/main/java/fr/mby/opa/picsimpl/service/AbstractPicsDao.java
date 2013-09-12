@@ -14,16 +14,31 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.picsimpl.service;
 
+import javax.persistence.EntityManagerFactory;
+
+import fr.mby.opa.pics.model.IPicsPersistenceUnit;
+import fr.mby.utils.common.jpa.AbstractOsgiJpaDao;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class PictureAlreadyExistsException extends RuntimeException {
+public abstract class AbstractPicsDao extends AbstractOsgiJpaDao {
 
-	/** Svuid. */
-	private static final long serialVersionUID = 124596910270874219L;
+	@Override
+	protected String getPersistenceUnitName() {
+		return IPicsPersistenceUnit.PU_NAME;
+	}
+
+	@Override
+	protected EntityManagerFactory getEmf() {
+		final EntityManagerFactory emf = super.getEmf();
+
+		emf.getCache().evictAll();
+
+		return emf;
+	}
 
 }

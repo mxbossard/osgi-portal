@@ -24,7 +24,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
 import java.util.Date;
@@ -50,6 +49,10 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
@@ -74,7 +77,7 @@ public class BasicPictureFactory implements IPictureFactory {
 	private static final boolean USE_RESIZE_HINT = true;
 
 	/** "MD5" or "SHA-1" or "SHA-256" */
-	private static final String HASH_ALGORITHM = "SHA-256";
+	private static final HashFunction HASH_FUNCTION = Hashing.sha256();
 
 	private static final String DEFAULT_PICTURE_FORMAT = "jpg";
 
@@ -107,8 +110,8 @@ public class BasicPictureFactory implements IPictureFactory {
 			throws IOException {
 
 		// Generate picture hash
-		final byte[] uniqueHash = this.generateHash(contents);
-		picture.setUniqueHash(new String(uniqueHash));
+		final String uniqueHash = this.generateHash(contents);
+		picture.setUniqueHash(uniqueHash);
 
 		// Load BufferedImage
 		stream.reset();
@@ -247,20 +250,18 @@ public class BasicPictureFactory implements IPictureFactory {
 	}
 
 	/**
+	 * Generate Hash String repesentation of a file contents.
+	 * 
 	 * @param contents
 	 * @return
 	 * @throws NoSuchAlgorithmException
 	 */
-	protected byte[] generateHash(final byte[] contents) {
-		MessageDigest hasher;
+	protected String generateHash(final byte[] contents) {
+		final Hasher hasher = BasicPictureFactory.HASH_FUNCTION.newHasher();
 
-		try {
-			hasher = MessageDigest.getInstance(BasicPictureFactory.HASH_ALGORITHM);
-		} catch (final NoSuchAlgorithmException e) {
-			throw new RuntimeException("Hash algorithm missing !", e);
-		}
+		final HashCode hashCode = hasher.putBytes(contents).hash();
 
-		return hasher.digest(contents);
+		return hashCode.toString();
 	}
 
 	protected BufferedImage resizeImage(final BufferedImage image, final int width, final int height,

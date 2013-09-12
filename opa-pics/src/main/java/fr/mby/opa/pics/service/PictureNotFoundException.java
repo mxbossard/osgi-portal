@@ -16,11 +16,12 @@
 
 package fr.mby.opa.pics.service;
 
+
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class PictureNotFoundException extends Exception {
+public class PictureNotFoundException extends RuntimeException {
 
 	/** Svuid. */
 	private static final long serialVersionUID = -2862728452281040361L;

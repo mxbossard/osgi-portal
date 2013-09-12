@@ -58,13 +58,13 @@ import org.joda.time.DateTime;
 // indexes = {@Index(columnList = "id"), @Index(columnList = "uniqueHash"), @Index(columnList = "creationTime")}
 public class Picture {
 
-	/** Find a Picture by Id. Params: id */
+	/** Load a Picture withs its contents by Id. Params: id */
 	public static final String LOAD_FULL_PIC_BY_ID = "LOAD_FULL_PIC_BY_ID";
 
 	/** Find a Picture by Hash. Params: uniqueHash */
 	public static final String FIND_PIC_ID_BY_HASH = "FIND_PIC_ID_BY_HASH";
 
-	/** Find a Picture by Hash. Params: uniqueHash */
+	/** Find all Pictures order by Date. */
 	public static final String FIND_ALL_ORDER_BY_DATE = "FIND_ALL_ORDER_BY_DATE";
 
 	@Id

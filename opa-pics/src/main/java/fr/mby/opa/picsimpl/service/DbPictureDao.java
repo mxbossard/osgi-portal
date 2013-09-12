@@ -21,61 +21,48 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
 import javax.persistence.LockModeType;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
-import org.eclipse.gemini.blueprint.context.BundleContextAware;
-import org.osgi.framework.BundleContext;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
+import com.google.common.collect.Iterables;
+
+import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.PictureNotFoundException;
-import fr.mby.utils.common.jpa.OsgiJpaHelper;
+import fr.mby.utils.common.jpa.EmCallback;
+import fr.mby.utils.common.jpa.TxCallback;
+import fr.mby.utils.common.jpa.TxCallbackReturn;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-@Service
-public class DbPictureDao implements IPictureDao, BundleContextAware, InitializingBean, DisposableBean {
-
-	private static final String PICTURE_PU_NAME = "opaPicsPu";
-
-	private BundleContext bundleContext;
-
-	private EntityManagerFactory emf;
+@Repository
+public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 
 	@Override
-	public Picture createPicture(final Picture picture) throws PictureAlreadyExistsException {
+	public Picture createPicture(final Picture picture, final Album album) throws PictureAlreadyExistsException {
 		Assert.notNull(picture, "No Picture supplied !");
+		Assert.notNull(album, "No Album supplied !");
 		Assert.isNull(picture.getId(), "Id should not be set for creation !");
 
-		EntityManager em = null;
-		try {
-			em = this.getNewEntityManager();
+		picture.setAlbum(album);
 
-			this.testHashUniqueness(picture, em);
+		new TxCallback(this.getEmf()) {
 
-			em.getTransaction().begin();
-
-			em.persist(picture);
-
-			em.getTransaction().commit();
-		} finally {
-			if (em != null && em.isOpen() && em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
+			@Override
+			protected void executeInTransaction(final EntityManager em) {
+				DbPictureDao.this.testHashUniqueness(picture, em);
+				em.persist(picture);
 			}
-			if (em != null) {
-				em.close();
-			}
-		}
+		};
 
 		return picture;
 	}
@@ -85,34 +72,22 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 		Assert.notNull(picture, "No Picture supplied !");
 		Assert.notNull(picture.getId(), "Id should be set for update !");
 
-		Picture updatedPicture = null;
+		final TxCallbackReturn<Picture> txCallback = new TxCallbackReturn<Picture>(this.getEmf()) {
 
-		EntityManager em = null;
-		try {
-			em = this.getNewEntityManager();
+			@Override
+			protected Picture executeInTransaction(final EntityManager em) {
+				final Picture managedPicture = em.find(Picture.class, picture.getId(), LockModeType.WRITE);
+				if (managedPicture == null) {
+					throw new PictureNotFoundException();
+				}
 
-			em.getTransaction().begin();
-
-			final Picture managedPicture = em.find(Picture.class, picture.getId(), LockModeType.WRITE);
-			if (managedPicture == null) {
-				throw new PictureNotFoundException();
+				final Picture updatedPicture = em.merge(picture);
+				em.lock(picture, LockModeType.NONE);
+				return updatedPicture;
 			}
+		};
 
-			updatedPicture = em.merge(picture);
-
-			em.lock(picture, LockModeType.NONE);
-
-			em.getTransaction().commit();
-		} finally {
-			if (em != null && em.isOpen() && em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
-			}
-			if (em != null) {
-				em.close();
-			}
-		}
-
-		return updatedPicture;
+		return txCallback.getReturnedValue();
 	}
 
 	@Override
@@ -120,145 +95,90 @@ public class DbPictureDao implements IPictureDao, BundleContextAware, Initializi
 		Assert.notNull(picture, "No Picture supplied !");
 		Assert.notNull(picture.getId(), "Id should be set for delete !");
 
-		EntityManager em = null;
-		try {
-			em = this.getNewEntityManager();
+		new TxCallback(this.getEmf()) {
 
-			em.getTransaction().begin();
+			@Override
+			protected void executeInTransaction(final EntityManager em) {
+				final Picture managedPicture = em.find(Picture.class, picture.getId(), LockModeType.WRITE);
+				if (managedPicture == null) {
+					throw new PictureNotFoundException();
+				}
 
-			final Picture managedPicture = em.find(Picture.class, picture.getId(), LockModeType.WRITE);
-			if (managedPicture == null) {
-				throw new PictureNotFoundException();
+				em.remove(picture);
+				em.lock(picture, LockModeType.NONE);
 			}
-
-			em.remove(picture);
-
-			em.lock(picture, LockModeType.NONE);
-
-			em.getTransaction().commit();
-		} finally {
-			if (em != null && em.isOpen() && em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
-			}
-			if (em != null) {
-				em.close();
-			}
-		}
+		};
 	}
 
 	@Override
 	public Picture findPictureById(final Long id) {
 		Assert.notNull(id, "Picture Id should be supplied !");
 
-		Picture picture = null;
+		final EmCallback<Picture> emCallback = new EmCallback<Picture>(this.getEmf()) {
 
-		EntityManager em = null;
-		try {
-			em = this.getNewEntityManager();
-
-			picture = em.find(Picture.class, id);
-		} finally {
-			if (em != null) {
-				em.close();
+			@Override
+			protected Picture executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				return em.find(Picture.class, id);
 			}
-		}
+		};
 
-		return picture;
+		return emCallback.getReturnedValue();
 	}
 
 	@Override
 	public Picture loadFullPictureById(final Long id) {
 		Assert.notNull(id, "Picture Id should be supplied !");
 
-		Picture picture = null;
+		final EmCallback<Picture> emCallback = new EmCallback<Picture>(this.getEmf()) {
 
-		EntityManager em = null;
-		try {
-			em = this.getNewEntityManager();
+			@Override
+			@SuppressWarnings("unchecked")
+			protected Picture executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				final Query findByIdQuery = em.createNamedQuery(Picture.LOAD_FULL_PIC_BY_ID);
+				findByIdQuery.setParameter("id", id);
 
-			final Query findByIdQuery = em.createNamedQuery(Picture.LOAD_FULL_PIC_BY_ID);
-			findByIdQuery.setParameter("id", id);
-			final List<?> pictures = findByIdQuery.getResultList();
-			if (!pictures.isEmpty()) {
-				picture = (Picture) pictures.iterator().next();
+				final Picture picture = Iterables.getFirst(findByIdQuery.getResultList(), null);
+				return picture;
 			}
-		} finally {
-			if (em != null) {
-				em.close();
-			}
-		}
+		};
 
-		return picture;
+		return emCallback.getReturnedValue();
 	}
 
 	@Override
 	public BinaryImage findImageById(final Long id) {
 		Assert.notNull(id, "Image Id should be supplied !");
 
-		BinaryImage image = null;
+		final EmCallback<BinaryImage> emCallback = new EmCallback<BinaryImage>(this.getEmf()) {
 
-		EntityManager em = null;
-		try {
-			em = this.getNewEntityManager();
-
-			image = em.find(BinaryImage.class, id);
-		} finally {
-			if (em != null) {
-				em.close();
+			@Override
+			protected BinaryImage executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				return em.find(BinaryImage.class, id);
 			}
-		}
+		};
 
-		return image;
+		return emCallback.getReturnedValue();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public Collection<Picture> findAllPictures() {
-		Collection<Picture> pictures = null;
+		final EmCallback<Collection<Picture>> emCallback = new EmCallback<Collection<Picture>>(this.getEmf()) {
 
-		EntityManager em = null;
-		try {
-			em = this.getNewEntityManager();
-
-			final Query findAllQuery = em.createNamedQuery(Picture.FIND_ALL_ORDER_BY_DATE);
-			pictures = findAllQuery.getResultList();
-		} finally {
-			if (em != null) {
-				em.close();
+			@Override
+			protected Collection<Picture> executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				final Query findAllQuery = em.createNamedQuery(Picture.FIND_ALL_ORDER_BY_DATE);
+				return findAllQuery.getResultList();
 			}
-		}
+		};
+
+		Collection<Picture> pictures = emCallback.getReturnedValue();
 
 		if (pictures == null) {
 			pictures = Collections.emptyList();
 		}
 
 		return pictures;
-	}
-
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		this.emf = OsgiJpaHelper.retrieveEmfByName(this.bundleContext, DbPictureDao.PICTURE_PU_NAME);
-	}
-
-	@Override
-	public void destroy() throws Exception {
-		this.emf.close();
-		this.emf = null;
-	}
-
-	@Override
-	public void setBundleContext(final BundleContext bundleContext) {
-		this.bundleContext = bundleContext;
-	}
-
-	/**
-	 * Get a new EntityManager.
-	 * 
-	 * @return
-	 */
-	protected EntityManager getNewEntityManager() {
-		this.emf.getCache().evictAll();
-		return this.emf.createEntityManager();
 	}
 
 	/**

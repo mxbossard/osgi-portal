@@ -19,6 +19,7 @@ package fr.mby.opa.pics.web.controller;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +28,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.common.collect.Iterables;
+
+import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.Picture;
+import fr.mby.opa.pics.service.IAlbumDao;
 import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureFactory;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
@@ -45,7 +50,10 @@ public class UploadPicturesController {
 	private IPictureFactory pictureFactory;
 
 	@Autowired
-	private IPictureDao picsDao;
+	private IAlbumDao albumDao;
+
+	@Autowired
+	private IPictureDao pictureDao;
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String displayForm() {
@@ -65,7 +73,7 @@ public class UploadPicturesController {
 				final Picture picture = this.pictureFactory.build(multipartFile);
 				if (picture != null) {
 					try {
-						this.picsDao.createPicture(picture);
+						this.pictureDao.createPicture(picture, this.initAlbum());
 						picturesNames.add(picture.getFilename());
 					} catch (final PictureAlreadyExistsException e) {
 						// Ignore picture
@@ -76,6 +84,21 @@ public class UploadPicturesController {
 
 		map.addAttribute("picturesNames", picturesNames);
 		return "file_upload_success";
+	}
+
+	protected Album initAlbum() {
+		final Collection<Album> albums = this.albumDao.findAllAlbums();
+		Album firstAlbum = Iterables.getFirst(albums, null);
+
+		if (firstAlbum == null) {
+			final Album newAlbum = new Album();
+			newAlbum.setName("myFirstAlbum");
+			newAlbum.setCreationTime(new DateTime());
+
+			firstAlbum = this.albumDao.createAlbum(newAlbum);
+		}
+
+		return firstAlbum;
 	}
 
 	/**
@@ -103,7 +126,7 @@ public class UploadPicturesController {
 	 * @return the picsDao
 	 */
 	public IPictureDao getPicsDao() {
-		return this.picsDao;
+		return this.pictureDao;
 	}
 
 	/**
@@ -113,7 +136,7 @@ public class UploadPicturesController {
 	 *            the picsDao to set
 	 */
 	public void setPicsDao(final IPictureDao picsDao) {
-		this.picsDao = picsDao;
+		this.pictureDao = picsDao;
 	}
 
 }
