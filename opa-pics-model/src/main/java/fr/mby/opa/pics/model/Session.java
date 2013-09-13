@@ -40,7 +40,7 @@ public class Session {
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Basic(optional = false)
 	@Column(name = "NAME")
@@ -65,7 +65,7 @@ public class Session {
 	 * 
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -75,7 +75,7 @@ public class Session {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 

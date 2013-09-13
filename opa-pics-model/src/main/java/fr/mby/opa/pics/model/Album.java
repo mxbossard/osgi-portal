@@ -42,8 +42,8 @@ import org.joda.time.ReadableDateTime;
  */
 @NamedQueries({
 		@NamedQuery(name = Album.LOAD_FULL_ALBUM_BY_ID, query = "SELECT a FROM Album a "
-				+ "JOIN FETCH a.selectedOrderingProposal JOIN FETCH a.pictures WHERE p.id = :id"),
-		@NamedQuery(name = Album.FIND_ALL_ORDER_BY_DATE, query = "SELECT a"
+				+ "JOIN FETCH a.selectedOrderingProposal JOIN FETCH a.pictures WHERE a.id = :id"),
+		@NamedQuery(name = Album.FIND_ALL_ALBUMS_ORDER_BY_DATE, query = "SELECT a"
 				+ " FROM Album a ORDER BY a.creationTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
@@ -54,12 +54,12 @@ public class Album {
 	public static final String LOAD_FULL_ALBUM_BY_ID = "LOAD_FULL_ALBUM_BY_ID";
 
 	/** Find an Album by Id ordered by Date. Params: id */
-	public static final String FIND_ALL_ORDER_BY_DATE = "FIND_ALL_ORDER_BY_DATE";
+	public static final String FIND_ALL_ALBUMS_ORDER_BY_DATE = "FIND_ALL_ALBUMS_ORDER_BY_DATE";
 
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Basic(optional = false)
 	@Column(name = "NAME")
@@ -92,7 +92,7 @@ public class Album {
 	 * 
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -102,7 +102,7 @@ public class Album {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 

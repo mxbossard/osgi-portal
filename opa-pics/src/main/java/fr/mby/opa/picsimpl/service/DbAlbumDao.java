@@ -145,7 +145,7 @@ public class DbAlbumDao extends AbstractPicsDao implements IAlbumDao {
 
 			@Override
 			protected Collection<Album> executeWithEntityManager(final EntityManager em) throws PersistenceException {
-				final Query findAllQuery = em.createNamedQuery(Album.FIND_ALL_ORDER_BY_DATE);
+				final Query findAllQuery = em.createNamedQuery(Album.FIND_ALL_ALBUMS_ORDER_BY_DATE);
 				return findAllQuery.getResultList();
 			}
 		};

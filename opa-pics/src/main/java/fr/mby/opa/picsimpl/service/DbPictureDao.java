@@ -134,7 +134,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 			@Override
 			@SuppressWarnings("unchecked")
 			protected Picture executeWithEntityManager(final EntityManager em) throws PersistenceException {
-				final Query findByIdQuery = em.createNamedQuery(Picture.LOAD_FULL_PIC_BY_ID);
+				final Query findByIdQuery = em.createNamedQuery(Picture.LOAD_FULL_PICTURE_BY_ID);
 				findByIdQuery.setParameter("id", id);
 
 				final Picture picture = Iterables.getFirst(findByIdQuery.getResultList(), null);
@@ -167,7 +167,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 
 			@Override
 			protected Collection<Picture> executeWithEntityManager(final EntityManager em) throws PersistenceException {
-				final Query findAllQuery = em.createNamedQuery(Picture.FIND_ALL_ORDER_BY_DATE);
+				final Query findAllQuery = em.createNamedQuery(Picture.FIND_ALL_PICTURES_ORDER_BY_DATE);
 				return findAllQuery.getResultList();
 			}
 		};
@@ -190,7 +190,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	 */
 	protected void testHashUniqueness(final Picture picture, final EntityManager em)
 			throws PictureAlreadyExistsException {
-		final Query findPicByHashQuery = em.createNamedQuery(Picture.FIND_PIC_ID_BY_HASH);
+		final Query findPicByHashQuery = em.createNamedQuery(Picture.FIND_PICTURE_ID_BY_HASH);
 		findPicByHashQuery.setParameter("uniqueHash", picture.getUniqueHash());
 		final List<?> results = findPicByHashQuery.getResultList();
 		if (!results.isEmpty()) {

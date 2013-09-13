@@ -68,7 +68,7 @@ public class BasicPictureFactory implements IPictureFactory {
 	/** Logger. */
 	private static final Logger LOG = LogManager.getLogger(BasicPictureFactory.class);
 
-	public static final String THUMBNAIL_FORMAT = "jpg";
+	public static final String THUMBNAIL_FORMAT = "png";
 
 	public static final int THUMBNAIL_MAX_WIDTH = 300;
 
@@ -94,7 +94,7 @@ public class BasicPictureFactory implements IPictureFactory {
 			final byte[] contents = multipartFile.getBytes();
 			final BufferedInputStream bufferedStream = new BufferedInputStream(new ByteArrayInputStream(contents),
 					contents.length);
-			bufferedStream.mark(contents.length);
+			bufferedStream.mark(contents.length + 1);
 
 			this.loadPicture(pic, contents, bufferedStream);
 
@@ -218,24 +218,7 @@ public class BasicPictureFactory implements IPictureFactory {
 			// Process specific metadata
 
 			// Creation time
-			DateTime creationTime = null;
-			final ExifIFD0Directory exifDir = metadata.getDirectory(ExifIFD0Directory.class);
-			Date date = exifDir.getDate(ExifIFD0Directory.TAG_DATETIME);
-
-			final ExifSubIFDDirectory subExifDir = metadata.getDirectory(ExifSubIFDDirectory.class);
-			if (date == null) {
-				date = subExifDir.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-			}
-
-			if (date == null) {
-				date = subExifDir.getDate(ExifSubIFDDirectory.TAG_DATETIME_DIGITIZED);
-			}
-
-			if (date != null) {
-				creationTime = new DateTime(date);
-			} else {
-				creationTime = new DateTime();
-			}
+			final DateTime creationTime = this.findCreationTime(metadata);
 
 			picture.setCreationTime(creationTime);
 
@@ -247,6 +230,39 @@ public class BasicPictureFactory implements IPictureFactory {
 			BasicPictureFactory.LOG.warn("Problem while converting Metadata to JSON !", e);
 			throw new RuntimeException("Problem while converting Metadata to JSON !", e);
 		}
+	}
+
+	/**
+	 * Search metadata to find creation time.
+	 * 
+	 * @param metadata
+	 * @return
+	 */
+	protected DateTime findCreationTime(final Metadata metadata) {
+		Date date = null;
+
+		final ExifSubIFDDirectory subExifDir = metadata.getDirectory(ExifSubIFDDirectory.class);
+		if (date == null) {
+			date = subExifDir.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+		}
+
+		if (date == null) {
+			date = subExifDir.getDate(ExifSubIFDDirectory.TAG_DATETIME_DIGITIZED);
+		}
+
+		if (date == null) {
+			final ExifIFD0Directory exifDir = metadata.getDirectory(ExifIFD0Directory.class);
+			date = exifDir.getDate(ExifIFD0Directory.TAG_DATETIME);
+		}
+
+		DateTime creationTime = null;
+
+		if (date != null) {
+			creationTime = new DateTime(date);
+		} else {
+			creationTime = new DateTime();
+		}
+		return creationTime;
 	}
 
 	/**
@@ -281,8 +297,8 @@ public class BasicPictureFactory implements IPictureFactory {
 				newHeight = (int) (width * ratio);
 			} else {
 				newHeight = height;
-				final double ratio = oldWidth / oldHeight;
-				newHeight = (int) (height * ratio);
+				final double ratio = (double) (oldWidth) / oldHeight;
+				newWidth = (int) (height * ratio);
 			}
 		} else {
 			newWidth = width;

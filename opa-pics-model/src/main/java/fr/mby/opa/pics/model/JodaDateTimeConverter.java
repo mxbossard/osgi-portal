@@ -37,7 +37,11 @@ public class JodaDateTimeConverter implements Converter {
 		Object result = null;
 
 		if (obj != null) {
-			result = new DateTime(Timestamp.valueOf(((String) obj)).getTime());
+			if (obj instanceof String) {
+				result = new DateTime(Timestamp.valueOf(((String) obj)).getTime());
+			} else if (obj instanceof Timestamp) {
+				result = new DateTime(((Timestamp) obj).getTime());
+			}
 		}
 
 		return result;

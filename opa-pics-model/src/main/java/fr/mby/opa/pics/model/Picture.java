@@ -46,11 +46,11 @@ import org.joda.time.DateTime;
  * 
  */
 @NamedQueries({
-		@NamedQuery(name = Picture.LOAD_FULL_PIC_BY_ID, query = "SELECT p"
+		@NamedQuery(name = Picture.LOAD_FULL_PICTURE_BY_ID, query = "SELECT p"
 				+ " FROM Picture p JOIN FETCH p.image JOIN FETCH p.thumbnail WHERE p.id = :id"),
-		@NamedQuery(name = Picture.FIND_PIC_ID_BY_HASH, query = "SELECT p.id"
+		@NamedQuery(name = Picture.FIND_PICTURE_ID_BY_HASH, query = "SELECT p.id"
 				+ " FROM Picture p WHERE p.uniqueHash = :uniqueHash"),
-		@NamedQuery(name = Picture.FIND_ALL_ORDER_BY_DATE, query = "SELECT p"
+		@NamedQuery(name = Picture.FIND_ALL_PICTURES_ORDER_BY_DATE, query = "SELECT p"
 				+ " FROM Picture p ORDER BY p.creationTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
@@ -59,13 +59,13 @@ import org.joda.time.DateTime;
 public class Picture {
 
 	/** Load a Picture withs its contents by Id. Params: id */
-	public static final String LOAD_FULL_PIC_BY_ID = "LOAD_FULL_PIC_BY_ID";
+	public static final String LOAD_FULL_PICTURE_BY_ID = "LOAD_FULL_PICTURE_BY_ID";
 
 	/** Find a Picture by Hash. Params: uniqueHash */
-	public static final String FIND_PIC_ID_BY_HASH = "FIND_PIC_ID_BY_HASH";
+	public static final String FIND_PICTURE_ID_BY_HASH = "FIND_PICTURE_ID_BY_HASH";
 
 	/** Find all Pictures order by Date. */
-	public static final String FIND_ALL_ORDER_BY_DATE = "FIND_ALL_ORDER_BY_DATE";
+	public static final String FIND_ALL_PICTURES_ORDER_BY_DATE = "FIND_ALL_PICTURES_ORDER_BY_DATE";
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -85,7 +85,7 @@ public class Picture {
 	private String name;
 
 	@Basic(optional = false)
-	@Column(name = "CREATION_TIME", nullable = false, updatable = false)
+	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
 	@Convert("jodaDateTime")
 	private DateTime creationTime;
 
@@ -139,7 +139,7 @@ public class Picture {
 	@JoinColumn(name = "THUMBNAIL_ID", nullable = false, updatable = false)
 	private BinaryImage thumbnail;
 
-	@ManyToOne(optional = false)
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "ALBUM_ID", nullable = false, updatable = false)
 	private Album album;
 

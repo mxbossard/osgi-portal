@@ -40,7 +40,7 @@ public class Shoot {
 	@Id
 	@Column(name = "ID")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+	private Long id;
 
 	@Basic(optional = false)
 	@Column(name = "START_TIME", columnDefinition = "TIMESTAMP")
@@ -57,7 +57,7 @@ public class Shoot {
 	 * 
 	 * @return the id
 	 */
-	public long getId() {
+	public Long getId() {
 		return this.id;
 	}
 
@@ -67,7 +67,7 @@ public class Shoot {
 	 * @param id
 	 *            the id to set
 	 */
-	public void setId(final long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 
