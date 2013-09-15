@@ -36,6 +36,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
@@ -49,22 +50,22 @@ import org.joda.time.DateTime;
 		@NamedQuery(name = Picture.LOAD_FULL_PICTURE_BY_ID, query = "SELECT p"
 				+ " FROM Picture p JOIN FETCH p.image JOIN FETCH p.thumbnail WHERE p.id = :id"),
 		@NamedQuery(name = Picture.FIND_PICTURE_ID_BY_HASH, query = "SELECT p.id"
-				+ " FROM Picture p WHERE p.uniqueHash = :uniqueHash"),
+				+ " FROM Picture p WHERE p.hash = :hash"),
 		@NamedQuery(name = Picture.FIND_ALL_PICTURES_ORDER_BY_DATE, query = "SELECT p"
-				+ " FROM Picture p ORDER BY p.creationTime ASC")})
+				+ " FROM Picture p ORDER BY p.originalTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
-@Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"uniqueHash"}))
+@Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"hash"}))
 // indexes = {@Index(columnList = "id"), @Index(columnList = "uniqueHash"), @Index(columnList = "creationTime")}
 public class Picture {
 
 	/** Load a Picture withs its contents by Id. Params: id */
 	public static final String LOAD_FULL_PICTURE_BY_ID = "LOAD_FULL_PICTURE_BY_ID";
 
-	/** Find a Picture by Hash. Params: uniqueHash */
+	/** Find a Picture by Hash. Params: hash */
 	public static final String FIND_PICTURE_ID_BY_HASH = "FIND_PICTURE_ID_BY_HASH";
 
-	/** Find all Pictures order by Date. */
+	/** Find all Pictures order by original time. */
 	public static final String FIND_ALL_PICTURES_ORDER_BY_DATE = "FIND_ALL_PICTURES_ORDER_BY_DATE";
 
 	@Id
@@ -74,7 +75,7 @@ public class Picture {
 
 	@Basic(optional = false)
 	@Column(name = "HASH", nullable = false, updatable = false, unique = true)
-	private String uniqueHash;
+	private String hash;
 
 	@Basic(optional = false)
 	@Column(name = "FILENAME", nullable = false, updatable = false)
@@ -83,6 +84,11 @@ public class Picture {
 	@Basic(optional = false)
 	@Column(name = "NAME")
 	private String name;
+
+	@Basic(optional = false)
+	@Column(name = "ORIGINAL_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+	@Convert("jodaDateTime")
+	private DateTime originalTime;
 
 	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
@@ -143,6 +149,9 @@ public class Picture {
 	@JoinColumn(name = "ALBUM_ID", nullable = false, updatable = false)
 	private Album album;
 
+	@Version
+	private Long version;
+
 	/**
 	 * Getter of id.
 	 * 
@@ -167,18 +176,18 @@ public class Picture {
 	 * 
 	 * @return the uniqueHash
 	 */
-	public String getUniqueHash() {
-		return this.uniqueHash;
+	public String getHash() {
+		return this.hash;
 	}
 
 	/**
 	 * Setter of uniqueHash.
 	 * 
-	 * @param uniqueHash
+	 * @param hash
 	 *            the uniqueHash to set
 	 */
-	public void setUniqueHash(final String uniqueHash) {
-		this.uniqueHash = uniqueHash;
+	public void setHash(final String hash) {
+		this.hash = hash;
 	}
 
 	/**
@@ -217,6 +226,25 @@ public class Picture {
 	 */
 	public void setName(final String name) {
 		this.name = name;
+	}
+
+	/**
+	 * Getter of originalTime.
+	 * 
+	 * @return the originalTime
+	 */
+	public DateTime getOriginalTime() {
+		return this.originalTime;
+	}
+
+	/**
+	 * Setter of originalTime.
+	 * 
+	 * @param originalTime
+	 *            the originalTime to set
+	 */
+	public void setOriginalTime(final DateTime originalTime) {
+		this.originalTime = originalTime;
 	}
 
 	/**

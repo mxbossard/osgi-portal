@@ -131,7 +131,7 @@ public class PictureMappingTest {
 		picture.setThumbnailFormat("jpg");
 		picture.setThumbnailHeigth(50);
 		picture.setThumbnailWidth(100);
-		picture.setUniqueHash(String.valueOf(now.getMillis()));
+		picture.setHash(String.valueOf(now.getMillis()));
 		picture.setWidth(300);
 
 		final BinaryImage image = new BinaryImage();

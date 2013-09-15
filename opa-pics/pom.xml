@@ -30,6 +30,8 @@
 		
 		<metadata-extractor.version>2.6.4</metadata-extractor.version>
 		<guava.version>15.0</guava.version>
+		
+		<jackson.version>1.9.13</jackson.version>
 	</properties>
 
 	<dependencies>
@@ -139,6 +141,14 @@
 		    <artifactId>com.springsource.org.json</artifactId>
 		    <version>1.0.0</version>
 		</dependency>
+		
+		<!-- Jackson JSON Mapper -->
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
+		
 	</dependencies>
 
 	<build>

@@ -16,7 +16,12 @@
 
 package fr.mby.opa.pics.web.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,11 +35,15 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
+import fr.mby.opa.pics.service.IAlbumDao;
 import fr.mby.opa.pics.service.IPictureDao;
+import fr.mby.opa.pics.service.IPictureFactory;
 import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
@@ -56,31 +65,47 @@ public class PicsController implements IPortalApp {
 	private IPortalService portalService;
 
 	@Autowired
-	private IPictureDao picsDao;
+	private IAlbumDao albumDao;
+
+	@Autowired
+	private IPictureDao pictureDao;
+
+	@Autowired
+	private IPictureFactory pictureFactory;
 
 	@RequestMapping(method = RequestMethod.GET)
-	ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+	public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
+			throws Exception {
 		final ModelAndView mv = new ModelAndView("index");
 
 		final IApp helloApp = this.portalService.getTargetedApp(request);
 		mv.addObject("app", helloApp);
 
-		final Collection<Picture> allPictures = this.picsDao.findAllPictures();
+		final Collection<Picture> allPictures = this.pictureDao.findAllPictures();
 
 		mv.addObject("pictures", allPictures);
 
 		return mv;
 	}
 
+	@RequestMapping(value = "album", method = RequestMethod.GET)
+	@ResponseBody
+	public Collection<Album> findAllAlbumsJson(final HttpServletRequest request, final HttpServletResponse response)
+			throws Exception {
+		final Collection<Album> albums = this.albumDao.findAllAlbums();
+
+		return albums;
+	}
+
 	@RequestMapping(value = "image/{id}", method = RequestMethod.GET)
-	ResponseEntity<byte[]> renderImage(@PathVariable final Long id, final HttpServletRequest request,
+	public ResponseEntity<byte[]> renderImage(@PathVariable final Long id, final HttpServletRequest request,
 			final HttpServletResponse response) throws Exception {
 
 		ResponseEntity<byte[]> responseEntity = null;
 
 		if (id != null) {
 
-			final BinaryImage image = this.picsDao.findImageById(id);
+			final BinaryImage image = this.pictureDao.findImageById(id);
 			if (image != null) {
 				final byte[] thumbnailData = image.getData();
 
@@ -98,6 +123,51 @@ public class PicsController implements IPortalApp {
 		}
 
 		return responseEntity;
+	}
+
+	@RequestMapping(value = "rebuildThumbnails", method = RequestMethod.GET)
+	public String rebuildThumbnails(final HttpServletRequest request, final HttpServletResponse response)
+			throws Exception {
+		final ExecutorService rebuildThumbnailsExecutor = Executors.newFixedThreadPool(Runtime.getRuntime()
+				.availableProcessors());
+
+		final Collection<Picture> pictures = this.pictureDao.findAllPictures();
+		final Collection<Future<Void>> futures = new ArrayList<>(pictures.size());
+
+		for (final Picture picture : pictures) {
+			final Future<Void> future = rebuildThumbnailsExecutor.submit(new Callable<Void>() {
+
+				@Override
+				public Void call() throws Exception {
+					final BinaryImage generated = PicsController.this.pictureFactory.generateThumbnail(picture, 800,
+							200, true, "jpg");
+					// Set the old Id to update
+					final BinaryImage thumbnailToUpdate = picture.getThumbnail();
+					thumbnailToUpdate.setData(generated.getData());
+					thumbnailToUpdate.setFormat(generated.getFormat());
+					thumbnailToUpdate.setWidth(generated.getWidth());
+					thumbnailToUpdate.setHeight(generated.getHeight());
+
+					picture.setThumbnail(generated);
+					picture.setThumbnailWidth(generated.getWidth());
+					picture.setThumbnailHeigth(generated.getHeight());
+					picture.setThumbnailFormat(generated.getFormat());
+					picture.setThumbnailSize(generated.getData().length);
+
+					PicsController.this.pictureDao.updatePicture(picture);
+
+					return null;
+				}
+			});
+
+			futures.add(future);
+		}
+
+		for (final Future<Void> future : futures) {
+			future.get();
+		}
+
+		return "index";
 	}
 
 	/*

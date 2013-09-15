@@ -76,13 +76,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 
 			@Override
 			protected Picture executeInTransaction(final EntityManager em) {
-				final Picture managedPicture = em.find(Picture.class, picture.getId(), LockModeType.WRITE);
-				if (managedPicture == null) {
-					throw new PictureNotFoundException();
-				}
-
 				final Picture updatedPicture = em.merge(picture);
-				em.lock(picture, LockModeType.NONE);
 				return updatedPicture;
 			}
 		};
@@ -119,6 +113,26 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 			@Override
 			protected Picture executeWithEntityManager(final EntityManager em) throws PersistenceException {
 				return em.find(Picture.class, id);
+			}
+		};
+
+		return emCallback.getReturnedValue();
+	}
+
+	@Override
+	public Long findPictureIdByHash(final String hash) {
+		Assert.hasText(hash, "Picture hash should be supplied !");
+
+		final EmCallback<Long> emCallback = new EmCallback<Long>(this.getEmf()) {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected Long executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				final Query findByHashQuery = em.createNamedQuery(Picture.FIND_PICTURE_ID_BY_HASH);
+				findByHashQuery.setParameter("hash", hash);
+
+				final Long pictureId = Iterables.getFirst(findByHashQuery.getResultList(), null);
+				return pictureId;
 			}
 		};
 
@@ -191,7 +205,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	protected void testHashUniqueness(final Picture picture, final EntityManager em)
 			throws PictureAlreadyExistsException {
 		final Query findPicByHashQuery = em.createNamedQuery(Picture.FIND_PICTURE_ID_BY_HASH);
-		findPicByHashQuery.setParameter("uniqueHash", picture.getUniqueHash());
+		findPicByHashQuery.setParameter("hash", picture.getHash());
 		final List<?> results = findPicByHashQuery.getResultList();
 		if (!results.isEmpty()) {
 			// A picture with same hash was found

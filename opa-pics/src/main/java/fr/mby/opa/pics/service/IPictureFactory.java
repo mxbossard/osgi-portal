@@ -20,6 +20,7 @@ import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
 
 /**
@@ -28,6 +29,9 @@ import fr.mby.opa.pics.model.Picture;
  */
 public interface IPictureFactory {
 
-	Picture build(MultipartFile multipartFile) throws IOException;
+	Picture build(MultipartFile multipartFile) throws IOException, PictureAlreadyExistsException;
+
+	BinaryImage generateThumbnail(Picture picture, int width, int height, boolean keepScale, String format)
+			throws IOException;
 
 }

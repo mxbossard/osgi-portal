@@ -36,6 +36,8 @@ public interface IPictureDao {
 
 	Picture findPictureById(Long id);
 
+	Long findPictureIdByHash(String hash);
+
 	Picture loadFullPictureById(Long id);
 
 	BinaryImage findImageById(Long id);

@@ -24,6 +24,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 /**
  * An Image represent the Picture binary contents.
@@ -60,6 +61,9 @@ public class BinaryImage {
 	@Basic(optional = false)
 	@Column(name = "DATA", nullable = false, updatable = true)
 	private byte[] data;
+
+	@Version
+	private Long version;
 
 	/**
 	 * Getter of id.

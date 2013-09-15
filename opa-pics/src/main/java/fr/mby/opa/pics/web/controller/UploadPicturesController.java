@@ -16,8 +16,13 @@
 
 package fr.mby.opa.pics.web.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +51,10 @@ import fr.mby.opa.pics.web.form.PicturesUploadForm;
 @RequestMapping("upload")
 public class UploadPicturesController {
 
+	/** ExecutorService used to build Picture. */
+	private static final ExecutorService BUILD_PICTURE_EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime()
+			.availableProcessors() * 3);
+
 	@Autowired
 	private IPictureFactory pictureFactory;
 
@@ -69,21 +78,50 @@ public class UploadPicturesController {
 		final Collection<String> picturesNames = new ArrayList<String>();
 
 		if (null != pictures && pictures.size() > 0) {
+			final Collection<Future<Picture>> futures = new ArrayList<>(pictures.size());
+
 			for (final MultipartFile multipartFile : pictures) {
-				final Picture picture = this.pictureFactory.build(multipartFile);
+				final Future<Picture> future = UploadPicturesController.BUILD_PICTURE_EXECUTOR
+						.submit(new Callable<Picture>() {
+
+							@Override
+							public Picture call() throws Exception {
+								Picture picture = null;
+								try {
+									picture = UploadPicturesController.this.createPicture(multipartFile);
+								} catch (final PictureAlreadyExistsException e) {
+									// Nothing to do
+								}
+
+								return picture;
+							}
+
+						});
+				futures.add(future);
+			}
+
+			for (final Future<Picture> future : futures) {
+				final Picture picture = future.get();
 				if (picture != null) {
-					try {
-						this.pictureDao.createPicture(picture, this.initAlbum());
-						picturesNames.add(picture.getFilename());
-					} catch (final PictureAlreadyExistsException e) {
-						// Ignore picture
-					}
+					picturesNames.add(picture.getFilename());
 				}
 			}
+
 		}
 
 		map.addAttribute("picturesNames", picturesNames);
 		return "file_upload_success";
+	}
+
+	protected Picture createPicture(final MultipartFile multipartFile) throws PictureAlreadyExistsException,
+			IOException {
+		final Picture picture = this.pictureFactory.build(multipartFile);
+
+		if (picture != null) {
+			UploadPicturesController.this.pictureDao.createPicture(picture, UploadPicturesController.this.initAlbum());
+		}
+
+		return picture;
 	}
 
 	protected Album initAlbum() {

@@ -39,6 +39,7 @@ import org.apache.logging.log4j.Logger;
 import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONStringer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -56,7 +57,9 @@ import com.google.common.hash.Hashing;
 
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
+import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureFactory;
+import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -68,9 +71,9 @@ public class BasicPictureFactory implements IPictureFactory {
 	/** Logger. */
 	private static final Logger LOG = LogManager.getLogger(BasicPictureFactory.class);
 
-	public static final String THUMBNAIL_FORMAT = "png";
+	public static final String THUMBNAIL_FORMAT = "jpg";
 
-	public static final int THUMBNAIL_MAX_WIDTH = 300;
+	public static final int THUMBNAIL_MAX_WIDTH = 800;
 
 	public static final int THUMBNAIL_MAX_HEIGHT = 230;
 
@@ -81,37 +84,88 @@ public class BasicPictureFactory implements IPictureFactory {
 
 	private static final String DEFAULT_PICTURE_FORMAT = "jpg";
 
+	@Autowired
+	private IPictureDao pictureDao;
+
 	@Override
-	public Picture build(final MultipartFile multipartFile) throws IOException {
-		Picture pic = null;
+	public Picture build(final MultipartFile multipartFile) throws IOException, PictureAlreadyExistsException {
+		Picture picture = null;
 		if (!multipartFile.isEmpty()) {
-			pic = new Picture();
+			picture = new Picture();
 
 			final String fileName = multipartFile.getOriginalFilename();
-			pic.setFilename(fileName);
-			pic.setName(fileName);
+			picture.setFilename(fileName);
+			picture.setName(fileName);
 
 			final byte[] contents = multipartFile.getBytes();
+
+			// Generate picture hash
+			final String uniqueHash = this.generateHash(contents);
+			picture.setHash(uniqueHash);
+
+			final Long alreadyExistingPictureId = this.pictureDao.findPictureIdByHash(uniqueHash);
+			if (alreadyExistingPictureId != null) {
+				throw new PictureAlreadyExistsException();
+			}
+
 			final BufferedInputStream bufferedStream = new BufferedInputStream(new ByteArrayInputStream(contents),
 					contents.length);
 			bufferedStream.mark(contents.length + 1);
 
-			this.loadPicture(pic, contents, bufferedStream);
+			this.loadPicture(picture, contents, bufferedStream);
 
-			this.loadMetadata(pic, bufferedStream);
+			this.loadMetadata(picture, bufferedStream);
 
 			bufferedStream.close();
 		}
 
-		return pic;
+		return picture;
+	}
+
+	@Override
+	public BinaryImage generateThumbnail(final Picture picture, final int width, final int height,
+			final boolean keepScale, final String format) throws IOException {
+
+		final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(picture.getImage().getData()));
+
+		return this.generateThumbnail(originalImage, picture.getFilename(), width, height, keepScale, format);
+	}
+
+	/**
+	 * @param picture
+	 * @param filename
+	 * @param width
+	 * @param height
+	 * @param keepScale
+	 * @param format
+	 * @param originalImage
+	 * @return
+	 * @throws IOException
+	 */
+	protected BinaryImage generateThumbnail(final BufferedImage originalImage, final String filename, final int width,
+			final int height, final boolean keepScale, final String format) throws IOException {
+
+		final BufferedImage resizedImage = this.resizeImage(originalImage, width, height, keepScale,
+				BasicPictureFactory.USE_RESIZE_HINT);
+
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		ImageIO.write(resizedImage, format, output);
+
+		final byte[] thumbnailData = output.toByteArray();
+
+		// Build Thumbnail
+		final BinaryImage thumbnail = new BinaryImage();
+		thumbnail.setData(thumbnailData);
+		thumbnail.setFilename(filename);
+		thumbnail.setFormat(format);
+		thumbnail.setWidth(resizedImage.getWidth());
+		thumbnail.setHeight(resizedImage.getHeight());
+
+		return thumbnail;
 	}
 
 	protected void loadPicture(final Picture picture, final byte[] contents, final BufferedInputStream stream)
 			throws IOException {
-
-		// Generate picture hash
-		final String uniqueHash = this.generateHash(contents);
-		picture.setUniqueHash(uniqueHash);
 
 		// Load BufferedImage
 		stream.reset();
@@ -157,28 +211,16 @@ public class BasicPictureFactory implements IPictureFactory {
 	protected void loadThumbnail(final Picture picture, final BufferedImage originalImage) throws IOException {
 		final String thumbnailFormat = BasicPictureFactory.THUMBNAIL_FORMAT;
 
-		final BufferedImage resizedImage = this.resizeImage(originalImage, BasicPictureFactory.THUMBNAIL_MAX_WIDTH,
-				BasicPictureFactory.THUMBNAIL_MAX_HEIGHT, true, BasicPictureFactory.USE_RESIZE_HINT);
-
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		ImageIO.write(resizedImage, thumbnailFormat, output);
-
-		final byte[] thumbnailData = output.toByteArray();
-
-		final int width = resizedImage.getWidth();
-		final int height = resizedImage.getHeight();
-		picture.setThumbnailWidth(width);
-		picture.setThumbnailHeigth(height);
-		picture.setThumbnailSize(thumbnailData.length);
-		picture.setThumbnailFormat(thumbnailFormat);
-
 		// Build Thumbnail
-		final BinaryImage thumbnail = new BinaryImage();
-		thumbnail.setData(thumbnailData);
-		thumbnail.setFilename(picture.getFilename());
-		thumbnail.setFormat(thumbnailFormat);
-		thumbnail.setWidth(width);
-		thumbnail.setHeight(height);
+		final BinaryImage thumbnail = this.generateThumbnail(originalImage, "thumb" + picture.getFilename(),
+				BasicPictureFactory.THUMBNAIL_MAX_WIDTH, BasicPictureFactory.THUMBNAIL_MAX_HEIGHT, true,
+				thumbnailFormat);
+
+		picture.setThumbnailWidth(thumbnail.getWidth());
+		picture.setThumbnailHeigth(thumbnail.getHeight());
+		picture.setThumbnailSize(thumbnail.getData().length);
+		picture.setThumbnailFormat(thumbnail.getFormat());
+
 		picture.setThumbnail(thumbnail);
 	}
 
@@ -217,10 +259,11 @@ public class BasicPictureFactory implements IPictureFactory {
 
 			// Process specific metadata
 
-			// Creation time
-			final DateTime creationTime = this.findCreationTime(metadata);
+			// Times
+			final DateTime originalTime = this.findOriginalTime(metadata);
+			picture.setOriginalTime(originalTime);
 
-			picture.setCreationTime(creationTime);
+			picture.setCreationTime(new DateTime());
 
 		} catch (final ImageProcessingException e) {
 			// Unable to process metadata
@@ -233,12 +276,12 @@ public class BasicPictureFactory implements IPictureFactory {
 	}
 
 	/**
-	 * Search metadata to find creation time.
+	 * Search metadata to find original time.
 	 * 
 	 * @param metadata
 	 * @return
 	 */
-	protected DateTime findCreationTime(final Metadata metadata) {
+	protected DateTime findOriginalTime(final Metadata metadata) {
 		Date date = null;
 
 		final ExifSubIFDDirectory subExifDir = metadata.getDirectory(ExifSubIFDDirectory.class);
@@ -285,20 +328,21 @@ public class BasicPictureFactory implements IPictureFactory {
 		final int oldWidth = image.getWidth();
 		final int oldHeight = image.getHeight();
 
-		final boolean isWidthLonger = oldWidth > oldHeight;
-
 		int newWidth = -1;
 		int newHeight = -1;
 
 		if (keepScale) {
-			if (isWidthLonger) {
-				newWidth = width;
-				final double ratio = (double) (oldHeight) / oldWidth;
-				newHeight = (int) (width * ratio);
-			} else {
+			// Ratio of image to resize
+			final double ratio = (double) (oldWidth) / oldHeight;
+			// Ratio of frame the thumbnail will be embbed
+			final double frameRatio = (double) (width) / height;
+
+			if (ratio < frameRatio) {
 				newHeight = height;
-				final double ratio = (double) (oldWidth) / oldHeight;
-				newWidth = (int) (height * ratio);
+				newWidth = (int) (newHeight * ratio);
+			} else {
+				newWidth = width;
+				newHeight = (int) (newWidth / ratio);
 			}
 		} else {
 			newWidth = width;
