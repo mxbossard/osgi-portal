@@ -125,9 +125,14 @@ public class PicsController implements IPortalApp {
 		return responseEntity;
 	}
 
-	@RequestMapping(value = "rebuildThumbnails", method = RequestMethod.GET)
-	public String rebuildThumbnails(final HttpServletRequest request, final HttpServletResponse response)
+	@RequestMapping(value = "rebuildThumbnails/{width}/{height}/{format}", method = RequestMethod.GET)
+	public String rebuildThumbnails(@PathVariable final Integer width, @PathVariable final Integer height,
+			@PathVariable final String format, final HttpServletRequest request, final HttpServletResponse response)
 			throws Exception {
+		final Integer selectedWidth = (width != null) ? width : 800;
+		final Integer selectedHeight = (height != null) ? height : 200;
+		final String selectedFormat = (format != null) ? format : "jpg";
+
 		final ExecutorService rebuildThumbnailsExecutor = Executors.newFixedThreadPool(Runtime.getRuntime()
 				.availableProcessors());
 
@@ -139,8 +144,8 @@ public class PicsController implements IPortalApp {
 
 				@Override
 				public Void call() throws Exception {
-					final BinaryImage generated = PicsController.this.pictureFactory.generateThumbnail(picture, 800,
-							200, true, "jpg");
+					final BinaryImage generated = PicsController.this.pictureFactory.generateThumbnail(picture,
+							selectedWidth, selectedHeight, true, selectedFormat);
 					// Set the old Id to update
 					final BinaryImage thumbnailToUpdate = picture.getThumbnail();
 					thumbnailToUpdate.setData(generated.getData());
