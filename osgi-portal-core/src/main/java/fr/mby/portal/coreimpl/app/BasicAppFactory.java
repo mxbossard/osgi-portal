@@ -29,10 +29,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import fr.mby.portal.api.IPortal;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IAppPreferences;
-import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppFactory;
 import fr.mby.portal.core.app.IAppSigner;
 import fr.mby.portal.core.preferences.IAppPreferencesManager;
@@ -92,13 +92,13 @@ public class BasicAppFactory implements IAppFactory {
 
 			// Add signature to IApp webPath
 			webPathBuilder.append("/?");
-			webPathBuilder.append(IPortalRenderer.SIGNATURE_PARAM_NAME);
+			webPathBuilder.append(IPortal.SIGNATURE_PARAM_NAME);
 			webPathBuilder.append("=");
 			webPathBuilder.append(encodedSignature);
 
 			// Add portal session to IApp webPath
 			webPathBuilder.append("&");
-			webPathBuilder.append(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
+			webPathBuilder.append(IPortal.PORTAL_SESSION_ID_PARAM_NAME);
 			webPathBuilder.append("=");
 			webPathBuilder.append(encodedPortalSessionId);
 

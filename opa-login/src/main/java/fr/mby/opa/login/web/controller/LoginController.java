@@ -30,6 +30,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.opa.login.web.model.LoginForm;
+import fr.mby.portal.api.IPortal;
 import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
@@ -38,7 +39,6 @@ import fr.mby.portal.api.message.IActionMessage;
 import fr.mby.portal.api.message.IActionReply;
 import fr.mby.portal.api.message.IRenderMessage;
 import fr.mby.portal.api.message.IRenderReply;
-import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.auth.IAuthentication;
 import fr.mby.portal.core.auth.PortalUserAuthentication;
 import fr.mby.portal.core.security.ILoginManager;
@@ -173,7 +173,7 @@ public class LoginController implements IPortalApp {
 		model.addAttribute("app", thisApp);
 		model.addAttribute("loginForm", new LoginForm());
 
-		response.addCookie(new Cookie(IPortalRenderer.SIGNATURE_PARAM_NAME, thisApp.getSignature()));
+		response.addCookie(new Cookie(IPortal.SIGNATURE_PARAM_NAME, thisApp.getSignature()));
 	}
 
 	/**

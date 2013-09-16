@@ -14,22 +14,18 @@
  * limitations under the License.
  */
 
-package fr.mby.portal.core;
-
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import fr.mby.portal.api.app.IApp;
+package fr.mby.portal.api;
 
 /**
- * IPortalRenderer implementation is in charge of rendering the portal.
- * 
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPortalRenderer {
+public interface IPortal {
 
-	List<IApp> getAppsToRender(HttpServletRequest request) throws Exception;
+	static final String SIGNATURE_PARAM_NAME = "signature";
+
+	static final String PORTAL_SESSION_ID_PARAM_NAME = "portalSession";
+
+	static final String PORTAL_SESSION_ID_COOKIE_NAME = "portalSession";
 
 }

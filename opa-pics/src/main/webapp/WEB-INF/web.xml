@@ -18,6 +18,16 @@
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
 
+	<filter>
+		<filter-name>OpaFilter</filter-name>
+		<filter-class>fr.mby.opa.web.servlet.filter.OsgiPortalAppFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>OpaFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
 	<servlet>
 		<servlet-name>pics</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

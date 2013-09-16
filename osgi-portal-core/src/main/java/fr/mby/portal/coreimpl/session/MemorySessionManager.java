@@ -35,11 +35,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
+import fr.mby.portal.api.IPortal;
 import fr.mby.portal.api.IPortalService;
 import fr.mby.portal.api.action.IUserAction;
 import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.ISession;
-import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.context.IAppContextResolver;
 import fr.mby.portal.core.session.ISessionManager;
 import fr.mby.portal.core.session.SessionNotInitializedException;
@@ -98,13 +98,12 @@ public class MemorySessionManager implements ISessionManager {
 			this.initSessionBucket(portalSessionId);
 
 			// Put sessionId in Cookie
-			final Cookie portalSessionCookie = new Cookie(IPortalRenderer.PORTAL_SESSION_ID_COOKIE_NAME,
-					portalSessionId);
+			final Cookie portalSessionCookie = new Cookie(IPortal.PORTAL_SESSION_ID_COOKIE_NAME, portalSessionId);
 			portalSessionCookie.setPath("/");
 			response.addCookie(portalSessionCookie);
 
 			// Put sessionId in current Http request
-			request.setAttribute(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME, portalSessionId);
+			request.setAttribute(IPortal.PORTAL_SESSION_ID_PARAM_NAME, portalSessionId);
 		}
 
 	}
@@ -142,7 +141,7 @@ public class MemorySessionManager implements ISessionManager {
 		String portalSessionId = null;
 
 		// Put sessionId in current Http request
-		final Object attrValue = request.getAttribute(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
+		final Object attrValue = request.getAttribute(IPortal.PORTAL_SESSION_ID_PARAM_NAME);
 		if (attrValue != null && attrValue instanceof String) {
 			portalSessionId = (String) attrValue;
 		}
@@ -151,7 +150,7 @@ public class MemorySessionManager implements ISessionManager {
 			final Cookie[] cookies = request.getCookies();
 			if (cookies != null) {
 				for (final Cookie cookie : cookies) {
-					if (cookie != null && IPortalRenderer.PORTAL_SESSION_ID_COOKIE_NAME.equals(cookie.getName())) {
+					if (cookie != null && IPortal.PORTAL_SESSION_ID_COOKIE_NAME.equals(cookie.getName())) {
 						portalSessionId = cookie.getValue();
 					}
 				}
@@ -160,13 +159,12 @@ public class MemorySessionManager implements ISessionManager {
 
 		if (!StringUtils.hasText(portalSessionId)) {
 			// Search Portal Session Id in Http Session
-			portalSessionId = (String) request.getSession(true).getAttribute(
-					IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
+			portalSessionId = (String) request.getSession(true).getAttribute(IPortal.PORTAL_SESSION_ID_PARAM_NAME);
 		}
 
 		if (!StringUtils.hasText(portalSessionId)) {
 			// Search Portal Session Id in Http Request params
-			portalSessionId = request.getParameter(IPortalRenderer.PORTAL_SESSION_ID_PARAM_NAME);
+			portalSessionId = request.getParameter(IPortal.PORTAL_SESSION_ID_PARAM_NAME);
 		}
 
 		// Null is the default value
@@ -184,8 +182,7 @@ public class MemorySessionManager implements ISessionManager {
 		if (portalSessionId != null) {
 			final SessionBucket sessionBucket = this.sessionBucketCache.remove(portalSessionId);
 			sessionBucket.destroy();
-			final Cookie portalSessionCookie = new Cookie(IPortalRenderer.PORTAL_SESSION_ID_COOKIE_NAME,
-					"SESSION_DESTROYED");
+			final Cookie portalSessionCookie = new Cookie(IPortal.PORTAL_SESSION_ID_COOKIE_NAME, "SESSION_DESTROYED");
 			portalSessionCookie.setPath("/");
 			response.addCookie(portalSessionCookie);
 

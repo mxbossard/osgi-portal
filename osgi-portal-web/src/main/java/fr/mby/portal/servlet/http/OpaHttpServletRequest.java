@@ -19,8 +19,8 @@ package fr.mby.portal.servlet.http;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import fr.mby.portal.api.IPortal;
 import fr.mby.portal.api.app.IApp;
-import fr.mby.portal.core.IPortalRenderer;
 
 /**
  * HttpServletRequestWrapper which allow to dispatch a request to an OPA.
@@ -39,7 +39,7 @@ public class OpaHttpServletRequest extends HttpServletRequestWrapper {
 		super(request);
 		this.targetedApp = app;
 
-		this.setAttribute(IPortalRenderer.SIGNATURE_PARAM_NAME, app.getSignature());
+		this.setAttribute(IPortal.SIGNATURE_PARAM_NAME, app.getSignature());
 	}
 
 	/**

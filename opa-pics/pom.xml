@@ -17,6 +17,8 @@
 	<properties>
 		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
 		
+		<opa-security.version>0.0.1.SNAPSHOT</opa-security.version>
+		
 		<opa-pics-model.version>0.0.1.SNAPSHOT</opa-pics-model.version>
 		
 		<bundlor.template.webContextPath>/pics</bundlor.template.webContextPath>
@@ -37,15 +39,21 @@
 	<dependencies>
 	
 		<dependency>
+			<groupId>fr.mby.osgi-portal</groupId>
+			<artifactId>osgi-portal-api</artifactId>
+			<version>${osgi-portal-api.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>fr.mby.osgi-portal</groupId>
+			<artifactId>opa-security</artifactId>
+			<version>${opa-security.version}</version>
+		</dependency>
+		
+		<dependency>
 			<groupId>fr.mby.osgi-portal-app</groupId>
 			<artifactId>pics-model</artifactId>
 			<version>${opa-pics-model.version}</version>
-		</dependency>
-	
-		<dependency>
-			<groupId>fr.mby.osgi-portal</groupId>
-			<artifactId>osgi-portal-core</artifactId>
-			<version>${osgi-portal-api.version}</version>
 		</dependency>
 		
 		<dependency>

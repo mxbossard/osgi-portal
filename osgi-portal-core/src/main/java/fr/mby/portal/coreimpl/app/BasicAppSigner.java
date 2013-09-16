@@ -23,8 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import fr.mby.portal.api.IPortal;
 import fr.mby.portal.api.app.IApp;
-import fr.mby.portal.core.IPortalRenderer;
 import fr.mby.portal.core.app.IAppSigner;
 import fr.mby.portal.core.session.ISessionManager;
 
@@ -55,20 +55,20 @@ public class BasicAppSigner implements IAppSigner {
 	public String retrieveSignature(final HttpServletRequest request) {
 		String signature = null;
 
-		final Object attrObject = request.getAttribute(IPortalRenderer.SIGNATURE_PARAM_NAME);
+		final Object attrObject = request.getAttribute(IPortal.SIGNATURE_PARAM_NAME);
 		if (attrObject != null && attrObject instanceof String) {
 			signature = (String) attrObject;
 		}
 
 		if (!StringUtils.hasText(signature)) {
-			signature = request.getParameter(IPortalRenderer.SIGNATURE_PARAM_NAME);
+			signature = request.getParameter(IPortal.SIGNATURE_PARAM_NAME);
 		}
 
 		if (!StringUtils.hasText(signature)) {
 			final Cookie[] cookies = request.getCookies();
 			if (cookies != null) {
 				for (final Cookie cookie : cookies) {
-					if (cookie != null && IPortalRenderer.SIGNATURE_PARAM_NAME.equals(cookie.getName())) {
+					if (cookie != null && IPortal.SIGNATURE_PARAM_NAME.equals(cookie.getName())) {
 						signature = cookie.getValue();
 					}
 				}
@@ -76,7 +76,7 @@ public class BasicAppSigner implements IAppSigner {
 		}
 
 		if (!StringUtils.hasText(signature)) {
-			request.setAttribute(IPortalRenderer.SIGNATURE_PARAM_NAME, signature);
+			request.setAttribute(IPortal.SIGNATURE_PARAM_NAME, signature);
 		}
 
 		return signature;

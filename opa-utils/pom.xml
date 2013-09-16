@@ -1,0 +1,61 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>fr.mby.osgi-portal</groupId>
+	<artifactId>opa-security</artifactId>
+	<version>0.0.1.SNAPSHOT</version>
+	<packaging>jar</packaging>
+	<name>OSGi Portal App Utils</name>
+	
+	<parent>
+		<groupId>fr.mby.maven</groupId>
+		<artifactId>basic-bundle</artifactId>
+		<version>1.0.0.PARENT</version>
+	</parent>
+
+	<properties>
+		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
+		
+		<servlet.version>2.5</servlet.version>
+		
+		<guava.version>15.0</guava.version>
+		<joda-time.version>2.3</joda-time.version>
+	</properties>
+
+	<dependencies>
+		<!-- API -->
+		<dependency>
+			<groupId>fr.mby.osgi-portal</groupId>
+			<artifactId>osgi-portal-core</artifactId>
+			<version>${osgi-portal-api.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>${servlet.version}</version>
+		</dependency>
+			    
+	    <!-- Guava -->
+	    <dependency>
+	        <groupId>com.google.guava</groupId>
+	        <artifactId>guava</artifactId>
+	        <version>${guava.version}</version>
+	    </dependency>	    
+		
+		<!-- Joda Time -->
+		<dependency>
+		    <groupId>joda-time</groupId>
+		    <artifactId>joda-time</artifactId>
+		    <version>${joda-time.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>3.2.2.RELEASE</version>
+		</dependency>
+	</dependencies>
+
+</project>
