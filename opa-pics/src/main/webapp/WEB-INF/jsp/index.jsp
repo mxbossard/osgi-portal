@@ -4,6 +4,8 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
+<%@ taglib prefix="opa" uri="http://www.mby.fr/osgi-portal/tags/opa"%>
+
 <!doctype html>
 <html lang="fr">
 <head>
@@ -13,10 +15,9 @@
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	
+	<opa:meta/>
+	
 	<script type="text/javascript">
-		var osgiPortal = window.parent.OsgiPortal.getInstance();
-		window.appClient = osgiPortal.registerPortalApplication("${app.signature}");
-		
 		$(document).ready(function() {
 			$(".thumbnail").click(function(e) {
 				var thumbnail = e.target;

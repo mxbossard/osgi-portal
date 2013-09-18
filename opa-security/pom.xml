@@ -17,6 +17,7 @@
 		<osgi-portal-api.version>0.0.1.SNAPSHOT</osgi-portal-api.version>
 		
 		<servlet.version>2.5</servlet.version>
+		<jsp.version>2.1.1</jsp.version>
 		
 		<guava.version>15.0</guava.version>
 		<joda-time.version>2.3</joda-time.version>
@@ -35,6 +36,12 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>servlet-api</artifactId>
 			<version>${servlet.version}</version>
+		</dependency>
+			    
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>jsp-api</artifactId>
+			<version>${jsp.version}</version>
 		</dependency>
 			    
 	    <!-- Guava -->

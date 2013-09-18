@@ -5,7 +5,8 @@ Bundle-Version: ${bundle.version}
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: ${bundlor.template.classPath}
 Import-Template:
- javax.servlet.*;version="${servlet.version:[=.=.=, +1.0.0)}"
+ javax.servlet.*;version="${servlet.version:[=.=.=, +1.0.0)}",
+ javax.servlet.jsp.*;version="${jsp.version:[=.=.=, +1.0.0)}"
 Version-Patterns:
  major-range;pattern="[=.=.=.=, +1.0.0.=)",
  medium-range;pattern="[=.=.=.=, =.+1.0.=)",

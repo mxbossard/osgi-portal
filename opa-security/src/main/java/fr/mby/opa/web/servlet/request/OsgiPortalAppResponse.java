@@ -44,7 +44,7 @@ public class OsgiPortalAppResponse extends HttpServletResponseWrapper {
 	public OsgiPortalAppResponse(final HttpServletResponse response, final String opaSignature) {
 		super(response);
 
-		Preconditions.checkArgument(!Strings.isNullOrEmpty(opaSignature), "");
+		Preconditions.checkArgument(!Strings.isNullOrEmpty(opaSignature), "No OPA signature supplied !");
 
 		this.response = response;
 		this.opaSignature = opaSignature;

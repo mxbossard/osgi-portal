@@ -24,10 +24,12 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.common.base.Strings;
 
+import fr.mby.opa.web.servlet.request.OsgiPortalAppRequest;
 import fr.mby.opa.web.servlet.request.OsgiPortalAppResponse;
 import fr.mby.portal.api.IPortal;
 
@@ -53,11 +55,14 @@ public class OsgiPortalAppFilter implements Filter {
 
 		request.setAttribute(IPortal.SIGNATURE_PARAM_NAME, opaSignature);
 
-		if (HttpServletResponse.class.isAssignableFrom(response.getClass())) {
+		if (HttpServletRequest.class.isAssignableFrom(request.getClass())
+				&& HttpServletResponse.class.isAssignableFrom(response.getClass())) {
+			final HttpServletRequest httpRequest = (HttpServletRequest) request;
+			final OsgiPortalAppRequest opaRequest = new OsgiPortalAppRequest(httpRequest, opaSignature);
 			final HttpServletResponse httpResponse = (HttpServletResponse) response;
 			final OsgiPortalAppResponse opaResponse = new OsgiPortalAppResponse(httpResponse, opaSignature);
 
-			chain.doFilter(request, opaResponse);
+			chain.doFilter(opaRequest, opaResponse);
 		} else {
 			chain.doFilter(request, response);
 		}
