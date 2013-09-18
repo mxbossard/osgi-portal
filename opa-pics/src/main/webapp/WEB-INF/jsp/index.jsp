@@ -24,7 +24,7 @@
 				
 				var imgElement = $('#image img');
 				var imageUrl = imgElement.attr('src');
-				var updatedImageUrl = imageUrl.replace(/[^\/]*$/, imageId);
+				var updatedImageUrl = imageUrl.replace(/[^\/?]*(\?+[^?]*)$/, imageId + '$1');
 				imgElement.attr('src', updatedImageUrl);
 				
 				$("#picture").show();
