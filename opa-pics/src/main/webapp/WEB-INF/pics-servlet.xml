@@ -33,7 +33,9 @@
 		<property name="suffix" value=".jsp" />
 	</bean>
 
-	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+	<bean id="multipartResolver" class="org.springframework.web.multipart.support.StandardServletMultipartResolver">
+		<!-- <property name="resolveLazily" value="true" /> -->
+	</bean>
  
 	<bean id="picsController" class="fr.mby.opa.pics.web.controller.PicsController">
 		<property name="portalService" ref="portalServiceRef" />

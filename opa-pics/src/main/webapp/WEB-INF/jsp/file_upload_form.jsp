@@ -16,7 +16,9 @@
 <body>
 	<h1>Pics Upload</h1>
 	 
-	<form:form method="post" action="upload/save"
+	 <spring:url value="upload/save" var="uploadActionUrl" />
+	 
+	<form:form method="post" action="${uploadActionUrl}"
 	        modelAttribute="uploadForm" enctype="multipart/form-data">
 	 
 	    <p>Select pictures to upload. Press Add button to add more file inputs.</p>

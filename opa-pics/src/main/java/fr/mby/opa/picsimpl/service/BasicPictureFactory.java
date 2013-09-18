@@ -75,7 +75,7 @@ public class BasicPictureFactory implements IPictureFactory {
 
 	public static final int THUMBNAIL_MAX_WIDTH = 800;
 
-	public static final int THUMBNAIL_MAX_HEIGHT = 230;
+	public static final int THUMBNAIL_MAX_HEIGHT = 200;
 
 	private static final boolean USE_RESIZE_HINT = true;
 

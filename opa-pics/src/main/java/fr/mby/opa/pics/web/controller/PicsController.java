@@ -18,6 +18,7 @@ package fr.mby.opa.pics.web.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -25,6 +26,7 @@ import java.util.concurrent.Future;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -74,8 +76,7 @@ public class PicsController implements IPortalApp {
 	private IPictureFactory pictureFactory;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public ModelAndView handleRequest(final HttpServletRequest request, final HttpServletResponse response)
-			throws Exception {
+	public ModelAndView index(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		final ModelAndView mv = new ModelAndView("index");
 
 		final IApp helloApp = this.portalService.getTargetedApp(request);
@@ -88,6 +89,16 @@ public class PicsController implements IPortalApp {
 		return mv;
 	}
 
+	@RequestMapping(value = "album", method = RequestMethod.POST)
+	@ResponseBody
+	public Album createAlbum(@Valid final Album album, final HttpServletRequest request,
+			final HttpServletResponse response) throws Exception {
+
+		this.albumDao.createAlbum(album);
+
+		return album;
+	}
+
 	@RequestMapping(value = "album", method = RequestMethod.GET)
 	@ResponseBody
 	public Collection<Album> findAllAlbumsJson(final HttpServletRequest request, final HttpServletResponse response)
@@ -97,8 +108,18 @@ public class PicsController implements IPortalApp {
 		return albums;
 	}
 
+	@RequestMapping(value = "album/{albumId}/pictures", method = RequestMethod.GET)
+	@ResponseBody
+	public List<Picture> findAlbumPictures(final Long albumId, final HttpServletRequest request,
+			final HttpServletResponse response) throws Exception {
+
+		final Album album = this.albumDao.loadAlbumById(albumId);
+
+		return album.getPictures();
+	}
+
 	@RequestMapping(value = "image/{id}", method = RequestMethod.GET)
-	public ResponseEntity<byte[]> renderImage(@PathVariable final Long id, final HttpServletRequest request,
+	public ResponseEntity<byte[]> getImage(@PathVariable final Long id, final HttpServletRequest request,
 			final HttpServletResponse response) throws Exception {
 
 		ResponseEntity<byte[]> responseEntity = null;

@@ -17,12 +17,17 @@
 package fr.mby.opa.pics.web.controller;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +37,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.google.common.collect.Iterables;
 
@@ -81,6 +87,7 @@ public class UploadPicturesController {
 			final Collection<Future<Picture>> futures = new ArrayList<>(pictures.size());
 
 			for (final MultipartFile multipartFile : pictures) {
+
 				final Future<Picture> future = UploadPicturesController.BUILD_PICTURE_EXECUTOR
 						.submit(new Callable<Picture>() {
 
@@ -110,6 +117,31 @@ public class UploadPicturesController {
 		}
 
 		map.addAttribute("picturesNames", picturesNames);
+		return "file_upload_success";
+	}
+
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	public String testUploadFile(final MultipartHttpServletRequest request, final HttpServletResponse response)
+			throws IOException {
+
+		// 1. build an iterator
+		// final Iterator<String> itr = request.getFileNames();
+		final List<MultipartFile> files = request.getFiles("pictures");
+		final Iterator<MultipartFile> itr = files.iterator();
+
+		MultipartFile mpf = null;
+
+		// 2. get each file
+		while (itr.hasNext()) {
+
+			mpf = itr.next();
+			// 2.1 get next MultipartFile
+			// mpf = request.getFile(itr.next());
+
+			final InputStream stream = mpf.getInputStream();
+
+		}
+
 		return "file_upload_success";
 	}
 

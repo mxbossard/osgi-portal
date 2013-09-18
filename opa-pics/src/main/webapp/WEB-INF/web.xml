@@ -36,6 +36,15 @@
 			<param-value>org.eclipse.virgo.web.dm.ServerOsgiBundleXmlWebApplicationContext</param-value>
 		</init-param>	
 		<load-on-startup>2</load-on-startup>
+		<multipart-config />
+	</servlet>
+	
+	<servlet>
+		<servlet-name>uploadServlet</servlet-name>
+		<servlet-class>fr.mby.opa.pics.web.controller.UplaodServlet</servlet-class>
+
+		<load-on-startup>1</load-on-startup>
+		<multipart-config />
 	</servlet>
 
 	<servlet-mapping>
@@ -43,4 +52,9 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
+	<servlet-mapping>
+		<servlet-name>uploadServlet</servlet-name>
+		<url-pattern>/uploadServlet</url-pattern>
+	</servlet-mapping>
+	
 </web-app>
