@@ -19,8 +19,11 @@ package fr.mby.opa.web.servlet.request;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
+import org.springframework.util.Assert;
+
+import fr.mby.opa.osgi.service.OsgiPortalServiceLocator;
+import fr.mby.portal.api.IPortalService;
+import fr.mby.portal.api.app.IApp;
 
 /**
  * Override encodeURL methods to add Opa signature parameter.
@@ -36,16 +39,21 @@ public class OsgiPortalAppRequest extends HttpServletRequestWrapper {
 
 	private final String opaSignature;
 
+	private final IApp opaApp;
+
 	/**
 	 * @param response
 	 */
 	public OsgiPortalAppRequest(final HttpServletRequest request, final String opaSignature) {
 		super(request);
 
-		Preconditions.checkArgument(!Strings.isNullOrEmpty(opaSignature), "No OPA signature supplied !");
+		Assert.hasText(opaSignature, "No OPA signature supplied !");
 
 		this.request = request;
 		this.opaSignature = opaSignature;
+
+		final IPortalService portalService = OsgiPortalServiceLocator.retrievePortalService();
+		this.opaApp = portalService.getTargetedApp(request);
 	}
 
 	/**
@@ -55,6 +63,15 @@ public class OsgiPortalAppRequest extends HttpServletRequestWrapper {
 	 */
 	public String getOpaSignature() {
 		return this.opaSignature;
+	}
+
+	/**
+	 * Getter of opaApp.
+	 * 
+	 * @return the opaApp
+	 */
+	public IApp getOpaApp() {
+		return this.opaApp;
 	}
 
 }

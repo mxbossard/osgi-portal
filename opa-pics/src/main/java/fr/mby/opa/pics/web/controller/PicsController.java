@@ -46,8 +46,6 @@ import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.service.IAlbumDao;
 import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureFactory;
-import fr.mby.portal.api.IPortalService;
-import fr.mby.portal.api.app.IApp;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.api.message.IActionMessage;
@@ -64,8 +62,6 @@ import fr.mby.portal.api.message.IRenderReply;
 @RequestMapping("")
 public class PicsController implements IPortalApp {
 
-	private IPortalService portalService;
-
 	@Autowired
 	private IAlbumDao albumDao;
 
@@ -78,9 +74,6 @@ public class PicsController implements IPortalApp {
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView index(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		final ModelAndView mv = new ModelAndView("index");
-
-		final IApp helloApp = this.portalService.getTargetedApp(request);
-		mv.addObject("app", helloApp);
 
 		final Collection<Picture> allPictures = this.pictureDao.findAllPictures();
 
@@ -240,25 +233,6 @@ public class PicsController implements IPortalApp {
 	public void render(final IRenderMessage request, final IRenderReply response) {
 		// TODO Auto-generated method stub
 
-	}
-
-	/**
-	 * Getter of portalService.
-	 * 
-	 * @return the portalService
-	 */
-	public IPortalService getPortalService() {
-		return this.portalService;
-	}
-
-	/**
-	 * Setter of portalService.
-	 * 
-	 * @param portalService
-	 *            the portalService to set
-	 */
-	public void setPortalService(final IPortalService portalService) {
-		this.portalService = portalService;
 	}
 
 }
