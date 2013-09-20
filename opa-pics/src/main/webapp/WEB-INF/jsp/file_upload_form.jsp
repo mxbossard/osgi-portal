@@ -23,7 +23,8 @@
 	 
 	    <p>Select pictures to upload. Press Add button to add more file inputs.</p>
 	 
-	    <input name="pictures" type="file" multiple="multiple" />
+	    <input id="multipleFile" name="pictures" type="file" multiple="multiple" draggable="true" autofocus="autofocus" accept="image/jpeg,image/png" />
+
 	    <br/>
 	    <input type="submit" value="Upload" />
 	</form:form>

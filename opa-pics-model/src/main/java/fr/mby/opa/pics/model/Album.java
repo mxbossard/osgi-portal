@@ -36,15 +36,17 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
+import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @NamedQueries({
 		@NamedQuery(name = Album.LOAD_FULL_ALBUM_BY_ID, query = "SELECT a FROM Album a "
-				+ "JOIN FETCH a.selectedOrderingProposal JOIN FETCH a.pictures WHERE a.id = :id"),
-		@NamedQuery(name = Album.FIND_ALL_ALBUMS_ORDER_BY_DATE, query = "SELECT a"
-				+ " FROM Album a ORDER BY a.creationTime ASC")})
+				+ "LEFT JOIN FETCH a.selectedOrderingProposal LEFT JOIN FETCH a.pictures WHERE a.id = :id"),
+		@NamedQuery(name = Album.FIND_ALL_ALBUMS_ORDER_BY_DATE, query = "SELECT new fr.mby.opa.pics.model.Album"
+				+ "(a.id, a.name, a.description, a.creationTime)" + " FROM Album a ORDER BY a.creationTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "ALBUM")
@@ -55,6 +57,25 @@ public class Album {
 
 	/** Find an Album by Id ordered by Date. Params: id */
 	public static final String FIND_ALL_ALBUMS_ORDER_BY_DATE = "FIND_ALL_ALBUMS_ORDER_BY_DATE";
+
+	/** Default constructor. */
+	public Album() {
+		super();
+	}
+
+	/**
+	 * @param id
+	 * @param name
+	 * @param description
+	 * @param creationTime
+	 */
+	public Album(final Long id, final String name, final String description, final ReadableDateTime creationTime) {
+		super();
+		this.id = id;
+		this.name = name;
+		this.description = description;
+		this.creationTime = creationTime;
+	}
 
 	@Id
 	@Column(name = "ID")

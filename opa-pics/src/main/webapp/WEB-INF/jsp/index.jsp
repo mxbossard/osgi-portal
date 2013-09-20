@@ -7,7 +7,7 @@
 <%@ taglib prefix="opa" uri="http://www.mby.fr/osgi-portal/tags/opa"%>
 
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-ng-app="pics">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Pics</title>
@@ -15,7 +15,29 @@
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	
+	<script data-require="angular.js@1.0.x" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js" data-semver="1.0.8"></script>
+	
 	<opa:meta/>
+	
+	<c:url var="appClientScriptUrl" value="/resources/js/portalAppClient.js" />
+	<script type="text/javascript" src="${appClientScriptUrl}"></script>
+	
+	<c:url var="picsAppScriptUrl" value="/resources/js/picsApp.js" />
+	<script type="text/javascript" src="${picsAppScriptUrl}"></script>
+	
+	<c:url var="picsAppCssUrl" value="/resources/css/picsApp.css" />
+	<link rel="stylesheet" href="${picsAppCssUrl}" />
+
+	<c:url var="findAllAlbumsJsonUrl" value="/album" />
+	<c:url var="findAllPicturesOfAlbumJsonUrl" value="/album/{:albumId}/pictures" />
+	<c:url var="getImageUrl" value="/image/{:imageId}" />
+	<c:url var="getPictureOfAlbumUrl" value="/album/{:albumId}/pictures/{:pictureId}" />
+	<script type="text/javascript">
+		var findAllAlbumsJsonUrl = '${findAllAlbumsJsonUrl}';
+		var findAllPicturesOfAlbumJsonUrl = '${findAllPicturesOfAlbumJsonUrl}';
+		var getImageUrl = '${getImageUrl}';
+		var getPictureOfAlbumUrl = '${getPictureOfAlbumUrl}';
+	</script>
 	
 	<script type="text/javascript">
 		$(document).ready(function() {
@@ -46,94 +68,35 @@
 		});
 
 	</script>
-	
-	<c:url var="appClientScriptUrl" value="/resources/js/portalAppClient.js" />
-	
-	<script type="text/javascript" src="${appClientScriptUrl}"></script>
-	
-	<style type="text/css">
-		img {
-			border: 0px;
-			margin: 0px;
-			padding: 0px;
-		}
-		
-		#thumbnails {
-			display: block;
-		}
-		
-		.thumbnail {
-			border: 0px solid transparent;
-			margin: 0px 1px 1px 0px;
-			padding: 0px;
-			overflow: none;
-			float: left;
-		}
-		
-		.thumbnail:HOVER {
-			cursor: pointer;
-		}
-		
-		#picture {
-			display: none;
-			position: fixed;
-			top: 0px;
-			left: 0px;
-			width: 100%;
-			height: 100%;
-			
-			background: rgba(255, 255, 255, 0.4);
-			
-			text-align: center;
-			
-			display: box;
-			-moz-box-pack: center;
-			-moz-box-align: center;
-			
-			-webkit-box-pack: center;
-			-webkit-box-align: center;
-			
-			box-pack: center;
-			box-align: center;
-		}
-		
-		#image {
-			position: relative;
-			margin: auto;
-			width: 90%;
-			height: 90%;
-			background: rgba(255, 255, 255, 1);
-			overflow: hidden;
-		}
-		
-		#image img {
-			opacity: 1;
-		}
-	</style>
+
 </head>
-<body>
+<body data-ng-controller="PicsCtrl">
 	<h2>Pics</h2>	
-	
+		
 	<spring:url value="/upload" var="uploadFormUrl" />
 	<a href="${uploadFormUrl}">Upload pics form</a>
 	
-	<h3>Uploaded pics (thumbnails) :</h3>
-	
-	<div id="thumbnails">
-		<c:forEach items="${pictures}" var="picture">
-			<div class="thumbnail" style="width: ${picture.thumbnail.width}px; height: ${picture.thumbnail.height}px;" data-imageId="${picture.image.id}">
-				<spring:url value="/image/${picture.thumbnail.id}" var="thumbUrl" />
-				<img src="${thumbUrl}" data-imageId="${picture.image.id}" />
-			</div>
-		</c:forEach>
-	</div>
-	
-	<div id="picture">
-		<div id="image">
-			<spring:url value="/image/0" var="imageUrl" />
-			<img src="${imageUrl}" />
+	<h3>Albums</h3>
+    <div id="albums">
+      	<ul>
+        	<li data-ng-repeat="album in albums" data-ng-class="{'selected': album.id == selectedAlbum.id}">
+          		<span>
+            		<span data-ng-click="selectAlbum(album)">{{album.id}} - {{album.name}} ({{album.size}})</span>
+            		<span data-ng-click="deleteAlbum(album)">[x]</span>
+          		</span>
+        	</li>
+      	</ul>
+    </div>
+    
+    <h3>Thumbnails</h3>
+    <div id="thumbnails">
+    	<div class="thumbnailsRow" data-ng-repeat="row in thumbnailRows" style="height: {{row.height}}px;">
+			<span class="thumbnail" data-ng-repeat="picture in row.pictures" data-ng-click="selectPicture(picture)"
+				style="width: {{picture.thumbnailWidth}}px; height: {{picture.thumbnailHeight}}px;">
+				<img data-ng-src="{{picture.thumbnailUrl}}" width="{{picture.thumbnailWidth}}px" height="{{picture.thumbnailHeight}}px" />
+			</span>
 		</div>
-	</div>
-	
+    </div>
+
 </body>
 </html>

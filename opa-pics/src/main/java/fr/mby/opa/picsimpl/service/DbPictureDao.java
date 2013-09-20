@@ -105,6 +105,26 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	}
 
 	@Override
+	public List<Picture> findPicturesByAlbumId(final Long albumId) {
+		Assert.notNull(albumId, "Album Id should be supplied !");
+
+		final EmCallback<List<Picture>> emCallback = new EmCallback<List<Picture>>(this.getEmf()) {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected List<Picture> executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				final Query findByAlbumQuery = em.createNamedQuery(Picture.FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE);
+				findByAlbumQuery.setParameter("albumId", albumId);
+
+				final List<Picture> pictureId = findByAlbumQuery.getResultList();
+				return pictureId;
+			}
+		};
+
+		return emCallback.getReturnedValue();
+	}
+
+	@Override
 	public Picture findPictureById(final Long id) {
 		Assert.notNull(id, "Picture Id should be supplied !");
 

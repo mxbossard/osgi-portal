@@ -17,6 +17,8 @@
 		<jpa.version>2.0.5</jpa.version>
 		<joda-time.version>2.3</joda-time.version>
 		
+		<jackson.version>1.9.13</jackson.version>
+		
 		<eclipselink.version>2.4.2</eclipselink.version>
 		<derby.version>10.10.1.1</derby.version>
 	</properties>
@@ -36,7 +38,14 @@
 		    <artifactId>joda-time</artifactId>
 		    <version>${joda-time.version}</version>
 		</dependency>
-		
+				
+		<!-- Jackson Annotations -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>com.springsource.com.fasterxml.jackson.core.jackson-databind</artifactId>
+		    <version>2.0.2</version>
+		</dependency>
+				
 		<!-- Eclipse link (before JPA 2.1) -->
 		<dependency>
 		    <groupId>org.eclipse.persistence</groupId>

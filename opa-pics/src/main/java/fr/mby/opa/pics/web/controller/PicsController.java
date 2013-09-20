@@ -18,6 +18,7 @@ package fr.mby.opa.pics.web.controller;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -28,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.json.JSONException;
+import org.json.JSONStringer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -59,7 +62,7 @@ import fr.mby.portal.api.message.IRenderReply;
  */
 
 @Controller
-@RequestMapping("")
+@RequestMapping
 public class PicsController implements IPortalApp {
 
 	@Autowired
@@ -103,12 +106,12 @@ public class PicsController implements IPortalApp {
 
 	@RequestMapping(value = "album/{albumId}/pictures", method = RequestMethod.GET)
 	@ResponseBody
-	public List<Picture> findAlbumPictures(final Long albumId, final HttpServletRequest request,
+	public List<Picture> findAlbumPictures(@PathVariable final Long albumId, final HttpServletRequest request,
 			final HttpServletResponse response) throws Exception {
 
-		final Album album = this.albumDao.loadAlbumById(albumId);
+		final List<Picture> pictures = this.pictureDao.findPicturesByAlbumId(albumId);
 
-		return album.getPictures();
+		return pictures;
 	}
 
 	@RequestMapping(value = "image/{id}", method = RequestMethod.GET)
@@ -169,7 +172,7 @@ public class PicsController implements IPortalApp {
 
 					picture.setThumbnail(generated);
 					picture.setThumbnailWidth(generated.getWidth());
-					picture.setThumbnailHeigth(generated.getHeight());
+					picture.setThumbnailHeight(generated.getHeight());
 					picture.setThumbnailFormat(generated.getFormat());
 					picture.setThumbnailSize(generated.getData().length);
 
@@ -187,6 +190,36 @@ public class PicsController implements IPortalApp {
 		}
 
 		return "index";
+	}
+
+	protected void buildPicturesJson(final List<Picture> pictures) throws JSONException {
+
+		final JSONStringer jsonStringer = new JSONStringer();
+		// Start Pic Array
+		jsonStringer.array();
+
+		final Iterator<Picture> dirPic = pictures.iterator();
+		while (dirPic.hasNext()) {
+			final Picture pic = dirPic.next();
+			// Start Picture
+			jsonStringer.object();
+
+			jsonStringer.key("id").value(pic.getId());
+			jsonStringer.key("name").value(pic.getName());
+			jsonStringer.key("thumbnailId").value(pic.getThumbnail().getId());
+			jsonStringer.key("imageId").value(pic.getImage().getId());
+
+			// End Picture
+			jsonStringer.endObject();
+		}
+
+		// End Pic Array
+		jsonStringer.endArray();
+
+		String jsonMetadata = jsonStringer.toString();
+		jsonMetadata = jsonMetadata.replaceAll("\"", "'");
+
+		// return new ResponseEntity<String>(jsonMetadata, null, HttpStatus.CREATED);
 	}
 
 	/*

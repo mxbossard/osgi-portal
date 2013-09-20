@@ -42,6 +42,14 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.DateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
+import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+import fr.mby.opa.pics.model.converter.JodaDateTimeJsonSerializer;
+
 /**
  * @author Maxime Bossard - 2013
  * 
@@ -51,12 +59,17 @@ import org.joda.time.DateTime;
 				+ " FROM Picture p JOIN FETCH p.image JOIN FETCH p.thumbnail WHERE p.id = :id"),
 		@NamedQuery(name = Picture.FIND_PICTURE_ID_BY_HASH, query = "SELECT p.id"
 				+ " FROM Picture p WHERE p.hash = :hash"),
+		@NamedQuery(name = Picture.FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE, query = "SELECT new fr.mby.opa.pics.model.Picture"
+				+ "(p.id, p.filename, p.name, p.originalTime, p.creationTime, p.width, p.height, p.format, p.thumbnailWidth,"
+				+ " p.thumbnailHeight, p.jsonMetadata, p.imageId, p.thumbnailId)"
+				+ " FROM Picture p JOIN FETCH p.tags WHERE p.album.id = :albumId ORDER BY p.originalTime"),
 		@NamedQuery(name = Picture.FIND_ALL_PICTURES_ORDER_BY_DATE, query = "SELECT p"
 				+ " FROM Picture p ORDER BY p.originalTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"hash"}))
 // indexes = {@Index(columnList = "id"), @Index(columnList = "uniqueHash"), @Index(columnList = "creationTime")}
+@JsonInclude(Include.NON_NULL)
 public class Picture {
 
 	/** Load a Picture withs its contents by Id. Params: id */
@@ -64,6 +77,9 @@ public class Picture {
 
 	/** Find a Picture by Hash. Params: hash */
 	public static final String FIND_PICTURE_ID_BY_HASH = "FIND_PICTURE_ID_BY_HASH";
+
+	/** Find all Pictures of an Album. Params: albumId */
+	public static final String FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE = "FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE";
 
 	/** Find all Pictures order by original time. */
 	public static final String FIND_ALL_PICTURES_ORDER_BY_DATE = "FIND_ALL_PICTURES_ORDER_BY_DATE";
@@ -88,16 +104,18 @@ public class Picture {
 	@Basic(optional = false)
 	@Column(name = "ORIGINAL_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
 	@Convert("jodaDateTime")
+	@JsonSerialize(using = JodaDateTimeJsonSerializer.class)
 	private DateTime originalTime;
 
 	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
 	@Convert("jodaDateTime")
+	@JsonSerialize(using = JodaDateTimeJsonSerializer.class)
 	private DateTime creationTime;
 
 	@Basic(optional = false)
 	@Column(name = "WIDTH", nullable = false, updatable = false)
-	private int width;
+	private Integer width;
 
 	@Basic(optional = false)
 	@Column(name = "HEIGHT", nullable = false, updatable = false)
@@ -112,23 +130,24 @@ public class Picture {
 	private String format;
 
 	@Basic(optional = false)
-	@Column(name = "THUMBNAIL_WIDTH", nullable = false, updatable = false)
+	@Column(name = "THUMBNAIL_WIDTH", nullable = false, updatable = true)
 	private Integer thumbnailWidth;
 
 	@Basic(optional = false)
-	@Column(name = "THUMBNAIL_HEIGHT", nullable = false, updatable = false)
-	private Integer thumbnailHeigth;
+	@Column(name = "THUMBNAIL_HEIGHT", nullable = false, updatable = true)
+	private Integer thumbnailHeight;
 
 	@Basic(optional = false)
-	@Column(name = "THUMBNAIL_SIZE", nullable = false, updatable = false)
+	@Column(name = "THUMBNAIL_SIZE", nullable = false, updatable = true)
 	private Integer thumbnailSize;
 
 	@Basic(optional = false)
-	@Column(name = "THUMBNAIL_FORMAT", nullable = false, updatable = false)
+	@Column(name = "THUMBNAIL_FORMAT", nullable = false, updatable = true)
 	private String thumbnailFormat;
 
 	@Basic(optional = true)
 	@Column(name = "JSON_METADATA", length = 8192)
+	@JsonRawValue
 	private String jsonMetadata;
 
 	@ManyToMany(fetch = FetchType.LAZY)
@@ -137,9 +156,17 @@ public class Picture {
 	@JoinColumn(name = "TAGS_ID")
 	private Map<Long, Tag> tags;
 
+	@Basic(optional = false)
+	@Column(name = "IMAGE_ID", nullable = false, insertable = false, updatable = false)
+	private Long imageId;
+
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "IMAGE_ID", nullable = false, updatable = false)
 	private BinaryImage image;
+
+	@Basic(optional = false)
+	@Column(name = "THUMBNAIL_ID", nullable = false, insertable = false, updatable = false)
+	private Long thumbnailId;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "THUMBNAIL_ID", nullable = false, updatable = false)
@@ -151,6 +178,45 @@ public class Picture {
 
 	@Version
 	private Long version;
+
+	/** */
+	public Picture() {
+		super();
+	}
+
+	/**
+	 * @param id
+	 * @param filename
+	 * @param name
+	 * @param originalTime
+	 * @param creationTime
+	 * @param width
+	 * @param height
+	 * @param format
+	 * @param thumbnailWidth
+	 * @param thumbnailHeigth
+	 * @param jsonMetadata
+	 * @param thumbnailId
+	 */
+	public Picture(final Long id, final String filename, final String name, final DateTime originalTime,
+			final DateTime creationTime, final Integer width, final Integer height, final String format,
+			final Integer thumbnailWidth, final Integer thumbnailHeight, final String jsonMetadata, final Long imageId,
+			final Long thumbnailId) {
+		super();
+		this.id = id;
+		this.filename = filename;
+		this.name = name;
+		this.originalTime = originalTime;
+		this.creationTime = creationTime;
+		this.width = width;
+		this.height = height;
+		this.format = format;
+		this.thumbnailWidth = thumbnailWidth;
+		this.thumbnailHeight = thumbnailHeight;
+		this.jsonMetadata = jsonMetadata;
+		this.imageId = imageId;
+		this.thumbnailId = thumbnailId;
+	}
 
 	/**
 	 * Getter of id.
@@ -267,6 +333,15 @@ public class Picture {
 	}
 
 	/**
+	 * Getter of imageId.
+	 * 
+	 * @return the imageId
+	 */
+	public Long getImageId() {
+		return this.imageId;
+	}
+
+	/**
 	 * Getter of image.
 	 * 
 	 * @return the image
@@ -283,6 +358,15 @@ public class Picture {
 	 */
 	public void setImage(final BinaryImage image) {
 		this.image = image;
+	}
+
+	/**
+	 * Getter of thumbnailId.
+	 * 
+	 * @return the thumbnailId
+	 */
+	public Long getThumbnailId() {
+		return this.thumbnailId;
 	}
 
 	/**
@@ -347,7 +431,7 @@ public class Picture {
 	 * 
 	 * @return the width
 	 */
-	public int getWidth() {
+	public Integer getWidth() {
 		return this.width;
 	}
 
@@ -357,7 +441,7 @@ public class Picture {
 	 * @param width
 	 *            the width to set
 	 */
-	public void setWidth(final int width) {
+	public void setWidth(final Integer width) {
 		this.width = width;
 	}
 
@@ -442,18 +526,18 @@ public class Picture {
 	 * 
 	 * @return the thumbnailHeigth
 	 */
-	public Integer getThumbnailHeigth() {
-		return this.thumbnailHeigth;
+	public Integer getThumbnailHeight() {
+		return this.thumbnailHeight;
 	}
 
 	/**
-	 * Setter of thumbnailHeigth.
+	 * Setter of thumbnailHeight.
 	 * 
-	 * @param thumbnailHeigth
-	 *            the thumbnailHeigth to set
+	 * @param thumbnailHeight
+	 *            the thumbnailHeight to set
 	 */
-	public void setThumbnailHeigth(final Integer thumbnailHeigth) {
-		this.thumbnailHeigth = thumbnailHeigth;
+	public void setThumbnailHeight(final Integer thumbnailHeight) {
+		this.thumbnailHeight = thumbnailHeight;
 	}
 
 	/**

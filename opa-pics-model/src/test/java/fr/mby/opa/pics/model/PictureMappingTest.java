@@ -129,7 +129,7 @@ public class PictureMappingTest {
 		picture.setHeight(200);
 		picture.setName("name");
 		picture.setThumbnailFormat("jpg");
-		picture.setThumbnailHeigth(50);
+		picture.setThumbnailHeight(50);
 		picture.setThumbnailWidth(100);
 		picture.setHash(String.valueOf(now.getMillis()));
 		picture.setWidth(300);

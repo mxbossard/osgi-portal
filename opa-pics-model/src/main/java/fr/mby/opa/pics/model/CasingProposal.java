@@ -33,6 +33,8 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
+import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+
 /**
  * A CasingProposal case a Picture in a Session. Multiple CasingProposal are grouped in a ProposalBag.
  * 

@@ -33,6 +33,8 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
+import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+
 /**
  * A RankingProposal rank a Picture in a Shoot. Multiple RankingProposal are grouped in a ProposalBag.
  * 

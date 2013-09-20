@@ -61,6 +61,11 @@ Import-Template:
  org.springframework.security.*;version="${spring-security.version:major-range}",
  org.springframework.webflow.*;version="${spring-webflow.version:major-range}"
 Ignored-Existing-Headers: 
+Import-Bundle:
+ com.springsource.com.fasterxml.jackson.core.jackson-annotations;version="[2.0.2,2.0.2]",
+ com.springsource.com.fasterxml.jackson.core.jackson-core;version="[2.0.2,2.0.2]",
+ com.springsource.com.fasterxml.jackson.core.jackson-databind;version="[2.0.2,2.0.2]",
+ fr.mby.osgi-portal.osgi-portal-api;version="${osgi-portal-api.version:major-range}"
 Version-Patterns: 
  major-range;pattern="[=.=.=.=, +1.0.0.=)",
  medium-range;pattern="[=.=.=.=, =.+1.0.=)",

@@ -71,9 +71,9 @@ public class BasicPictureFactory implements IPictureFactory {
 	/** Logger. */
 	private static final Logger LOG = LogManager.getLogger(BasicPictureFactory.class);
 
-	public static final String THUMBNAIL_FORMAT = "jpg";
+	public static final String THUMBNAIL_FORMAT = "jpeg";
 
-	public static final int THUMBNAIL_MAX_WIDTH = 800;
+	public static final int THUMBNAIL_MAX_WIDTH = 1000;
 
 	public static final int THUMBNAIL_MAX_HEIGHT = 200;
 
@@ -82,7 +82,7 @@ public class BasicPictureFactory implements IPictureFactory {
 	/** "MD5" or "SHA-1" or "SHA-256" */
 	private static final HashFunction HASH_FUNCTION = Hashing.sha256();
 
-	private static final String DEFAULT_PICTURE_FORMAT = "jpg";
+	private static final String DEFAULT_PICTURE_FORMAT = "jpeg";
 
 	@Autowired
 	private IPictureDao pictureDao;
@@ -217,7 +217,7 @@ public class BasicPictureFactory implements IPictureFactory {
 				thumbnailFormat);
 
 		picture.setThumbnailWidth(thumbnail.getWidth());
-		picture.setThumbnailHeigth(thumbnail.getHeight());
+		picture.setThumbnailHeight(thumbnail.getHeight());
 		picture.setThumbnailSize(thumbnail.getData().length);
 		picture.setThumbnailFormat(thumbnail.getFormat());
 

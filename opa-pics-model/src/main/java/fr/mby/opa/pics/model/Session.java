@@ -28,6 +28,8 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
+import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+
 /**
  * @author Maxime Bossard - 2013
  * 

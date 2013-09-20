@@ -33,6 +33,8 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
+import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+
 /**
  * An EraseProposal ask for erasing. Multiple EraseProposal are grouped in a ProposalBag.
  * 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.model;
+package fr.mby.opa.pics.model.converter;
 
 import java.sql.Timestamp;
 

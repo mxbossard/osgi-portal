@@ -17,6 +17,7 @@
 package fr.mby.opa.pics.service;
 
 import java.util.Collection;
+import java.util.List;
 
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.BinaryImage;
@@ -33,6 +34,8 @@ public interface IPictureDao {
 	Picture updatePicture(Picture picture) throws PictureNotFoundException;
 
 	void deletePicture(Picture picture) throws PictureNotFoundException;
+
+	List<Picture> findPicturesByAlbumId(Long albumId);
 
 	Picture findPictureById(Long id);
 
