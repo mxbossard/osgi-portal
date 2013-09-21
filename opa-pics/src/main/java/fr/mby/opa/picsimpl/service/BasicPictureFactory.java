@@ -25,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
@@ -36,7 +37,6 @@ import javax.imageio.stream.ImageInputStream;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.joda.time.DateTime;
 import org.json.JSONException;
 import org.json.JSONStringer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +105,7 @@ public class BasicPictureFactory implements IPictureFactory {
 
 			final Long alreadyExistingPictureId = this.pictureDao.findPictureIdByHash(uniqueHash);
 			if (alreadyExistingPictureId != null) {
-				throw new PictureAlreadyExistsException();
+				throw new PictureAlreadyExistsException(fileName);
 			}
 
 			final BufferedInputStream bufferedStream = new BufferedInputStream(new ByteArrayInputStream(contents),
@@ -260,10 +260,10 @@ public class BasicPictureFactory implements IPictureFactory {
 			// Process specific metadata
 
 			// Times
-			final DateTime originalTime = this.findOriginalTime(metadata);
+			final Timestamp originalTime = this.findOriginalTime(metadata);
 			picture.setOriginalTime(originalTime);
 
-			picture.setCreationTime(new DateTime());
+			picture.setCreationTime(new Timestamp(System.currentTimeMillis()));
 
 		} catch (final ImageProcessingException e) {
 			// Unable to process metadata
@@ -281,7 +281,7 @@ public class BasicPictureFactory implements IPictureFactory {
 	 * @param metadata
 	 * @return
 	 */
-	protected DateTime findOriginalTime(final Metadata metadata) {
+	protected Timestamp findOriginalTime(final Metadata metadata) {
 		Date date = null;
 
 		final ExifSubIFDDirectory subExifDir = metadata.getDirectory(ExifSubIFDDirectory.class);
@@ -298,12 +298,12 @@ public class BasicPictureFactory implements IPictureFactory {
 			date = exifDir.getDate(ExifIFD0Directory.TAG_DATETIME);
 		}
 
-		DateTime creationTime = null;
+		Timestamp creationTime = null;
 
 		if (date != null) {
-			creationTime = new DateTime(date);
+			creationTime = new Timestamp(date.getTime());
 		} else {
-			creationTime = new DateTime();
+			creationTime = new Timestamp(System.currentTimeMillis());
 		}
 		return creationTime;
 	}

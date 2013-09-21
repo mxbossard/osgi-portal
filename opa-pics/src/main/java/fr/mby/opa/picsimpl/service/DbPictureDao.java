@@ -16,7 +16,7 @@
 
 package fr.mby.opa.picsimpl.service;
 
-import java.util.Collection;
+import java.sql.Timestamp;
 import java.util.Collections;
 import java.util.List;
 
@@ -46,6 +46,9 @@ import fr.mby.utils.common.jpa.TxCallbackReturn;
  */
 @Repository
 public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
+
+	/** Page size used for pagination. */
+	protected static final int PAGINATION_SIZE = 50;
 
 	@Override
 	public Picture createPicture(final Picture picture, final Album album) throws PictureAlreadyExistsException {
@@ -105,8 +108,9 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	}
 
 	@Override
-	public List<Picture> findPicturesByAlbumId(final Long albumId) {
+	public List<Picture> findPicturesByAlbumId(final Long albumId, final Long since) {
 		Assert.notNull(albumId, "Album Id should be supplied !");
+		final Timestamp sinceTimstamp = new Timestamp((since != null) ? since : 0L);
 
 		final EmCallback<List<Picture>> emCallback = new EmCallback<List<Picture>>(this.getEmf()) {
 
@@ -115,13 +119,20 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 			protected List<Picture> executeWithEntityManager(final EntityManager em) throws PersistenceException {
 				final Query findByAlbumQuery = em.createNamedQuery(Picture.FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE);
 				findByAlbumQuery.setParameter("albumId", albumId);
+				findByAlbumQuery.setParameter("since", sinceTimstamp);
+				findByAlbumQuery.setMaxResults(DbPictureDao.PAGINATION_SIZE);
 
 				final List<Picture> pictureId = findByAlbumQuery.getResultList();
 				return pictureId;
 			}
 		};
 
-		return emCallback.getReturnedValue();
+		List<Picture> pictures = emCallback.getReturnedValue();
+		if (pictures == null) {
+			pictures = Collections.emptyList();
+		}
+
+		return pictures;
 	}
 
 	@Override
@@ -196,17 +207,22 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public Collection<Picture> findAllPictures() {
-		final EmCallback<Collection<Picture>> emCallback = new EmCallback<Collection<Picture>>(this.getEmf()) {
+	public List<Picture> findAllPictures(final Long since) {
+		final Timestamp sinceTimstamp = new Timestamp((since != null) ? since : 0L);
+
+		final EmCallback<List<Picture>> emCallback = new EmCallback<List<Picture>>(this.getEmf()) {
 
 			@Override
-			protected Collection<Picture> executeWithEntityManager(final EntityManager em) throws PersistenceException {
+			protected List<Picture> executeWithEntityManager(final EntityManager em) throws PersistenceException {
 				final Query findAllQuery = em.createNamedQuery(Picture.FIND_ALL_PICTURES_ORDER_BY_DATE);
+				findAllQuery.setParameter("since", sinceTimstamp);
+				findAllQuery.setMaxResults(DbPictureDao.PAGINATION_SIZE);
+
 				return findAllQuery.getResultList();
 			}
 		};
 
-		Collection<Picture> pictures = emCallback.getReturnedValue();
+		List<Picture> pictures = emCallback.getReturnedValue();
 
 		if (pictures == null) {
 			pictures = Collections.emptyList();
@@ -229,7 +245,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 		final List<?> results = findPicByHashQuery.getResultList();
 		if (!results.isEmpty()) {
 			// A picture with same hash was found
-			throw new PictureAlreadyExistsException();
+			throw new PictureAlreadyExistsException(picture.getFilename());
 		}
 	}
 

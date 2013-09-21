@@ -16,6 +16,8 @@
 
 package fr.mby.opa.pics.model;
 
+import java.sql.Timestamp;
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
@@ -121,7 +123,7 @@ public class PictureMappingTest {
 	protected Picture buildPicture(final Album album) {
 		final Picture picture = new Picture();
 
-		final DateTime now = new DateTime();
+		final Timestamp now = new Timestamp(System.currentTimeMillis());
 
 		picture.setCreationTime(now);
 		picture.setFilename("filename");
@@ -131,7 +133,7 @@ public class PictureMappingTest {
 		picture.setThumbnailFormat("jpg");
 		picture.setThumbnailHeight(50);
 		picture.setThumbnailWidth(100);
-		picture.setHash(String.valueOf(now.getMillis()));
+		picture.setHash(String.valueOf(now.getTime()));
 		picture.setWidth(300);
 
 		final BinaryImage image = new BinaryImage();

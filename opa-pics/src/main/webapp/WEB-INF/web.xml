@@ -21,11 +21,16 @@
 	<filter>
 		<filter-name>OpaFilter</filter-name>
 		<filter-class>fr.mby.opa.web.servlet.filter.OsgiPortalAppFilter</filter-class>
+		<init-param>
+			<param-name>ignoreResources</param-name>
+			<param-value>true</param-value>
+		</init-param>
 	</filter>
 
 	<filter-mapping>
 		<filter-name>OpaFilter</filter-name>
 		<url-pattern>/*</url-pattern>
+		
 	</filter-mapping>
 
 	<servlet>

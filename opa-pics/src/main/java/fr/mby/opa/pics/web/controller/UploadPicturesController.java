@@ -17,11 +17,9 @@
 package fr.mby.opa.pics.web.controller;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -36,6 +34,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
@@ -48,6 +47,8 @@ import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureFactory;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.web.form.PicturesUploadForm;
+import fr.mby.opa.pics.web.jquery.FileMeta;
+import fr.mby.opa.pics.web.jquery.FileMetaList;
 
 /**
  * @author Maxime Bossard - 2013
@@ -78,15 +79,19 @@ public class UploadPicturesController {
 	@RequestMapping(value = "/save", method = RequestMethod.POST)
 	public String save(@ModelAttribute("uploadForm") final PicturesUploadForm uploadForm, final Model map)
 			throws Exception {
+		final Collection<String> uploadedPicturesNames = new ArrayList<String>();
+		final Collection<String> alreayExistingPicturesNames = new ArrayList<String>();
 
 		final Collection<MultipartFile> pictures = uploadForm.getPictures();
-
-		final Collection<String> picturesNames = new ArrayList<String>();
 
 		if (null != pictures && pictures.size() > 0) {
 			final Collection<Future<Picture>> futures = new ArrayList<>(pictures.size());
 
-			for (final MultipartFile multipartFile : pictures) {
+			final Iterator<MultipartFile> multipartFileIt = pictures.iterator();
+			while (multipartFileIt.hasNext()) {
+				final MultipartFile multipartFile = multipartFileIt.next();
+				// Free memory
+				multipartFileIt.remove();
 
 				final Future<Picture> future = UploadPicturesController.BUILD_PICTURE_EXECUTOR
 						.submit(new Callable<Picture>() {
@@ -96,53 +101,95 @@ public class UploadPicturesController {
 								Picture picture = null;
 								try {
 									picture = UploadPicturesController.this.createPicture(multipartFile);
+
+									// Free memory: we don't need blobs
+									picture.setThumbnail(null);
+									picture.setImage(null);
 								} catch (final PictureAlreadyExistsException e) {
-									// Nothing to do
+									alreayExistingPicturesNames.add(e.getFilename());
 								}
 
 								return picture;
 							}
-
 						});
+
 				futures.add(future);
 			}
 
-			for (final Future<Picture> future : futures) {
+			final Iterator<Future<Picture>> futureIt = futures.iterator();
+			while (futureIt.hasNext()) {
+				final Future<Picture> future = futureIt.next();
+				// Free memory
+				futureIt.remove();
+
 				final Picture picture = future.get();
 				if (picture != null) {
-					picturesNames.add(picture.getFilename());
+					uploadedPicturesNames.add(picture.getFilename());
 				}
 			}
 
 		}
 
-		map.addAttribute("picturesNames", picturesNames);
+		map.addAttribute("picturesNames", uploadedPicturesNames);
 		return "file_upload_success";
 	}
 
-	@RequestMapping(value = "/upload", method = RequestMethod.POST)
-	public String testUploadFile(final MultipartHttpServletRequest request, final HttpServletResponse response)
-			throws IOException {
+	/***************************************************
+	 * URL: /upload/jqueryUpload upload(): receives files
+	 * 
+	 * @param request
+	 *            : MultipartHttpServletRequest auto passed
+	 * @param response
+	 *            : HttpServletResponse auto passed
+	 * @return LinkedList<FileMeta> as json format
+	 ****************************************************/
+	@ResponseBody
+	@RequestMapping(value = "/jqueryUpload", method = RequestMethod.POST)
+	public FileMetaList jqueryUpload(final MultipartHttpServletRequest request, final HttpServletResponse response)
+			throws Exception {
+		final FileMetaList files = new FileMetaList();
+		FileMeta fileMeta = null;
 
 		// 1. build an iterator
-		// final Iterator<String> itr = request.getFileNames();
-		final List<MultipartFile> files = request.getFiles("pictures");
-		final Iterator<MultipartFile> itr = files.iterator();
-
-		MultipartFile mpf = null;
+		final Iterator<String> itr = request.getFileNames();
 
 		// 2. get each file
 		while (itr.hasNext()) {
 
-			mpf = itr.next();
 			// 2.1 get next MultipartFile
-			// mpf = request.getFile(itr.next());
+			final MultipartFile mpf = request.getFile(itr.next());
 
-			final InputStream stream = mpf.getInputStream();
+			// Free memory
+			itr.remove();
+
+			// 2.3 create new fileMeta
+			fileMeta = new FileMeta();
+			fileMeta.setFileName(mpf.getOriginalFilename());
+			fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
+			fileMeta.setFileType(mpf.getContentType());
+
+			fileMeta.setBytes(mpf.getBytes());
+
+			try {
+				final Picture picture = this.createPicture(mpf);
+
+				final Long imageId = picture.getImage().getId();
+				final Long thumbnailId = picture.getThumbnail().getId();
+
+				fileMeta.setUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + imageId));
+				fileMeta.setThumbnailUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + thumbnailId));
+
+				// 2.4 add to files
+				files.add(fileMeta);
+			} catch (final PictureAlreadyExistsException e) {
+				// Picture already exists !
+			}
 
 		}
 
-		return "file_upload_success";
+		// result will be like this
+		// [{"fileName":"app_engine-85x77.png","fileSize":"8 Kb","fileType":"image/png"},...]
+		return files;
 	}
 
 	protected Picture createPicture(final MultipartFile multipartFile) throws PictureAlreadyExistsException,

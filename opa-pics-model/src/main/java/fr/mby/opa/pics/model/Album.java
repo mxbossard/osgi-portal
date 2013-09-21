@@ -36,7 +36,12 @@ import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
 import org.joda.time.ReadableDateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+import fr.mby.opa.pics.model.converter.JodaDateTimeJsonSerializer;
 
 /**
  * @author Maxime Bossard - 2013
@@ -50,6 +55,7 @@ import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "ALBUM")
+@JsonInclude(Include.NON_NULL)
 public class Album {
 
 	/** Load an Album and its surronding objects by Id. Params: id */
@@ -93,6 +99,7 @@ public class Album {
 	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP")
 	@Convert("jodaDateTime")
+	@JsonSerialize(using = JodaDateTimeJsonSerializer.class)
 	private ReadableDateTime creationTime;
 
 	@OneToOne(fetch = FetchType.LAZY)

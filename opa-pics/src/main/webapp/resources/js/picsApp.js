@@ -1,25 +1,40 @@
-var app = angular.module('pics', []);
+var app = angular.module('pics', ['infinite-scroll']);
 
 app.controller('PicsCtrl', function($scope, $http) {
+	'use strict';
+
+	$scope.albums = $scope.albums || [];
+
 	$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
 		$scope.albums = data;
 	});
 
+	function getNextPictures($scope) {
+		var album = $scope.selectedAlbum;
+		var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, album.id) + '&since=' + $scope.lastSinceTime;
+
+		$http.get(url).success(function(data, status) {
+			if (data && data.length > 0) {
+				$scope.pictures = data;
+				$scope.lastSinceTime = data[data.length - 1].originalTime;
+
+				var thumbnailsRowWidth = document.getElementById("thumbnails").offsetWidth;
+				organizeThumbnails(thumbnailsRowWidth, data, $scope.thumbnailRows);
+			}
+		});
+	}
+
+	$scope.loadMore = function() {
+		getNextPictures($scope);
+	};
+
 	$scope.selectAlbum = function(album) {
 		$scope.selectedAlbum = album;
 
-		var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, album.id);
+		$scope.lastSinceTime = 0;
+		$scope.thumbnailRows = [];
 
-		$http.get(url).success(function(data, status) {
-
-			/*
-			 * angular.forEach(data, function(value, key) { var thumbnailUrl = getImageUrl.replace(/{:imageId}/,
-			 * value.thumbnailId); value.thumbnailUrl = thumbnailUrl; var imageUrl = getImageUrl.replace(/{:imageId}/,
-			 * value.imageId); value.imageUrl = imageUrl; });
-			 */
-			var thumbnailsRowWidth = document.getElementById("thumbnails").offsetWidth;
-			$scope.thumbnailRows = organizeThumbnails(thumbnailsRowWidth, data);
-		});
+		getNextPictures($scope);
 
 	};
 
@@ -42,17 +57,18 @@ app.controller('PicsCtrl', function($scope, $http) {
 
 });
 
-function organizeThumbnails(width, thumbnailsList) {
+function organizeThumbnails(width, thumbnailsList, thumbnailRows) {
+	'use strict';
+
 	var margin = 1;
 
-	var thumbnailRows = [];
-
-	var currentRowIndex = 0;
+	var currentRowIndex = thumbnailRows.length;
 	thumbnailRows[currentRowIndex] = {};
 	var currentRow = thumbnailRows[currentRowIndex];
 	currentRow.pictures = [];
 
 	var currentRowWidth = 0;
+	var currentRowMargin = 0;
 
 	angular.forEach(thumbnailsList, function(value, key) {
 		// Build thumbnail URL
@@ -65,18 +81,19 @@ function organizeThumbnails(width, thumbnailsList) {
 
 		var thumbnailWidth = value.thumbnailWidth;
 
-		if (currentRowWidth + thumbnailWidth > width) {
+		if (currentRowWidth + currentRowMargin + thumbnailWidth > width) {
 			// thumbnail overflow from row
 
 			// Finalize the row
-			var growthRatio = width / currentRowWidth;
+			var growthRatio = (width - currentRowMargin) / currentRowWidth;
+			var offset = 0;
 			angular.forEach(currentRow.pictures, function(value, key) {
 				// Enlarge thumbnails of row to occupy all the width
-				if (key % 2 == 0) {
-					value.thumbnailWidth = Math.ceil(value.thumbnailWidth * growthRatio);
-				} else {
-					value.thumbnailWidth = Math.floor(value.thumbnailWidth * growthRatio);
-				}
+				var exactWidth = value.thumbnailWidth * growthRatio + offset;
+				var roundedWidth = Math.round(exactWidth);
+				offset = exactWidth - roundedWidth;
+				value.thumbnailWidth = roundedWidth;
+
 				value.thumbnailHeight = Math.round(value.thumbnailHeight * growthRatio);
 				currentRow.height = Math.max(currentRow.height, value.thumbnailHeight);
 			});
@@ -88,12 +105,14 @@ function organizeThumbnails(width, thumbnailsList) {
 			currentRow.pictures = [];
 
 			currentRowWidth = 0;
+			currentRowMargin = 0;
 		}
 
 		// add thumbnail in the row
 		currentRow.pictures.push(value);
 		currentRow.height = value.thumbnailHeight;
-		currentRowWidth += thumbnailWidth + margin;
+		currentRowWidth += thumbnailWidth;
+		currentRowMargin += margin;
 	});
 
 	return thumbnailRows;

@@ -14,34 +14,30 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.pics.web.jquery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class PictureAlreadyExistsException extends RuntimeException {
+public class FileMetaList {
 
-	/** Svuid. */
-	private static final long serialVersionUID = 124596910270874219L;
+	private final List<FileMeta> files = new ArrayList<>();
 
-	private final String filename;
-
-	/**
-	 * @param filename
-	 */
-	public PictureAlreadyExistsException(final String filename) {
-		super();
-		this.filename = filename;
+	public void add(final FileMeta fileMeta) {
+		this.files.add(fileMeta);
 	}
 
 	/**
-	 * Getter of name.
+	 * Getter of files.
 	 * 
-	 * @return the name
+	 * @return the files
 	 */
-	public String getFilename() {
-		return this.filename;
+	public List<FileMeta> getFiles() {
+		return this.files;
 	}
 
 }

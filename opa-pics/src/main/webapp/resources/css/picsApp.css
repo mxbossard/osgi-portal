@@ -4,6 +4,10 @@ img, div, span, ul, li {
 	padding: 0;
 }
 
+body {
+	overflow-y: scroll; 
+}
+
 #image {
 	position: relative;
 	margin: auto;

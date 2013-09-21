@@ -17,6 +17,8 @@
 	
 	<script data-require="angular.js@1.0.x" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js" data-semver="1.0.8"></script>
 	
+	<script type="text/javascript" src="resources/js/ng-infinite-scroll.min.js"></script>
+	
 	<opa:meta/>
 	
 	<c:url var="appClientScriptUrl" value="/resources/js/portalAppClient.js" />
@@ -37,36 +39,6 @@
 		var findAllPicturesOfAlbumJsonUrl = '${findAllPicturesOfAlbumJsonUrl}';
 		var getImageUrl = '${getImageUrl}';
 		var getPictureOfAlbumUrl = '${getPictureOfAlbumUrl}';
-	</script>
-	
-	<script type="text/javascript">
-		$(document).ready(function() {
-			$(".thumbnail").click(function(e) {
-				var thumbnail = e.target;
-				var imageId = $(thumbnail).attr('data-imageId');
-				
-				var imgElement = $('#image img');
-				var imageUrl = imgElement.attr('src');
-				var updatedImageUrl = imageUrl.replace(/[^\/?]*(\?+[^?]*)$/, imageId + '$1');
-				imgElement.attr('src', updatedImageUrl);
-				
-				$("#picture").show();
-				
-				var imageWidth = $('#image').innerWidth();
-				var imageHeight = $('#image').innerHeight();
-				
-				imgElement.attr('height', imageHeight);
-				//$('#image').css('width', imgElement.attr('width'));
-				
-				
-			});
-			
-			$("#picture").click(function(e) {
-				$("#picture").hide();
-				var updatedImageUrl = imageUrl.replace(/[^\/]*$/, 0);
-			});
-		});
-
 	</script>
 
 </head>
@@ -89,7 +61,7 @@
     </div>
     
     <h3>Thumbnails</h3>
-    <div id="thumbnails">
+    <div id="thumbnails" infinite-scroll='loadMore()' infinite-scroll-distance='2'>
     	<div class="thumbnailsRow" data-ng-repeat="row in thumbnailRows" style="height: {{row.height}}px;">
 			<span class="thumbnail" data-ng-repeat="picture in row.pictures" data-ng-click="selectPicture(picture)"
 				style="width: {{picture.thumbnailWidth}}px; height: {{picture.thumbnailHeight}}px;">

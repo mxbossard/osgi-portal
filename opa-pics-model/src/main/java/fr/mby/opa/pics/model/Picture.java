@@ -16,6 +16,7 @@
 
 package fr.mby.opa.pics.model;
 
+import java.sql.Timestamp;
 import java.util.Map;
 
 import javax.persistence.Basic;
@@ -38,9 +39,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
-import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
-import org.joda.time.DateTime;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -48,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
-import fr.mby.opa.pics.model.converter.JodaDateTimeJsonSerializer;
+import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 
 /**
  * @author Maxime Bossard - 2013
@@ -62,9 +61,10 @@ import fr.mby.opa.pics.model.converter.JodaDateTimeJsonSerializer;
 		@NamedQuery(name = Picture.FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE, query = "SELECT new fr.mby.opa.pics.model.Picture"
 				+ "(p.id, p.filename, p.name, p.originalTime, p.creationTime, p.width, p.height, p.format, p.thumbnailWidth,"
 				+ " p.thumbnailHeight, p.jsonMetadata, p.imageId, p.thumbnailId)"
-				+ " FROM Picture p JOIN FETCH p.tags WHERE p.album.id = :albumId ORDER BY p.originalTime"),
+				+ " FROM Picture p JOIN FETCH p.tags WHERE p.album.id = :albumId AND p.originalTime > :since"
+				+ " ORDER BY p.originalTime"),
 		@NamedQuery(name = Picture.FIND_ALL_PICTURES_ORDER_BY_DATE, query = "SELECT p"
-				+ " FROM Picture p ORDER BY p.originalTime ASC")})
+				+ " FROM Picture p WHERE p.originalTime > :since ORDER BY p.originalTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"hash"}))
@@ -78,10 +78,10 @@ public class Picture {
 	/** Find a Picture by Hash. Params: hash */
 	public static final String FIND_PICTURE_ID_BY_HASH = "FIND_PICTURE_ID_BY_HASH";
 
-	/** Find all Pictures of an Album. Params: albumId */
+	/** Find all Pictures of an Album. Params: albumId, since */
 	public static final String FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE = "FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE";
 
-	/** Find all Pictures order by original time. */
+	/** Find all Pictures order by original time. Params: since */
 	public static final String FIND_ALL_PICTURES_ORDER_BY_DATE = "FIND_ALL_PICTURES_ORDER_BY_DATE";
 
 	@Id
@@ -103,15 +103,17 @@ public class Picture {
 
 	@Basic(optional = false)
 	@Column(name = "ORIGINAL_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
-	@Convert("jodaDateTime")
-	@JsonSerialize(using = JodaDateTimeJsonSerializer.class)
-	private DateTime originalTime;
+	// @Convert("jodaDateTime")
+	// @JsonSerialize(using = JodaDateTimeJsonSerializer.class)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp originalTime;
 
 	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
-	@Convert("jodaDateTime")
-	@JsonSerialize(using = JodaDateTimeJsonSerializer.class)
-	private DateTime creationTime;
+	// @Convert("jodaDateTime")
+	// @JsonSerialize(using = JodaDateTimeJsonSerializer.class)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp creationTime;
 
 	@Basic(optional = false)
 	@Column(name = "WIDTH", nullable = false, updatable = false)
@@ -198,8 +200,8 @@ public class Picture {
 	 * @param jsonMetadata
 	 * @param thumbnailId
 	 */
-	public Picture(final Long id, final String filename, final String name, final DateTime originalTime,
-			final DateTime creationTime, final Integer width, final Integer height, final String format,
+	public Picture(final Long id, final String filename, final String name, final Timestamp originalTime,
+			final Timestamp creationTime, final Integer width, final Integer height, final String format,
 			final Integer thumbnailWidth, final Integer thumbnailHeight, final String jsonMetadata, final Long imageId,
 			final Long thumbnailId) {
 		super();
@@ -299,7 +301,7 @@ public class Picture {
 	 * 
 	 * @return the originalTime
 	 */
-	public DateTime getOriginalTime() {
+	public Timestamp getOriginalTime() {
 		return this.originalTime;
 	}
 
@@ -309,7 +311,7 @@ public class Picture {
 	 * @param originalTime
 	 *            the originalTime to set
 	 */
-	public void setOriginalTime(final DateTime originalTime) {
+	public void setOriginalTime(final Timestamp originalTime) {
 		this.originalTime = originalTime;
 	}
 
@@ -318,7 +320,7 @@ public class Picture {
 	 * 
 	 * @return the creationTime
 	 */
-	public DateTime getCreationTime() {
+	public Timestamp getCreationTime() {
 		return this.creationTime;
 	}
 
@@ -328,7 +330,7 @@ public class Picture {
 	 * @param creationTime
 	 *            the creationTime to set
 	 */
-	public void setCreationTime(final DateTime creationTime) {
+	public void setCreationTime(final Timestamp creationTime) {
 		this.creationTime = creationTime;
 	}
 

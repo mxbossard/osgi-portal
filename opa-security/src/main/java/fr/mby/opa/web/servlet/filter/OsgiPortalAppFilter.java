@@ -17,6 +17,7 @@
 package fr.mby.opa.web.servlet.filter;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,9 +40,22 @@ import fr.mby.portal.api.IPortal;
  */
 public class OsgiPortalAppFilter implements Filter {
 
+	private final String defaultResourcesRegexp = "\\.(css|js|jpg|jpeg|gif|png)$";
+
+	private Pattern resourcesPattern = null;
+
+	private boolean ignoreResources = false;
+
 	@Override
 	public void init(final FilterConfig filterConfig) throws ServletException {
-		// TODO Auto-generated method stub
+		this.ignoreResources = Boolean.valueOf(filterConfig.getInitParameter("ignoreResources"));
+
+		String resourcesRegex = filterConfig.getInitParameter("resourcesRegex");
+		if (resourcesRegex == null) {
+			resourcesRegex = this.defaultResourcesRegexp;
+		}
+
+		this.resourcesPattern = Pattern.compile(resourcesRegex);
 
 	}
 
@@ -49,24 +63,31 @@ public class OsgiPortalAppFilter implements Filter {
 	public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain chain)
 			throws IOException, ServletException {
 
-		final String opaSignature = request.getParameter(IPortal.SIGNATURE_PARAM_NAME);
+		ServletRequest opaRequest = request;
+		ServletResponse opaResponse = response;
 
-		OsgiPortalAppFilter.checkOpaSignature(opaSignature);
+		final String path = ((HttpServletRequest) request).getRequestURI();
 
-		request.setAttribute(IPortal.SIGNATURE_PARAM_NAME, opaSignature);
-
-		if (HttpServletRequest.class.isAssignableFrom(request.getClass())
-				&& HttpServletResponse.class.isAssignableFrom(response.getClass())) {
-			final HttpServletRequest httpRequest = (HttpServletRequest) request;
-			final OsgiPortalAppRequest opaRequest = new OsgiPortalAppRequest(httpRequest, opaSignature);
-			final HttpServletResponse httpResponse = (HttpServletResponse) response;
-			final OsgiPortalAppResponse opaResponse = new OsgiPortalAppResponse(httpResponse, opaSignature);
-
-			chain.doFilter(opaRequest, opaResponse);
+		if (this.ignoreResources && this.resourcesPattern.matcher(path).find()) {
+			// Ignore resources filtering
 		} else {
-			chain.doFilter(request, response);
+
+			final String opaSignature = request.getParameter(IPortal.SIGNATURE_PARAM_NAME);
+
+			OsgiPortalAppFilter.checkOpaSignature(opaSignature);
+
+			request.setAttribute(IPortal.SIGNATURE_PARAM_NAME, opaSignature);
+
+			if (HttpServletRequest.class.isAssignableFrom(request.getClass())
+					&& HttpServletResponse.class.isAssignableFrom(response.getClass())) {
+				final HttpServletRequest httpRequest = (HttpServletRequest) request;
+				opaRequest = new OsgiPortalAppRequest(httpRequest, opaSignature);
+				final HttpServletResponse httpResponse = (HttpServletResponse) response;
+				opaResponse = new OsgiPortalAppResponse(httpResponse, opaSignature);
+			}
 		}
 
+		chain.doFilter(opaRequest, opaResponse);
 	}
 
 	@Override

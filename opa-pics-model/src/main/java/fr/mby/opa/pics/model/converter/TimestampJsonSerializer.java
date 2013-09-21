@@ -14,34 +14,27 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.pics.model.converter;
+
+import java.io.IOException;
+import java.sql.Timestamp;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class PictureAlreadyExistsException extends RuntimeException {
+public class TimestampJsonSerializer extends JsonSerializer<Timestamp> {
 
-	/** Svuid. */
-	private static final long serialVersionUID = 124596910270874219L;
-
-	private final String filename;
-
-	/**
-	 * @param filename
-	 */
-	public PictureAlreadyExistsException(final String filename) {
-		super();
-		this.filename = filename;
+	@Override
+	public void serialize(final Timestamp value, final JsonGenerator gen, final SerializerProvider arg2)
+			throws IOException, JsonProcessingException {
+		if (value != null) {
+			gen.writeNumber(value.getTime());
+		}
 	}
-
-	/**
-	 * Getter of name.
-	 * 
-	 * @return the name
-	 */
-	public String getFilename() {
-		return this.filename;
-	}
-
 }
