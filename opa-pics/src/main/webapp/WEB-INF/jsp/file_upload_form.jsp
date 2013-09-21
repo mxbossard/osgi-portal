@@ -30,6 +30,10 @@
 	
 </head>
 <body>
+
+	<spring:url var="backUrl" value="/" />
+	<a href="${backUrl}">Back to index</a>
+	
 	<h1>Pics Upload</h1>
 
 	<!-- The file upload form used as target for the file upload widget -->

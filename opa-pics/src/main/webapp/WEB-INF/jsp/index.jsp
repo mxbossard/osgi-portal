@@ -62,7 +62,7 @@
     
     <h3>Thumbnails</h3>
     <div id="thumbnails" infinite-scroll='loadMore()' infinite-scroll-distance='2'>
-    	<div class="thumbnailsRow" data-ng-repeat="row in thumbnailRows" style="height: {{row.height}}px;">
+    	<div class="thumbnailsRow" data-ng-repeat="row in stash.rows" style="height: {{row.height}}px;">
 			<span class="thumbnail" data-ng-repeat="picture in row.pictures" data-ng-click="selectPicture(picture)"
 				style="width: {{picture.thumbnailWidth}}px; height: {{picture.thumbnailHeight}}px;">
 				<img data-ng-src="{{picture.thumbnailUrl}}" width="{{picture.thumbnailWidth}}px" height="{{picture.thumbnailHeight}}px" />

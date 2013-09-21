@@ -18,8 +18,12 @@ app.controller('PicsCtrl', function($scope, $http) {
 				$scope.pictures = data;
 				$scope.lastSinceTime = data[data.length - 1].originalTime;
 
-				var thumbnailsRowWidth = document.getElementById("thumbnails").offsetWidth;
-				organizeThumbnails(thumbnailsRowWidth, data, $scope.thumbnailRows);
+				// var thumbnailsRowWidth = document.getElementById("thumbnails").offsetWidth;
+				// organizeThumbnails(thumbnailsRowWidth, data, $scope.thumbnailRows);
+
+				angular.forEach(data, function(value, key) {
+					addPictureToStash($scope, value);
+				});
 			}
 		});
 	}
@@ -32,7 +36,8 @@ app.controller('PicsCtrl', function($scope, $http) {
 		$scope.selectedAlbum = album;
 
 		$scope.lastSinceTime = 0;
-		$scope.thumbnailRows = [];
+		// $scope.thumbnailRows = [];
+		$scope.stash = null;
 
 		getNextPictures($scope);
 
@@ -56,6 +61,83 @@ app.controller('PicsCtrl', function($scope, $http) {
 	};
 
 });
+
+function addPictureToStash($scope, picture) {
+	'use strict';
+
+	var stash = $scope.stash = $scope.stash || {
+		rows : [],
+		size : 0,
+		width : document.getElementById("thumbnails").offsetWidth,
+		margin : 1,
+		getLastRow : function() {
+			if (this.rows.length < 1) {
+				this.addNewRow();
+			}
+			return this.rows[this.rows.length - 1];
+		},
+		addNewRow : function() {
+			var newRow = {
+				pictures : [],
+				height : 0,
+				width : 0,
+				addPicture : function(picture) {
+					var nbPic = this.pictures.length || 0;
+					var hypotheticWidth = nbPic * stash.margin + this.width + picture.thumbnailWidth;
+					if (hypotheticWidth > stash.width) {
+						return false;
+					}
+
+					this.pictures.push(picture);
+					this.height = Math.max(this.height, picture.thumbnailHeight);
+					this.width += picture.thumbnailWidth;
+
+					// Build thumbnail URL
+					var thumbnailUrl = getImageUrl.replace(/{:imageId}/, picture.thumbnailId);
+					picture.thumbnailUrl = thumbnailUrl;
+
+					// Build image URL
+					var imageUrl = getImageUrl.replace(/{:imageId}/, picture.imageId);
+					picture.imageUrl = imageUrl;
+
+					return true;
+				},
+				finalizeRow : function() {
+					var growthRatio = (stash.width - stash.margin * this.pictures.length) / this.width;
+					this.height = Math.round(this.height * growthRatio);
+					var offset = 0;
+					angular.forEach(this.pictures, function(value, key) {
+						// Enlarge thumbnails of row to occupy all the width
+						var exactWidth = value.thumbnailWidth * growthRatio + offset;
+						var roundedWidth = Math.round(exactWidth);
+
+						// offset due to rounding
+						offset = exactWidth - roundedWidth;
+
+						value.thumbnailWidth = roundedWidth;
+						value.thumbnailHeight = this.height;
+					}, this);
+				}
+			};
+			this.rows.push(newRow);
+			return newRow;
+		},
+		addPicture : function(picture) {
+			var lastRow = stash.getLastRow();
+			var enoughSpace = lastRow.addPicture(picture);
+			if (!enoughSpace) {
+				// Not enough space in row for the picture
+				lastRow.finalizeRow();
+
+				var newRow = this.addNewRow();
+				newRow.addPicture(picture);
+			}
+
+		}
+	};
+
+	stash.addPicture(picture);
+}
 
 function organizeThumbnails(width, thumbnailsList, thumbnailRows) {
 	'use strict';
