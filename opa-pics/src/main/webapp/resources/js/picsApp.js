@@ -6,6 +6,7 @@ app.controller('PicsCtrl', function($scope, $http) {
 	$scope.albums = $scope.albums || [];
 	$scope.lastSinceTime = 0;
 	$scope.scale = 100;
+	$scope.searchPicturesLock = false;
 
 	$scope.nextPictures = function() {
 		getNextPictures($scope);
@@ -52,24 +53,29 @@ app.controller('PicsCtrl', function($scope, $http) {
 	});
 
 	function getNextPictures($scope) {
-		var lastSinceTime = $scope.lastSinceTime;
-		var album = $scope.selectedAlbum;
-		if (album) {
-			var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, album.id) + '&since=' + lastSinceTime;
+		if (!$scope.searchPicturesLock) {
+			// Pseudo synchronization
+			$scope.searchPicturesLock = true;
 
-			$http.get(url).success(function(data, status) {
-				if (data && data.length > 0) {
-					$scope.pictures = data;
-					$scope.lastSinceTime = data[data.length - 1].originalTime;
+			var lastSinceTime = $scope.lastSinceTime;
+			var album = $scope.selectedAlbum;
+			if (album) {
+				var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, album.id) + '&since=' + lastSinceTime;
 
-					// var thumbnailsRowWidth = document.getElementById("thumbnails").offsetWidth;
-					// organizeThumbnails(thumbnailsRowWidth, data, $scope.thumbnailRows);
+				$http.get(url).success(function(data, status) {
+					if (data && data.length > 0) {
+						$scope.lastSinceTime = data[data.length - 1].originalTime;
 
-					angular.forEach(data, function(value, key) {
-						$scope.stash.addPicture(value);
-					});
-				}
-			});
+						angular.forEach(data, function(value, key) {
+							$scope.stash.addPicture(value);
+						});
+					}
+
+					$scope.searchPicturesLock = false;
+				}).error(function(data, status, headers, config) {
+					$scope.searchPicturesLock = false;
+				});
+			}
 		}
 	}
 
