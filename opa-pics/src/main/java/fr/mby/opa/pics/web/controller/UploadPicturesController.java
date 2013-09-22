@@ -70,10 +70,6 @@ import fr.mby.opa.pics.web.jquery.FileMetaList;
 @RequestMapping("upload")
 public class UploadPicturesController {
 
-	/** ExecutorService used to build Picture. */
-	private static final ExecutorService BUILD_PICTURE_EXECUTOR = Executors.newFixedThreadPool(Runtime.getRuntime()
-			.availableProcessors() * 3);
-
 	private static final String PICTURE_ALREADY_EXISTS_MSG = "Picture already exists in the database : ";
 
 	private static final String UNSUPPORTED_PICTURE_TYPE_MSG = "Unsupported picture type : ";
@@ -117,34 +113,32 @@ public class UploadPicturesController {
 			while (multipartFileIt.hasNext()) {
 				final MultipartFile multipartFile = multipartFileIt.next();
 
-				final Future<Picture> future = UploadPicturesController.BUILD_PICTURE_EXECUTOR
-						.submit(new Callable<Picture>() {
+				final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime()
+						.availableProcessors());
+				final Future<Picture> future = executorService.submit(new Callable<Picture>() {
 
-							@Override
-							public Picture call() throws Exception {
-								Picture picture = null;
-								try {
-									picture = UploadPicturesController.this.createPicture(
-											multipartFile.getOriginalFilename(), multipartFile.getBytes());
+					@Override
+					public Picture call() throws Exception {
+						Picture picture = null;
+						try {
+							picture = UploadPicturesController.this.createPicture(multipartFile.getOriginalFilename(),
+									multipartFile.getBytes());
 
-									// Free memory: we don't need blobs
-									picture.setThumbnail(null);
-									picture.setImage(null);
-								} catch (final PictureAlreadyExistsException e) {
-									alreayExistingPicturesNames.add(e.getFilename());
-								}
+							// Free memory: we don't need blobs
+							picture.setThumbnail(null);
+							picture.setImage(null);
+						} catch (final PictureAlreadyExistsException e) {
+							alreayExistingPicturesNames.add(e.getFilename());
+						}
 
-								return picture;
-							}
-						});
+						return picture;
+					}
+				});
 
 				futures.add(future);
 			}
 
-			final Iterator<Future<Picture>> futureIt = futures.iterator();
-			while (futureIt.hasNext()) {
-				final Future<Picture> future = futureIt.next();
-
+			for (final Future<Picture> future : futures) {
 				final Picture picture = future.get();
 				if (picture != null) {
 					uploadedPicturesNames.add(picture.getFilename());
@@ -171,7 +165,6 @@ public class UploadPicturesController {
 	public FileMetaList jqueryUpload(final MultipartHttpServletRequest request, final HttpServletResponse response)
 			throws Exception {
 		final FileMetaList files = new FileMetaList();
-		FileMeta fileMeta = null;
 
 		// 1. build an iterator
 		final Iterator<String> itr = request.getFileNames();
@@ -185,65 +178,96 @@ public class UploadPicturesController {
 			// Here the file is uploaded
 
 			final String originalFilename = mpf.getOriginalFilename();
-			final byte[] fileContents = mpf.getBytes();
 			final String contentType = mpf.getContentType();
-
-			// 2.3 create new fileMeta
-			fileMeta = new FileMeta();
-			fileMeta.setFileName(originalFilename);
-			fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
-			fileMeta.setFileType(mpf.getContentType());
-
-			fileMeta.setBytes(fileContents);
 
 			final Matcher zipMatcher = UploadPicturesController.ZIP_CONTENT_TYPE_PATTERN.matcher(contentType);
 			if (zipMatcher.find()) {
+
+				// 2.3 create new fileMeta
+				final FileMeta zipMeta = new FileMeta();
+				zipMeta.setFileName(originalFilename);
+				zipMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
+				zipMeta.setFileType(mpf.getContentType());
+
 				final List<Path> picturesPaths = this.processArchive(mpf);
+
+				final Collection<Future<Void>> futures = new ArrayList<>(picturesPaths.size());
+				final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime()
+						.availableProcessors());
+
 				for (final Path picturePath : picturesPaths) {
-					final String pictureFileName = picturePath.getName(picturePath.getNameCount() - 1).toString();
-					final byte[] pictureContents = Files.readAllBytes(picturePath);
+					final Future<Void> future = executorService.submit(new Callable<Void>() {
 
-					final FileMeta pictureMeta = new FileMeta();
-					try {
-						final Picture picture = this.createPicture(pictureFileName.toString(), pictureContents);
-						final Long imageId = picture.getImage().getId();
-						final Long thumbnailId = picture.getThumbnail().getId();
+						@Override
+						public Void call() throws Exception {
+							final String pictureFileName = picturePath.getName(picturePath.getNameCount() - 1)
+									.toString();
+							final byte[] pictureContents = Files.readAllBytes(picturePath);
 
-						pictureMeta.setFileName(pictureFileName);
-						pictureMeta.setFileSize(pictureContents.length / 1024 + " Kb");
-						pictureMeta.setFileType(Files.probeContentType(picturePath));
-						pictureMeta.setUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + imageId));
-						pictureMeta.setThumbnailUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + thumbnailId));
-					} catch (final PictureAlreadyExistsException e) {
-						// Picture already exists !
-						pictureMeta.setError(UploadPicturesController.PICTURE_ALREADY_EXISTS_MSG + e.getFilename());
-					} catch (final UnsupportedPictureTypeException e) {
-						// Picture already exists !
-						pictureMeta.setError(UploadPicturesController.UNSUPPORTED_PICTURE_TYPE_MSG + e.getFilename());
-					}
+							final FileMeta pictureMeta = new FileMeta();
+							try {
+								final Picture picture = UploadPicturesController.this.createPicture(
+										pictureFileName.toString(), pictureContents);
+								final Long imageId = picture.getImage().getId();
+								final Long thumbnailId = picture.getThumbnail().getId();
 
-					files.add(pictureMeta);
+								pictureMeta.setFileName(pictureFileName);
+								pictureMeta.setFileSize(pictureContents.length / 1024 + " Kb");
+								pictureMeta.setFileType(Files.probeContentType(picturePath));
+								pictureMeta.setUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + imageId));
+								pictureMeta.setThumbnailUrl(response.encodeURL(PicsController.GET_IMAGE_PATH
+										+ thumbnailId));
+							} catch (final PictureAlreadyExistsException e) {
+								// Picture already exists !
+								pictureMeta.setError(UploadPicturesController.PICTURE_ALREADY_EXISTS_MSG
+										+ e.getFilename());
+							} catch (final UnsupportedPictureTypeException e) {
+								// Picture already exists !
+								pictureMeta.setError(UploadPicturesController.UNSUPPORTED_PICTURE_TYPE_MSG
+										+ e.getFilename());
+							}
+
+							files.add(pictureMeta);
+
+							return null;
+						}
+					});
+					futures.add(future);
 				}
+
+				for (final Future<Void> future : futures) {
+					future.get();
+				}
+
+				files.add(zipMeta);
 			}
 
 			final Matcher imgMatcher = UploadPicturesController.IMG_CONTENT_TYPE_PATTERN.matcher(contentType);
 			if (imgMatcher.find()) {
+				// 2.3 create new fileMeta
+				final FileMeta fileMeta = new FileMeta();
 				try {
+					final byte[] fileContents = mpf.getBytes();
 					final Picture picture = this.createPicture(originalFilename, fileContents);
 
 					final Long imageId = picture.getImage().getId();
 					final Long thumbnailId = picture.getThumbnail().getId();
 
+					fileMeta.setFileName(originalFilename);
+					fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
+					fileMeta.setFileType(mpf.getContentType());
+					fileMeta.setBytes(fileContents);
 					fileMeta.setUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + imageId));
 					fileMeta.setThumbnailUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + thumbnailId));
+
+					// 2.4 add to files
+					files.add(fileMeta);
 				} catch (final PictureAlreadyExistsException e) {
 					// Picture already exists !
 					fileMeta.setError(UploadPicturesController.PICTURE_ALREADY_EXISTS_MSG);
 				}
 			}
 
-			// 2.4 add to files
-			files.add(fileMeta);
 		}
 
 		// result will be like this
@@ -283,6 +307,9 @@ public class UploadPicturesController {
 		// We copy the archive in a tmp file
 		final File tmpFile = File.createTempFile(multipartFile.getName(), ".tmp");
 		multipartFile.transferTo(tmpFile);
+		// final InputStream archiveInputStream = multipartFile.getInputStream();
+		// Streams.copy(archiveInputStream, new FileOutputStream(tmpFile), true);
+		// archiveInputStream.close();
 
 		final Path tmpFilePath = tmpFile.toPath();
 		final FileSystem archiveFs = FileSystems.newFileSystem(tmpFilePath, null);
@@ -304,7 +331,6 @@ public class UploadPicturesController {
 
 					return super.visitFile(path, attrs);
 				}
-
 			});
 		}
 

@@ -4,40 +4,17 @@ app.controller('PicsCtrl', function($scope, $http) {
 	'use strict';
 
 	$scope.albums = $scope.albums || [];
+	$scope.lastSinceTime = 0;
+	$scope.scale = 100;
 
-	$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
-		$scope.albums = data;
-	});
-
-	function getNextPictures($scope) {
-		var album = $scope.selectedAlbum;
-		var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, album.id) + '&since=' + $scope.lastSinceTime;
-
-		$http.get(url).success(function(data, status) {
-			if (data && data.length > 0) {
-				$scope.pictures = data;
-				$scope.lastSinceTime = data[data.length - 1].originalTime;
-
-				// var thumbnailsRowWidth = document.getElementById("thumbnails").offsetWidth;
-				// organizeThumbnails(thumbnailsRowWidth, data, $scope.thumbnailRows);
-
-				angular.forEach(data, function(value, key) {
-					addPictureToStash($scope, value);
-				});
-			}
-		});
-	}
-
-	$scope.loadMore = function() {
+	$scope.nextPictures = function() {
 		getNextPictures($scope);
 	};
 
 	$scope.selectAlbum = function(album) {
 		$scope.selectedAlbum = album;
 
-		$scope.lastSinceTime = 0;
-		// $scope.thumbnailRows = [];
-		$scope.stash = null;
+		$scope.stash = initPictureStash($scope, 1);
 
 		getNextPictures($scope);
 
@@ -56,20 +33,59 @@ app.controller('PicsCtrl', function($scope, $http) {
 
 	};
 
+	$scope.changeStashScale = function(scale) {
+		// Reset stash
+		$scope.stash = initPictureStash($scope, scale / 100);
+
+		// Begin to load the stash
+		getNextPictures($scope);
+
+	};
+
 	$scope.selectPicture = function(picture) {
 
 	};
 
+	// On page init
+	$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
+		$scope.albums = data;
+	});
+
+	function getNextPictures($scope) {
+		var lastSinceTime = $scope.lastSinceTime;
+		var album = $scope.selectedAlbum;
+		if (album) {
+			var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, album.id) + '&since=' + lastSinceTime;
+
+			$http.get(url).success(function(data, status) {
+				if (data && data.length > 0) {
+					$scope.pictures = data;
+					$scope.lastSinceTime = data[data.length - 1].originalTime;
+
+					// var thumbnailsRowWidth = document.getElementById("thumbnails").offsetWidth;
+					// organizeThumbnails(thumbnailsRowWidth, data, $scope.thumbnailRows);
+
+					angular.forEach(data, function(value, key) {
+						$scope.stash.addPicture(value);
+					});
+				}
+			});
+		}
+	}
+
 });
 
-function addPictureToStash($scope, picture) {
+function initPictureStash($scope) {
 	'use strict';
 
-	var stash = $scope.stash = $scope.stash || {
+	$scope.lastSinceTime = 0;
+
+	var stash = $scope.stash = {
 		rows : [],
 		size : 0,
 		width : document.getElementById("thumbnails").offsetWidth,
 		margin : 1,
+		scale : $scope.scale ? $scope.scale / 100 : 1,
 		getLastRow : function() {
 			if (this.rows.length < 1) {
 				this.addNewRow();
@@ -123,6 +139,10 @@ function addPictureToStash($scope, picture) {
 			return newRow;
 		},
 		addPicture : function(picture) {
+			// Rescale picture
+			picture.thumbnailWidth = Math.round(picture.thumbnailWidth * this.scale);
+			picture.thumbnailHeight = Math.round(picture.thumbnailHeight * this.scale);
+
 			var lastRow = stash.getLastRow();
 			var enoughSpace = lastRow.addPicture(picture);
 			if (!enoughSpace) {
@@ -136,7 +156,7 @@ function addPictureToStash($scope, picture) {
 		}
 	};
 
-	stash.addPicture(picture);
+	return stash;
 }
 
 function organizeThumbnails(width, thumbnailsList, thumbnailRows) {

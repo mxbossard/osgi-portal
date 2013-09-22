@@ -58,10 +58,12 @@
           		</span>
         	</li>
       	</ul>
+      	
+      	Thumbnails scale: <input type="number" name="scale" data-ng-model="scale" min="1" max="500" data-ng-change="changeStashScale(scale)" required> %
     </div>
     
     <h3>Thumbnails</h3>
-    <div id="thumbnails" infinite-scroll='loadMore()' infinite-scroll-distance='2'>
+    <div id="thumbnails" data-infinite-scroll="nextPictures()" data-infinite-scroll-distance="2" data-infinite-scroll-immediate-check="false">
     	<div class="thumbnailsRow" data-ng-repeat="row in stash.rows" style="height: {{row.height}}px;">
 			<span class="thumbnail" data-ng-repeat="picture in row.pictures" data-ng-click="selectPicture(picture)"
 				style="width: {{picture.thumbnailWidth}}px; height: {{picture.thumbnailHeight}}px;">
@@ -70,5 +72,7 @@
 		</div>
     </div>
 
+	<div align="center" data-ng-click="nextPictures()">More ...</div>
+	
 </body>
 </html>
