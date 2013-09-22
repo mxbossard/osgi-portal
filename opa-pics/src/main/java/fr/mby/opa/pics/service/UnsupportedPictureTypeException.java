@@ -16,21 +16,32 @@
 
 package fr.mby.opa.pics.service;
 
-import java.io.IOException;
-
-import fr.mby.opa.pics.model.BinaryImage;
-import fr.mby.opa.pics.model.Picture;
-
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPictureFactory {
+public class UnsupportedPictureTypeException extends Exception {
 
-	Picture build(String filename, byte[] contents) throws IOException, PictureAlreadyExistsException,
-			UnsupportedPictureTypeException;
+	/** Svuid. */
+	private static final long serialVersionUID = -222975810586277980L;
 
-	BinaryImage generateThumbnail(Picture picture, int width, int height, boolean keepScale, String format)
-			throws IOException;
+	private final String filename;
+
+	/**
+	 * @param filename
+	 */
+	public UnsupportedPictureTypeException(final String filename) {
+		super();
+		this.filename = filename;
+	}
+
+	/**
+	 * Getter of filename.
+	 * 
+	 * @return the filename
+	 */
+	public String getFilename() {
+		return this.filename;
+	}
 
 }

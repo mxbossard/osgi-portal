@@ -41,7 +41,7 @@ import org.json.JSONException;
 import org.json.JSONStringer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.util.Assert;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
@@ -60,6 +60,7 @@ import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureFactory;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
+import fr.mby.opa.pics.service.UnsupportedPictureTypeException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -88,16 +89,17 @@ public class BasicPictureFactory implements IPictureFactory {
 	private IPictureDao pictureDao;
 
 	@Override
-	public Picture build(final MultipartFile multipartFile) throws IOException, PictureAlreadyExistsException {
+	public Picture build(final String filename, final byte[] contents) throws IOException,
+			PictureAlreadyExistsException, UnsupportedPictureTypeException {
+		Assert.hasText(filename, "No filename supplied !");
+		Assert.notNull(contents, "No contents supplied !");
+
 		Picture picture = null;
-		if (!multipartFile.isEmpty()) {
+		if (contents.length > 0) {
 			picture = new Picture();
 
-			final String fileName = multipartFile.getOriginalFilename();
-			picture.setFilename(fileName);
-			picture.setName(fileName);
-
-			final byte[] contents = multipartFile.getBytes();
+			picture.setFilename(filename);
+			picture.setName(filename);
 
 			// Generate picture hash
 			final String uniqueHash = this.generateHash(contents);
@@ -105,7 +107,7 @@ public class BasicPictureFactory implements IPictureFactory {
 
 			final Long alreadyExistingPictureId = this.pictureDao.findPictureIdByHash(uniqueHash);
 			if (alreadyExistingPictureId != null) {
-				throw new PictureAlreadyExistsException(fileName);
+				throw new PictureAlreadyExistsException(filename);
 			}
 
 			final BufferedInputStream bufferedStream = new BufferedInputStream(new ByteArrayInputStream(contents),
@@ -165,11 +167,15 @@ public class BasicPictureFactory implements IPictureFactory {
 	}
 
 	protected void loadPicture(final Picture picture, final byte[] contents, final BufferedInputStream stream)
-			throws IOException {
+			throws IOException, UnsupportedPictureTypeException {
 
 		// Load BufferedImage
 		stream.reset();
 		final BufferedImage originalImage = ImageIO.read(stream);
+		if (originalImage == null) {
+			throw new UnsupportedPictureTypeException(picture.getFilename());
+		}
+
 		final int width = originalImage.getWidth();
 		final int height = originalImage.getHeight();
 		picture.setWidth(width);
@@ -241,10 +247,11 @@ public class BasicPictureFactory implements IPictureFactory {
 				jsonStringer.key(dir.getName()).object();
 				final Collection<Tag> dirTags = dir.getTags();
 				for (final Tag tag : dirTags) {
+					final int tagType = tag.getTagType();
 					final String tagName = tag.getTagName();
 					final String tagDesc = tag.getDescription();
 					// Add Tag
-					jsonStringer.key(tagName).value(tagDesc);
+					jsonStringer.key(tagName + "[" + tagType + "]").value(tagDesc);
 				}
 
 				// End Directory

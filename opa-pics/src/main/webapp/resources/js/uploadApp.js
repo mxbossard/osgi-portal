@@ -29,8 +29,8 @@
 							// which actually support image resizing, but fail to
 							// send Blob objects via XHR requests:
 							disableImageResize : true,
-							maxFileSize : 10000000,
-							acceptFileTypes : /(\.|\/)(gif|jpe?g|png)$/i,
+							maxFileSize : false,
+							acceptFileTypes : /(\.|\/)(gif|jpe?g|png|zip)$/i,
 							limitConcurrentUploads : 3,
 							maxNumberOfFiles : 50,
 

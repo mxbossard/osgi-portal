@@ -26,6 +26,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties({"bytes"})
 public class FileMeta {
 
+	private String error;
+
 	private String fileName;
 	private String fileSize;
 	private String fileType;
@@ -42,6 +44,25 @@ public class FileMeta {
 	 */
 	public String getFileName() {
 		return this.fileName;
+	}
+
+	/**
+	 * Getter of error.
+	 * 
+	 * @return the error
+	 */
+	public String getError() {
+		return this.error;
+	}
+
+	/**
+	 * Setter of error.
+	 * 
+	 * @param error
+	 *            the error to set
+	 */
+	public void setError(final String error) {
+		this.error = error;
 	}
 
 	/**
