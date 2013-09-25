@@ -19,6 +19,9 @@
 	
 	<script type="text/javascript" src="resources/js/ng-infinite-scroll.min.js"></script>
 	
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+    
 	<opa:meta/>
 	
 	<c:url var="appClientScriptUrl" value="/resources/js/portalAppClient.js" />
@@ -48,31 +51,90 @@
 	<spring:url value="/upload" var="uploadFormUrl" />
 	<a href="${uploadFormUrl}">Upload pics form</a>
 	
-	<h3>Albums</h3>
+    <h3>Albums</h3>
     <div id="albums">
-      	<ul>
-        	<li data-ng-repeat="album in albums" data-ng-class="{'selected': album.id == selectedAlbum.id}">
-          		<span>
-            		<span data-ng-click="selectAlbum(album)">{{album.id}} - {{album.name}} ({{album.size}})</span>
-            		<span data-ng-click="deleteAlbum(album)">[x]</span>
-          		</span>
-        	</li>
-      	</ul>
-      	
-      	Thumbnails scale: <input type="number" name="scale" data-ng-model="scale" min="1" max="500" data-ng-change="changeStashScale(scale)" required> %
+      <ul>
+        <li data-ng-repeat="album in albums" data-ng-class="{'selected': album.id == selectedAlbum.id}">
+          <span>
+            <span data-ng-click="selectAlbum(album)">{{album.name}}</span>
+            <span data-ng-click="deleteAlbum(album)">[x]</span>
+          </span>
+        </li>
+      </ul>
     </div>
+    <p>
+      Stash width : 
+      <input type="text" name="stashWidth" id="stashWidth" data-ng-model="stashWidth" /> px
+      | Scale : 
+      <input type="number" name="scale" id="scale" min="10" step="10" max="300" data-ng-model="scale" />
+      % | Reechantillonating page size 
+      <input type="number" name="scale" id="scale" min="10" step="10" max="1000" data-ng-model="reechantillonatingPageSize" />
+      |
+      <button type="button" class="btn btn-large btn-danger" data-ng-click="reechantillonateStash($event)">
+        <i class="icon-time"></i><span>Reechantillonate</span>
+      </button>
+    </p>
     
-    <h3>Thumbnails</h3>
-    <div id="thumbnails" data-infinite-scroll="nextPictures()" data-infinite-scroll-distance="2" data-infinite-scroll-immediate-check="false">
-    	<div class="thumbnailsRow" data-ng-repeat="row in stash.rows" style="height: {{row.height}}px;">
-			<span class="thumbnail" data-ng-repeat="picture in row.pictures" data-ng-click="selectPicture(picture)"
-				style="width: {{picture.thumbnailWidth}}px; height: {{picture.thumbnailHeight}}px;">
-				<img data-ng-src="{{picture.thumbnailUrl}}" width="{{picture.thumbnailWidth}}px" height="{{picture.thumbnailHeight}}px" />
-			</span>
-		</div>
-    </div>
+    <h3>
+      Pictures Stash ({{stash.size}}) ({{selectedPictures.length}})
+      <button type="button" class="btn btn-large btn-primary"  data-ng-click="addRandomPicture()" data-ng-mousedown="startAddRandomPicture()" data-ng-mouseup="stopAddRandomPicture()">
+        Add random picture
+      </button>
+    </h3>
 
-	<div align="center" data-ng-click="nextPictures()">More ...</div>
-	
+    <h3>Stash keeping flux</h3>
+    <div id="stash" data-infinite-scroll="nextPictures()" data-infinite-scroll-distance="2" data-infinite-scroll-immediate-check="false">
+      <div>
+        <div class="stashPicture" data-ng-repeat="picture in stash.pictures" 
+            data-ng-class="{'selected' : picture.selected, 'hovered' : picture.hovered}"
+            data-ng-click="selectPicture($event, picture)" 
+            style="height: {{picture.height}}px; width: {{picture.width}}px">
+          <div class="stashThumbnail" style="
+              height: {{picture.height * hoverZoom}}px; 
+              width: {{picture.width * hoverZoom}}px; 
+              margin-left: {{-(hoverZoom - 1) * picture.width / 2}}px; 
+              margin-top: {{-(hoverZoom - 1) * picture.height / 2}}px;">
+            <%-- 
+            <img src="http://lorempixel.com/{{picture.thumbnailWidth}}/{{picture.thumbnailHeight}}"
+                class="img-rounded" />
+            --%>
+            <img src="{{picture.thumbnailUrl}}" class="img-rounded" />
+                
+            <div class="overlay " style="font-size: {{scale/100}}em" data-ng-click="$event.stopPropagation();">
+              <span class="btn-group">
+                <button type="button" class="icon newShoot btn btn-mini btn-info" title="new shoot">
+                  <i class="icon-camera icon-large"></i>
+                </button>
+                <button type="button" class="icon newSession btn btn-mini btn-primary" title="new session">
+                  <i class="icon-folder-open icon-large"></i>
+                </button>
+              </span>
+              <span class="btn-group">
+                <button type="button" class="icon rotateLeft btn btn-mini btn-warning" title="rotate left">
+                  <i class="icon-rotate-left icon-large"></i>
+                </button>
+                <button type="button" class="icon rotateRight btn btn-mini btn-warning" title="rotate right">
+                  <i class="icon-rotate-right icon-large"></i>
+                </button>
+              </span>
+              <span class="btn-group">
+                <button type="button" class="icon tags btn btn-mini btn-success" title="add tags">
+                  <i class="icon-tags icon-large"></i>
+                </button>
+                <button type="button" class="icon tags btn btn-mini btn-info" title="settings">
+                  <i class="icon-wrench icon-large"></i>
+                </button>
+              </span>
+              <span class="btn-group">
+                <button type="button" class="icon remove btn btn-mini btn-danger" title="remove">
+                  <i class="icon-remove-sign icon-large"></i>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="clearfix"></div>
+    </div>
 </body>
 </html>

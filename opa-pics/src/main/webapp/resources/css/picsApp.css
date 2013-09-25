@@ -1,86 +1,174 @@
-img, div, span, ul, li {
-	border: 0;
-	margin: 0;
-	padding: 0;
-}
-
+/* Put your css in here */
 body {
-	overflow-y: scroll; 
-}
-
-#image {
-	position: relative;
-	margin: auto;
-	width: 90%;
-	height: 90%;
-	background: rgba(255, 255, 255, 1);
-	overflow: hidden;
-}
-
-#image img {
-	opacity: 1;
+  overflow-y: scroll;
 }
 
 #albums ul {
+  white-space: nowrap;
   margin: 0px;
-  padding: 0px;
-  width: 100%;
 }
 
 #albums li {
   display: inline;
-  margin: 0px;
-  padding: 0 2px 0 2px;
   list-style-type: none;
-  cursor: pointer;
+  padding-left: 2px;
+  padding-right: 2px;
 }
 
-#albums li.selected {
+#albums span[data-ng-click] {
+  cursor: pointer;
+  color: blue;
+}
+
+#albums span[data-ng-click]:HOVER {
+  text-decoration: underline;
+}
+
+#albums .selected span {
   color: red;
 }
 
-#thumbnails {
-	display: block;
+.button {
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid blue;
+  background-color: lightblue;
+  padding: 5px;
+  user-select: none;
 }
 
-.thumbnailsRow {
-	width: 100%;
-	overflow: hidden;
-	white-space: nowrap;
-	margin: 0 0 1px 0;
+.button:HOVER {
+  text-decoration: none;
+  background-color: lightgray;
+  border: 1px solid gray;
 }
 
-.thumbnail {
-	border: 0px solid transparent;
-	margin: 0 1px 0 0;
-	padding: 0px;
-	display: inline-block;
-	overflow: none;
+#stash {
+  width: 100%;
 }
 
-#thumbnails .thumbnail:HOVER {
-  opacity: 0.6;
+.stashRow {
+
 }
 
-#picture {
-	display: none;
-	position: fixed;
-	top: 0px;
-	left: 0px;
-	width: 100%;
-	height: 100%;
-	
-	background: rgba(255, 255, 255, 0.4);
-	
-	text-align: center;
-	
-	display: box;
-	-moz-box-pack: center;
-	-moz-box-align: center;
-	
-	-webkit-box-pack: center;
-	-webkit-box-align: center;
-	
-	box-pack: center;
-	box-align: center;
+.stashPicture {
+  position: relative;
+  float: left;
+  margin-left: 1px;
+  margin-bottom: 1px;
+  z-index: 1;
+}
+
+.stashPicture:HOVER {
+  z-index: 10;
+}
+
+.stashPicture.selected {
+
+}
+
+.stashThumbnail {
+  position: relative;
+  cursor: pointer;
+  z-index: 1;
+  font-size: 0.75em;
+}
+
+.stashThumbnail:HOVER {
+  z-index: 10;
+  background-color: transparent;
+}
+
+.stashThumbnail img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+}
+
+.stashPicture:not(.selected) .stashThumbnail:HOVER img {
+  /*
+  width: 120%;
+  height: 120%;
+  top: -10%;
+  left: -10%;
+  */
+  /*opacity: 0.8;*/
+  z-index: 10;
+  background-color: transparent;
+}
+
+.selected .stashThumbnail {
+  background-color: #E3FEC8;
+  border: 3px solid #51a351;
+}
+
+.selected .stashThumbnail img {
+  opacity: 0.3;
+}
+
+.stashThumbnail .overlay {
+  cursor: default;
+  display: none;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  min-width: 8em;
+  z-index: 20;
+  background-color: white;
+  text-align: center;
+  padding: 2em 0.2em 1.5em 0.2em;
+  /*color: #007dbc;*/
+}
+
+.stashPicture:not(.selected) .stashThumbnail:HOVER .overlay {
+  display: block;
+  background-color: rgba(255,255,255);
+  background-color: rgba(255,255,255, 0.7);
+  /*border: 5px solid red;*/
+}
+
+.stashThumbnail .overlay .btn {
+  font-size: 1em;
+  margin-bottom: 0.5em;
+  padding: 0.4em 0.8em;
+}
+
+.stashThumbnail .overlay .icon-large {
+  
+}
+
+/*
+.stashThumbnail .overlay .icon {
+  cursor: pointer;
+  padding: 1px;
+}
+
+.stashThumbnail .overlay .icon:HOVER {
+  background-color: rgb(255,255,255);
+  background-color: rgba(255,255,255, 1);
+  opacity: 1;
+}
+
+.stashThumbnail .overlay .icon.rotateLeft {
+  color: #51a351;
+}
+
+.stashThumbnail .overlay .icon.rotateRight {
+  color: #51a351;
+}
+
+.stashThumbnail .overlay .icon.tags {
+  color: #c49c38;
+}
+
+.stashThumbnail .overlay .icon.remove {
+  color: #da4f49;
+} */
+
+.stashThumbnail .overlay i {
+  /*position: relative;*/
+}
+
+.stashThumbnail .overlay i:HOVER {
 }
