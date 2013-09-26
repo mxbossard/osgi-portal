@@ -37,6 +37,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -49,7 +50,7 @@ import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.service.IAlbumDao;
 import fr.mby.opa.pics.service.IPictureDao;
-import fr.mby.opa.pics.service.IPictureFactory;
+import fr.mby.opa.pics.service.IPictureService;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IPortalApp;
 import fr.mby.portal.api.message.IActionMessage;
@@ -68,6 +69,8 @@ public class PicsController implements IPortalApp {
 
 	public static final String GET_IMAGE_PATH = "image/";
 
+	public static final String ROTATE_PICTURE_PATH = "rotate/";
+
 	@Autowired
 	private IAlbumDao albumDao;
 
@@ -75,7 +78,7 @@ public class PicsController implements IPortalApp {
 	private IPictureDao pictureDao;
 
 	@Autowired
-	private IPictureFactory pictureFactory;
+	private IPictureService pictureService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ModelAndView index(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
@@ -86,7 +89,7 @@ public class PicsController implements IPortalApp {
 
 	@ResponseBody
 	@RequestMapping(value = "album", method = RequestMethod.POST)
-	public Album createAlbum(@Valid final Album album, final HttpServletRequest request,
+	public Album createAlbumJson(@Valid final Album album, final HttpServletRequest request,
 			final HttpServletResponse response) throws Exception {
 
 		this.albumDao.createAlbum(album);
@@ -105,7 +108,7 @@ public class PicsController implements IPortalApp {
 
 	@ResponseBody
 	@RequestMapping(value = "album/{albumId}/pictures", method = RequestMethod.GET)
-	public List<Picture> findAlbumPictures(@PathVariable final Long albumId,
+	public List<Picture> findAlbumPicturesJson(@PathVariable final Long albumId,
 			@RequestParam(value = "since", required = false) final Long since, final HttpServletRequest request,
 			final HttpServletResponse response) throws Exception {
 
@@ -142,6 +145,18 @@ public class PicsController implements IPortalApp {
 		return responseEntity;
 	}
 
+	@ResponseBody
+	@RequestMapping(value = PicsController.ROTATE_PICTURE_PATH + "{id}/{angle}", method = RequestMethod.GET)
+	public Picture rotatePictureJson(@PathVariable final Long id, @PathVariable final Integer angle,
+			final HttpServletRequest request, final HttpServletResponse response) throws Exception {
+		Assert.notNull(id, "Picture Id not supplied !");
+		Assert.notNull(angle, "Rotating angle not supplied !");
+
+		final Picture rotatedPicture = this.pictureService.rotatePicture(id, angle);
+
+		return rotatedPicture;
+	}
+
 	@RequestMapping(value = "rebuildThumbnails/{width}/{height}/{format}", method = RequestMethod.GET)
 	public String rebuildThumbnails(@PathVariable final Integer width, @PathVariable final Integer height,
 			@PathVariable final String format, final HttpServletRequest request, final HttpServletResponse response)
@@ -164,7 +179,7 @@ public class PicsController implements IPortalApp {
 
 					@Override
 					public Void call() throws Exception {
-						final BinaryImage generated = PicsController.this.pictureFactory.generateThumbnail(picture,
+						final BinaryImage generated = PicsController.this.pictureService.generateThumbnail(picture,
 								selectedWidth, selectedHeight, true, selectedFormat);
 						// Set the old Id to update
 						final BinaryImage thumbnailToUpdate = picture.getThumbnail();

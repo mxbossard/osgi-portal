@@ -20,6 +20,7 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 
 	$scope.selectAlbum = function(album) {
 		$scope.selectedAlbum = album;
+		$scope.lastSinceTime = 0;
 
 		var width = $scope.stashWidth;
 		console.log(width);

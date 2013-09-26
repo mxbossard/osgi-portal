@@ -16,8 +16,8 @@
 
 package fr.mby.opa.pics.service;
 
-import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
@@ -26,12 +26,22 @@ import fr.mby.opa.pics.model.Picture;
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPictureFactory {
+public interface IPictureService {
 
-	Picture build(String filename, byte[] contents) throws IOException, PictureAlreadyExistsException,
+	Picture createPicture(String filename, byte[] contents) throws PictureAlreadyExistsException, IOException,
 			UnsupportedPictureTypeException;
 
-	BinaryImage buildThumbnail(BufferedImage originalImage, String filename, Integer width, Integer height,
-			String format) throws IOException;
+	BinaryImage generateThumbnail(Picture picture, int width, int height, boolean keepScale, String format)
+			throws IOException;
 
+	Picture rotatePicture(Long pictureId, Integer angle) throws IOException;
+
+	/**
+	 * Generate Hash String repesentation of a file contents.
+	 * 
+	 * @param contents
+	 * @return
+	 * @throws NoSuchAlgorithmException
+	 */
+	String generateHash(byte[] contents);
 }

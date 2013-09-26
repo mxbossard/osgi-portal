@@ -41,6 +41,7 @@ import javax.persistence.Version;
 
 import org.eclipse.persistence.annotations.Converter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonRawValue;
@@ -164,6 +165,7 @@ public class Picture {
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "IMAGE_ID", nullable = false, updatable = false)
+	@JsonIgnore
 	private BinaryImage image;
 
 	@Basic(optional = false)
@@ -172,10 +174,12 @@ public class Picture {
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "THUMBNAIL_ID", nullable = false, updatable = false)
+	@JsonIgnore
 	private BinaryImage thumbnail;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "ALBUM_ID", nullable = false, updatable = false)
+	@JsonIgnore
 	private Album album;
 
 	@Version

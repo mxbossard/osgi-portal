@@ -24,7 +24,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
@@ -50,17 +49,14 @@ import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.exif.ExifSubIFDDirectory;
-import com.google.common.hash.HashCode;
-import com.google.common.hash.HashFunction;
-import com.google.common.hash.Hasher;
-import com.google.common.hash.Hashing;
 
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureFactory;
+import fr.mby.opa.pics.service.IPictureService;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.UnsupportedPictureTypeException;
+import fr.mby.utils.common.image.ImageHelper;
 
 /**
  * @author Maxime Bossard - 2013
@@ -72,21 +68,10 @@ public class BasicPictureFactory implements IPictureFactory {
 	/** Logger. */
 	private static final Logger LOG = LogManager.getLogger(BasicPictureFactory.class);
 
-	public static final String THUMBNAIL_FORMAT = "jpeg";
-
-	public static final int THUMBNAIL_MAX_WIDTH = 1000;
-
-	public static final int THUMBNAIL_MAX_HEIGHT = 200;
-
-	private static final boolean USE_RESIZE_HINT = true;
-
-	/** "MD5" or "SHA-1" or "SHA-256" */
-	private static final HashFunction HASH_FUNCTION = Hashing.sha256();
-
 	private static final String DEFAULT_PICTURE_FORMAT = "jpeg";
 
 	@Autowired
-	private IPictureDao pictureDao;
+	private IPictureService pictureService;
 
 	@Override
 	public Picture build(final String filename, final byte[] contents) throws IOException,
@@ -100,15 +85,6 @@ public class BasicPictureFactory implements IPictureFactory {
 
 			picture.setFilename(filename);
 			picture.setName(filename);
-
-			// Generate picture hash
-			final String uniqueHash = this.generateHash(contents);
-			picture.setHash(uniqueHash);
-
-			final Long alreadyExistingPictureId = this.pictureDao.findPictureIdByHash(uniqueHash);
-			if (alreadyExistingPictureId != null) {
-				throw new PictureAlreadyExistsException(filename);
-			}
 
 			final BufferedInputStream bufferedStream = new BufferedInputStream(new ByteArrayInputStream(contents),
 					contents.length);
@@ -125,35 +101,12 @@ public class BasicPictureFactory implements IPictureFactory {
 	}
 
 	@Override
-	public BinaryImage generateThumbnail(final Picture picture, final int width, final int height,
-			final boolean keepScale, final String format) throws IOException {
+	public BinaryImage buildThumbnail(final BufferedImage originalImage, final String filename, final Integer width,
+			final Integer height, final String format) throws IOException {
 
-		final BufferedImage originalImage = ImageIO.read(new ByteArrayInputStream(picture.getImage().getData()));
+		final BufferedImage resizedImage = ImageHelper.resize(originalImage, width, height, true, true);
 
-		return this.generateThumbnail(originalImage, picture.getFilename(), width, height, keepScale, format);
-	}
-
-	/**
-	 * @param picture
-	 * @param filename
-	 * @param width
-	 * @param height
-	 * @param keepScale
-	 * @param format
-	 * @param originalImage
-	 * @return
-	 * @throws IOException
-	 */
-	protected BinaryImage generateThumbnail(final BufferedImage originalImage, final String filename, final int width,
-			final int height, final boolean keepScale, final String format) throws IOException {
-
-		final BufferedImage resizedImage = this.resizeImage(originalImage, width, height, keepScale,
-				BasicPictureFactory.USE_RESIZE_HINT);
-
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		ImageIO.write(resizedImage, format, output);
-
-		final byte[] thumbnailData = output.toByteArray();
+		final byte[] thumbnailData = ImageHelper.toByteArray(resizedImage, format);
 
 		// Build Thumbnail
 		final BinaryImage thumbnail = new BinaryImage();
@@ -215,12 +168,11 @@ public class BasicPictureFactory implements IPictureFactory {
 	}
 
 	protected void loadThumbnail(final Picture picture, final BufferedImage originalImage) throws IOException {
-		final String thumbnailFormat = BasicPictureFactory.THUMBNAIL_FORMAT;
+		final String thumbnailFormat = BasicPictureService.THUMBNAIL_FORMAT;
 
 		// Build Thumbnail
-		final BinaryImage thumbnail = this.generateThumbnail(originalImage, "thumb" + picture.getFilename(),
-				BasicPictureFactory.THUMBNAIL_MAX_WIDTH, BasicPictureFactory.THUMBNAIL_MAX_HEIGHT, true,
-				thumbnailFormat);
+		final BinaryImage thumbnail = this.buildThumbnail(originalImage, "thumb" + picture.getFilename(),
+				BasicPictureService.THUMBNAIL_MAX_WIDTH, BasicPictureService.THUMBNAIL_MAX_HEIGHT, thumbnailFormat);
 
 		picture.setThumbnailWidth(thumbnail.getWidth());
 		picture.setThumbnailHeight(thumbnail.getHeight());
@@ -316,21 +268,40 @@ public class BasicPictureFactory implements IPictureFactory {
 	}
 
 	/**
-	 * Generate Hash String repesentation of a file contents.
-	 * 
-	 * @param contents
+	 * @param picture
+	 * @param filename
+	 * @param width
+	 * @param height
+	 * @param keepScale
+	 * @param format
+	 * @param originalImage
 	 * @return
-	 * @throws NoSuchAlgorithmException
+	 * @throws IOException
 	 */
-	protected String generateHash(final byte[] contents) {
-		final Hasher hasher = BasicPictureFactory.HASH_FUNCTION.newHasher();
+	@Deprecated
+	private BinaryImage generateThumbnail(final BufferedImage originalImage, final String filename, final int width,
+			final int height, final boolean keepScale, final String format) throws IOException {
 
-		final HashCode hashCode = hasher.putBytes(contents).hash();
+		final BufferedImage resizedImage = this.resizeImage(originalImage, width, height, keepScale, true);
 
-		return hashCode.toString();
+		final ByteArrayOutputStream output = new ByteArrayOutputStream();
+		ImageIO.write(resizedImage, format, output);
+
+		final byte[] thumbnailData = output.toByteArray();
+
+		// Build Thumbnail
+		final BinaryImage thumbnail = new BinaryImage();
+		thumbnail.setData(thumbnailData);
+		thumbnail.setFilename(filename);
+		thumbnail.setFormat(format);
+		thumbnail.setWidth(resizedImage.getWidth());
+		thumbnail.setHeight(resizedImage.getHeight());
+
+		return thumbnail;
 	}
 
-	protected BufferedImage resizeImage(final BufferedImage image, final int width, final int height,
+	@Deprecated
+	private BufferedImage resizeImage(final BufferedImage image, final int width, final int height,
 			final boolean keepScale, final boolean withHint) {
 		final int oldWidth = image.getWidth();
 		final int oldHeight = image.getHeight();
@@ -362,8 +333,9 @@ public class BasicPictureFactory implements IPictureFactory {
 				image, newWidth, newHeight, type);
 	}
 
-	protected BufferedImage resizeImageWithoutHint(final java.awt.Image originalImage, final int width,
-			final int height, final int type) {
+	@Deprecated
+	private BufferedImage resizeImageWithoutHint(final java.awt.Image originalImage, final int width, final int height,
+			final int type) {
 		final BufferedImage resizedImage = new BufferedImage(width, height, type);
 
 		final Graphics2D graphics2D = resizedImage.createGraphics();
@@ -373,7 +345,7 @@ public class BasicPictureFactory implements IPictureFactory {
 		return resizedImage;
 	}
 
-	protected BufferedImage resizeImageWithHint(final java.awt.Image originalImage, final int width, final int height,
+	private BufferedImage resizeImageWithHint(final java.awt.Image originalImage, final int width, final int height,
 			final int type) {
 		final BufferedImage resizedImage = new BufferedImage(width, height, type);
 

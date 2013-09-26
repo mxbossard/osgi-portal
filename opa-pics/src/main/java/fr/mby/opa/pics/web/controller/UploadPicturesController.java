@@ -55,7 +55,7 @@ import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.service.IAlbumDao;
 import fr.mby.opa.pics.service.IPictureDao;
-import fr.mby.opa.pics.service.IPictureFactory;
+import fr.mby.opa.pics.service.IPictureService;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.UnsupportedPictureTypeException;
 import fr.mby.opa.pics.web.form.PicturesUploadForm;
@@ -85,7 +85,7 @@ public class UploadPicturesController {
 			.compile(UploadPicturesController.IMG_CONTENT_TYPE_REGEX);
 
 	@Autowired
-	private IPictureFactory pictureFactory;
+	private IPictureService pictureService;
 
 	@Autowired
 	private IAlbumDao albumDao;
@@ -277,7 +277,7 @@ public class UploadPicturesController {
 
 	protected Picture createPicture(final String filename, final byte[] contents) throws PictureAlreadyExistsException,
 			IOException, UnsupportedPictureTypeException {
-		final Picture picture = this.pictureFactory.build(filename, contents);
+		final Picture picture = this.pictureService.createPicture(filename, contents);
 
 		if (picture != null) {
 			UploadPicturesController.this.pictureDao.createPicture(picture, UploadPicturesController.this.initAlbum());
@@ -338,22 +338,22 @@ public class UploadPicturesController {
 	}
 
 	/**
-	 * Getter of pictureFactory.
+	 * Getter of pictureService.
 	 * 
-	 * @return the pictureFactory
+	 * @return the pictureService
 	 */
-	public IPictureFactory getPictureFactory() {
-		return this.pictureFactory;
+	public IPictureService getPictureService() {
+		return this.pictureService;
 	}
 
 	/**
-	 * Setter of pictureFactory.
+	 * Setter of pictureService.
 	 * 
-	 * @param pictureFactory
-	 *            the pictureFactory to set
+	 * @param pictureService
+	 *            the pictureService to set
 	 */
-	public void setPictureFactory(final IPictureFactory pictureFactory) {
-		this.pictureFactory = pictureFactory;
+	public void setPictureService(final IPictureService pictureService) {
+		this.pictureService = pictureService;
 	}
 
 	/**
