@@ -151,55 +151,7 @@
             </div>
           </div>
         </div>
-              
-        <div class="stashPicture" data-ng-repeat="picture in stash.pictures" 
-            data-ng-class="{'selected' : picture.selected, 'hovered' : picture.hovered}"
-            data-ng-click="selectPicture($event, picture)" 
-            style="height: {{picture.height}}px; width: {{picture.width}}px">
-          <div class="stashThumbnail" style="
-              height: {{picture.height * hoverZoom}}px; 
-              width: {{picture.width * hoverZoom}}px; 
-              margin-left: {{-(hoverZoom - 1) * picture.width / 2}}px; 
-              margin-top: {{-(hoverZoom - 1) * picture.height / 2}}px;">
-            <%-- 
-            <img src="http://lorempixel.com/{{picture.thumbnailWidth}}/{{picture.thumbnailHeight}}"
-                class="img-rounded" />
-            --%>
-            <img src="{{picture.thumbnailUrl}}" class="img-rounded" />
-                
-            <div class="overlay " style="font-size: {{scale/100}}em" data-ng-click="$event.stopPropagation();">
-              <span class="btn-group">
-                <button type="button" class="icon newShoot btn btn-mini btn-info" title="new shoot">
-                  <i class="icon-camera icon-large"></i>
-                </button>
-                <button type="button" class="icon newSession btn btn-mini btn-primary" title="new session">
-                  <i class="icon-folder-open icon-large"></i>
-                </button>
-              </span>
-              <span class="btn-group">
-                <button type="button" class="icon rotateLeft btn btn-mini btn-warning" title="rotate left">
-                  <i class="icon-rotate-left icon-large"></i>
-                </button>
-                <button type="button" class="icon rotateRight btn btn-mini btn-warning" title="rotate right">
-                  <i class="icon-rotate-right icon-large"></i>
-                </button>
-              </span>
-              <span class="btn-group">
-                <button type="button" class="icon tags btn btn-mini btn-success" title="add tags">
-                  <i class="icon-tags icon-large"></i>
-                </button>
-                <button type="button" class="icon tags btn btn-mini btn-info" title="settings">
-                  <i class="icon-wrench icon-large"></i>
-                </button>
-              </span>
-              <span class="btn-group">
-                <button type="button" class="icon remove btn btn-mini btn-danger" title="remove">
-                  <i class="icon-remove-sign icon-large"></i>
-                </button>
-              </span>
-            </div>
-          </div>
-        </div>
+        
       </div>
       <div class="clearfix"></div>
     </div>
