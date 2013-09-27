@@ -99,6 +99,8 @@ public class BasicPictureService implements IPictureService {
 		Assert.notNull(pictureId, "Picture Id not supplied !");
 		Assert.notNull(angle, "Rotating angle not supplied !");
 
+		Picture rotatedPicture = null;
+
 		final Picture picture = this.pictureDao.loadFullPictureById(pictureId);
 		if (picture != null) {
 			final String filename = picture.getThumbnail().getFilename();
@@ -126,10 +128,10 @@ public class BasicPictureService implements IPictureService {
 				picture.setThumbnailSize(thumbnail.getData().length);
 			}
 
-			this.pictureDao.updatePicture(picture);
+			rotatedPicture = this.pictureDao.updatePicture(picture);
 		}
 
-		return picture;
+		return rotatedPicture;
 	}
 
 	@Override

@@ -37,11 +37,13 @@
 	<c:url var="findAllPicturesOfAlbumJsonUrl" value="/album/{:albumId}/pictures" />
 	<c:url var="getImageUrl" value="/image/{:imageId}" />
 	<c:url var="getPictureOfAlbumUrl" value="/album/{:albumId}/pictures/{:pictureId}" />
+	<c:url var="rotatePictureUrl" value="/rotate/{:pictureId}/{:angle}" />
 	<script type="text/javascript">
 		var findAllAlbumsJsonUrl = '${findAllAlbumsJsonUrl}';
 		var findAllPicturesOfAlbumJsonUrl = '${findAllPicturesOfAlbumJsonUrl}';
 		var getImageUrl = '${getImageUrl}';
 		var getPictureOfAlbumUrl = '${getPictureOfAlbumUrl}';
+		var rotatePictureUrl = '${rotatePictureUrl}';
 	</script>
 
 </head>
@@ -85,6 +87,71 @@
     <h3>Stash keeping flux</h3>
     <div id="stash" data-infinite-scroll="nextPictures()" data-infinite-scroll-distance="2" data-infinite-scroll-immediate-check="false">
       <div>
+		<div class="stashPicture" data-ng-repeat="picture in stash.pictures" 
+            data-ng-class="{'selected' : picture.selected, 'removed' : picture.removed,
+            'overlayed' : picture.overlayed,
+            'rotatingLeft' : picture.rotatingLeft,'rotatingRight' : picture.rotatingRight}"
+            data-ng-click="selectPicture($event, picture)" 
+            style="height: {{picture.height}}px; width: {{picture.width}}px; font-size: {{scale/100}}em;">
+          <div class="stashThumbnail" style="
+              height: {{picture.height * hoverZoom}}px; 
+              width: {{picture.width * hoverZoom}}px; 
+              margin-left: {{-(hoverZoom - 1) * picture.width / 2}}px; 
+              margin-top: {{-(hoverZoom - 1) * picture.height / 2}}px;">
+            
+            <%-- 
+            <img src="http://lorempixel.com/{{picture.thumbnailWidth}}/{{picture.thumbnailHeight}}"
+                class="img-rounded" />
+            --%>
+            <img data-ng-src="{{picture.thumbnailUrl}}" class="img-rounded" />
+                
+            <div class="overlay" data-ng-click="$event.stopPropagation();">
+              <p>{{picture.waitingMsg}}</p>
+              <i class="icon-spin icon-spinner icon-large"></i>
+              <button type="button" class="btn btn-large btn-primary btn-action" data-ng-click="overlayAction($event, picture)">
+                <i class="icon-action"></i>
+              </button>
+            </div>
+            
+            <div class="title" data-ng-click="$event.stopPropagation();">
+              
+            </div>
+            
+            <div class="buttonBar" data-ng-click="$event.stopPropagation();">
+              <span class="btn-group">
+                <button type="button" class="icon newShoot btn btn-mini btn-info" title="new shoot"
+                    >
+                  <i class="icon-camera icon-large"></i>
+                </button>
+                <button type="button" class="icon newSession btn btn-mini btn-primary" title="new session">
+                  <i class="icon-folder-open icon-large"></i>
+                </button>
+              </span>
+              <span class="btn-group" data-ng-style="font-size: {{scale/100}}em">
+                <button type="button" class="icon rotateLeft btn btn-mini btn-warning" title="rotate left"
+                    data-ng-click="rotatePictureLeft($event, picture)">
+                  <i class="icon-rotate-left icon-large"></i>
+                </button>
+                <button type="button" class="icon rotateRight btn btn-mini btn-warning" title="rotate right"
+                    data-ng-click="rotatePictureRight($event, picture)">
+                  <i class="icon-rotate-right icon-large"></i>
+                </button>
+              </span>
+              <span class="btn-group" data-ng-style="font-size: {{scale/100}}em">
+                <button type="button" class="icon tags btn btn-mini btn-success" title="add tags">
+                  <i class="icon-tags icon-large"></i>
+                </button>
+              </span>
+              <span class="btn-group" data-ng-style="font-size: {{scale/100}}em">
+                <button type="button" class="icon remove btn btn-mini btn-danger" title="remove"
+                    data-ng-click="removePicture($event, picture)">
+                  <i class="icon-remove-sign icon-large"></i>
+                </button>
+              </span>
+            </div>
+          </div>
+        </div>
+              
         <div class="stashPicture" data-ng-repeat="picture in stash.pictures" 
             data-ng-class="{'selected' : picture.selected, 'hovered' : picture.hovered}"
             data-ng-click="selectPicture($event, picture)" 

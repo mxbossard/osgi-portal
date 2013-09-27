@@ -81,6 +81,7 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 	$scope.selectPicture = function($event, picture) {
 		console.log('toggle selection on picture');
 		picture.selected = !picture.selected;
+		picture.overlayed = picture.selected;
 
 		var array = $scope.selectedPictures;
 		if (picture.selected) {
@@ -89,6 +90,58 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 		} else {
 			array.splice(array.indexOf(picture), 1);
 			// picture.zoom = 1;
+		}
+	};
+
+	$scope.rotatePictureLeft = function($event, picture) {
+		picture.waitingMsg = 'Rotating to the left...';
+		picture.rotatingLeft = true;
+		picture.overlayed = true;
+
+		var url = rotatePictureUrl.replace(/{:pictureId}/, picture.id).replace(/{:angle}/, -90);
+		$http.get(url).success(function(data, status) {
+			var newPicture = data;
+			console.log('data: ' + data);
+			console.log('old url: ' + picture.thumbnailUrl);
+			updatePicture(picture, newPicture);
+			console.log('new data url: ' + newPicture.thumbnailUrl);
+			console.log('new url: ' + picture.thumbnailUrl);
+
+			picture.rotatingLeft = false;
+			picture.overlayed = false;
+		});
+	};
+
+	$scope.rotatePictureRight = function($event, picture) {
+		picture.waitingMsg = 'Rotating to the right...';
+		picture.rotatingRight = true;
+		picture.overlayed = true;
+
+		var url = rotatePictureUrl.replace(/{:pictureId}/, picture.id).replace(/{:angle}/, 90);
+		$http.get(url).success(function(data, status) {
+			var newPicture = data;
+
+			updatePicture(picture, newPicture);
+
+			picture.thumbnailUrl = newPicture.thumbnailUrl;
+
+			picture.rotatingLeft = false;
+			picture.overlayed = false;
+		});
+	};
+
+	$scope.removePicture = function($event, picture) {
+		picture.removed = !picture.removed;
+		picture.overlayed = picture.removed;
+	};
+
+	$scope.overlayAction = function($event, picture) {
+		if (picture.overlayed) {
+			if (picture.selected) {
+				$scope.selectPicture($event, picture);
+			} else if (picture.removed) {
+				$scope.removePicture($event, picture);
+			}
 		}
 	};
 
@@ -187,16 +240,7 @@ function buildNewStash(width, scale) {
 			return newRow;
 		},
 		addPicture : function(picture) {
-			picture.selected = false;
-			picture.zoom = 1;
-
-			// Build thumbnail URL
-			var thumbnailUrl = getImageUrl.replace(/{:imageId}/, picture.thumbnailId);
-			picture.thumbnailUrl = thumbnailUrl;
-
-			// Build image URL
-			var imageUrl = getImageUrl.replace(/{:imageId}/, picture.imageId);
-			picture.imageUrl = imageUrl;
+			initPicture(picture);
 
 			this.pictures.push(picture);
 
@@ -252,4 +296,29 @@ function buildNewStash(width, scale) {
 	};
 
 	return stash;
+}
+
+function initPicture(picture) {
+	picture.selected = false;
+	picture.zoom = 1;
+
+	// Build thumbnail URL
+	var thumbnailUrl = getImageUrl.replace(/{:imageId}/, picture.thumbnailId);
+	picture.thumbnailUrl = thumbnailUrl;
+
+	// Build image URL
+	var imageUrl = getImageUrl.replace(/{:imageId}/, picture.imageId);
+	picture.imageUrl = imageUrl;
+}
+
+function updatePicture(pictureInStash, newPicture) {
+	initPicture(newPicture);
+
+	pictureInStash.imageWidth = newPicture.imageWidth;
+	pictureInStash.imageHeight = newPicture.imageHeight;
+	pictureInStash.thumbnailWidth = newPicture.thumbnailWidth;
+	pictureInStash.thumbnailHeight = newPicture.thumbnailHeight;
+
+	pictureInStash.thumbnailUrl = newPicture.thumbnailUrl;
+	pictureInStash.imageUrl = newPicture.imageUrl;
 }

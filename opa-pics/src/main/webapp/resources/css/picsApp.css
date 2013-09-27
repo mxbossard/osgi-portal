@@ -45,6 +45,7 @@ body {
 
 #stash {
   width: 100%;
+  font-size: 0.8em;
 }
 
 .stashRow {
@@ -60,7 +61,7 @@ body {
 }
 
 .stashPicture:HOVER {
-  z-index: 10;
+
 }
 
 .stashPicture.selected {
@@ -71,19 +72,23 @@ body {
   position: relative;
   cursor: pointer;
   z-index: 1;
-  font-size: 0.75em;
 }
 
 .stashThumbnail:HOVER {
-  z-index: 10;
   background-color: transparent;
 }
 
 .stashThumbnail img {
   position: relative;
-  z-index: 1;
+  z-index: 10;
   width: 100%;
   height: 100%;
+}
+
+.stashThumbnail .btn {
+  font-size: 1em;
+  margin-bottom: 0.5em;
+  padding: 0.4em 0.8em;
 }
 
 .stashPicture:not(.selected) .stashThumbnail:HOVER img {
@@ -94,26 +99,101 @@ body {
   left: -10%;
   */
   /*opacity: 0.8;*/
-  z-index: 10;
   background-color: transparent;
 }
 
 .selected .stashThumbnail {
   background-color: #E3FEC8;
   border: 3px solid #51a351;
+  color : #51a351;
 }
 
-.selected .stashThumbnail img {
-  opacity: 0.3;
+.selected .stashThumbnail img, .removed .stashThumbnail img, 
+.overlayed .stashThumbnail img {
+  opacity: 1;
+}
+
+.removed .stashThumbnail {
+  background-color: orange;
+  border: 3px solid red;
+  color: red;
 }
 
 .stashThumbnail .overlay {
+  cursor: default;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  z-index: 5;
+  opacity: 0.8;
+  background-color: white;
+  text-align: center;
+  padding: 2em 0.2em 1.5em 0.2em;
+}
+
+.stashThumbnail .overlay i {
+  font-size: 2em;
+}
+
+.overlayed .stashThumbnail .overlay {
+  z-index: 20;
+}
+
+.stashThumbnail .overlay .btn-action {
+  display: none;
+  cursor: pointer;
+  margin: auto;
+}
+
+/* On selection hide spinner and show check icon. */
+.selected .stashThumbnail .overlay .icon-spinner {
+  display: none;
+}
+.selected .stashThumbnail .overlay .btn-action {
+  display: block;
+}
+.selected .stashThumbnail .overlay .icon-action:before {
+  content: "\f046";
+}
+
+/* On remove hide spinner and show remove icon. */
+.removed .stashThumbnail .overlay .icon-spinner {
+  display: none;
+}
+.removed .stashThumbnail .overlay .btn-action {
+  display: block;
+}
+.removed .stashThumbnail .overlay .icon-action:before {
+  content: "\f057";
+}
+
+.rotatingLeft .stashThumbnail .overlay .icon-spinner, 
+.rotatingRight .stashThumbnail .overlay .icon-spinner {
+  color: orange;
+}
+
+.stashThumbnail .title {
+  cursor: default;
+  display: none;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  left: 0px;
+  height: 10em;
+  z-index: 20;
+  background-color: white;
+  text-align: center;
+  padding: 2em 0.2em 1.5em 0.2em;
+}
+
+.stashThumbnail .buttonBar {
   cursor: default;
   display: none;
   position: absolute;
   bottom: 0px;
   width: 100%;
-  min-width: 8em;
   z-index: 20;
   background-color: white;
   text-align: center;
@@ -121,54 +201,18 @@ body {
   /*color: #007dbc;*/
 }
 
-.stashPicture:not(.selected) .stashThumbnail:HOVER .overlay {
+.stashPicture:not(.selected):not(.removed):not(.overlayed) .stashThumbnail:HOVER .buttonBar {
   display: block;
   background-color: rgba(255,255,255);
   background-color: rgba(255,255,255, 0.7);
   /*border: 5px solid red;*/
 }
 
-.stashThumbnail .overlay .btn {
+.stashThumbnail .buttonBar .btn {
   font-size: 1em;
   margin-bottom: 0.5em;
-  padding: 0.4em 0.8em;
 }
 
-.stashThumbnail .overlay .icon-large {
+.stashThumbnail .buttonBar .icon-large {
   
-}
-
-/*
-.stashThumbnail .overlay .icon {
-  cursor: pointer;
-  padding: 1px;
-}
-
-.stashThumbnail .overlay .icon:HOVER {
-  background-color: rgb(255,255,255);
-  background-color: rgba(255,255,255, 1);
-  opacity: 1;
-}
-
-.stashThumbnail .overlay .icon.rotateLeft {
-  color: #51a351;
-}
-
-.stashThumbnail .overlay .icon.rotateRight {
-  color: #51a351;
-}
-
-.stashThumbnail .overlay .icon.tags {
-  color: #c49c38;
-}
-
-.stashThumbnail .overlay .icon.remove {
-  color: #da4f49;
-} */
-
-.stashThumbnail .overlay i {
-  /*position: relative;*/
-}
-
-.stashThumbnail .overlay i:HOVER {
 }
