@@ -11,7 +11,6 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 	$scope.selectedPictures = [];
 	$scope.stashRows = [];
 	$scope.stashRowsToReechantillonate = [];
-	$scope.hoverZoom = 1;
 	$scope.reechantillonatingPageSize = 200;
 
 	$scope.nextPictures = function() {
@@ -68,7 +67,7 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 	$scope.deleteAlbum = function(album) {
 		var confirm = window.confirm("Are you sure you want to delete album: " + album.name + " ?");
 		if (confirm) {
-			var index = $scope.albums.indexOf(album)
+			var index = $scope.albums.indexOf(album);
 			$scope.albums.splice(index, 1);
 		}
 
@@ -99,17 +98,7 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 		picture.overlayed = true;
 
 		var url = rotatePictureUrl.replace(/{:pictureId}/, picture.id).replace(/{:angle}/, -90);
-		$http.get(url).success(function(data, status) {
-			var newPicture = data;
-			console.log('data: ' + data);
-			console.log('old url: ' + picture.thumbnailUrl);
-			updatePicture(picture, newPicture);
-			console.log('new data url: ' + newPicture.thumbnailUrl);
-			console.log('new url: ' + picture.thumbnailUrl);
-
-			picture.rotatingLeft = false;
-			picture.overlayed = false;
-		});
+		rotatePicture($http, picture, url);
 	};
 
 	$scope.rotatePictureRight = function($event, picture) {
@@ -118,16 +107,7 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 		picture.overlayed = true;
 
 		var url = rotatePictureUrl.replace(/{:pictureId}/, picture.id).replace(/{:angle}/, 90);
-		$http.get(url).success(function(data, status) {
-			var newPicture = data;
-
-			updatePicture(picture, newPicture);
-
-			picture.thumbnailUrl = newPicture.thumbnailUrl;
-
-			picture.rotatingLeft = false;
-			picture.overlayed = false;
-		});
+		rotatePicture($http, picture, url);
 	};
 
 	$scope.removePicture = function($event, picture) {
@@ -205,14 +185,14 @@ function buildNewStash(width, scale) {
 				width : 0,
 				addPicture : function(picture) {
 					var nbPic = this.pictures.length || 0;
-					var hypotheticWidth = nbPic * parentStash.margin + this.width + picture.width;
+					var hypotheticWidth = nbPic * parentStash.margin + this.width + picture.displayWidth;
 					if (hypotheticWidth > parentStash.width) {
 						return false;
 					}
 
 					this.pictures.push(picture);
-					this.height = Math.max(this.height, picture.height);
-					this.width += picture.width;
+					this.height = Math.max(this.height, picture.displayHeight);
+					this.width += picture.displayWidth;
 
 					return true;
 				},
@@ -223,14 +203,17 @@ function buildNewStash(width, scale) {
 					var offset = 0;
 					angular.forEach(this.pictures, function(value, key) {
 						// Enlarge thumbnails of row to occupy all the width
-						var exactWidth = value.width * ratio + offset;
+						var exactWidth = value.displayWidth * ratio + offset;
 						var roundedWidth = Math.round(exactWidth);
 
 						// offset due to rounding
 						offset = exactWidth - roundedWidth;
 
-						value.width = roundedWidth;
-						value.height = this.height;
+						value.displayWidth = roundedWidth;
+						value.displayHeight = this.height;
+
+						value.initialWidth = value.displayWidth;
+						value.initialHeight = value.displayHeight;
 					}, this);
 				}
 			};
@@ -248,8 +231,8 @@ function buildNewStash(width, scale) {
 		},
 		_addPictureInternal : function(picture) {
 			// Rescale
-			picture.width = Math.round(picture.thumbnailWidth * this.scale);
-			picture.height = Math.round(picture.thumbnailHeight * this.scale);
+			picture.displayWidth = Math.round(picture.thumbnailWidth * this.scale);
+			picture.displayHeight = Math.round(picture.thumbnailHeight * this.scale);
 
 			var lastRow = this.getLastRow();
 			var enoughSpace = lastRow.addPicture(picture);
@@ -265,7 +248,7 @@ function buildNewStash(width, scale) {
 		reechantillonate : function(width, scale, pageSize, $timeout) {
 			// Stop current job
 			if (this.job) {
-				$timeout.cancel(this.job)
+				$timeout.cancel(this.job);
 			}
 
 			// Update stash configuration
@@ -300,7 +283,6 @@ function buildNewStash(width, scale) {
 
 function initPicture(picture) {
 	picture.selected = false;
-	picture.zoom = 1;
 
 	// Build thumbnail URL
 	var thumbnailUrl = getImageUrl.replace(/{:imageId}/, picture.thumbnailId);
@@ -314,11 +296,49 @@ function initPicture(picture) {
 function updatePicture(pictureInStash, newPicture) {
 	initPicture(newPicture);
 
-	pictureInStash.imageWidth = newPicture.imageWidth;
-	pictureInStash.imageHeight = newPicture.imageHeight;
+	pictureInStash.width = newPicture.width;
+	pictureInStash.height = newPicture.height;
+	pictureInStash.size = newPicture.size;
+	pictureInStash.format = newPicture.format;
+
 	pictureInStash.thumbnailWidth = newPicture.thumbnailWidth;
 	pictureInStash.thumbnailHeight = newPicture.thumbnailHeight;
+	pictureInStash.thumbnailSize = newPicture.thumbnailSize;
+	pictureInStash.thumbnailFormat = newPicture.thumbnailFormat;
 
 	pictureInStash.thumbnailUrl = newPicture.thumbnailUrl;
 	pictureInStash.imageUrl = newPicture.imageUrl;
+}
+
+function rotatePicture($http, picture, url) {
+	$http.get(url).success(function(data, status) {
+		var newPicture = data;
+		updatePicture(picture, newPicture);
+
+		var initialRatio = picture.initialWidth / picture.initialHeight;
+		var newRatio = newPicture.thumbnailWidth / newPicture.thumbnailHeight;
+
+		if (initialRatio >= 1 && newRatio >= 1 || initialRatio < 1 && newRatio < 1) {
+			// Same orientation than initial display
+			picture.displayHeight = picture.initialHeight;
+			picture.displayWidth = picture.initialWidth;
+		} else {
+			// Orientation change
+			var ratioW = picture.thumbnailWidth / picture.initialWidth;
+			var ratioH = picture.thumbnailHeight / picture.initialHeight;
+			if (ratioW > ratioH) {
+				// We need to fix width
+				picture.displayWidth = picture.initialWidth;
+				picture.displayHeight = Math.round(picture.displayWidth / newRatio);
+			} else {
+				// We need to fix height
+				picture.displayHeight = picture.initialHeight;
+				picture.displayWidth = Math.round(picture.displayHeight * newRatio);
+			}
+		}
+
+		picture.rotatingLeft = false;
+		picture.rotatingRight = false;
+		picture.overlayed = false;
+	});
 }

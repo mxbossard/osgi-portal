@@ -72,6 +72,7 @@ body {
   position: relative;
   cursor: pointer;
   z-index: 1;
+  text-align: center;
 }
 
 .stashThumbnail:HOVER {
@@ -81,8 +82,7 @@ body {
 .stashThumbnail img {
   position: relative;
   z-index: 10;
-  width: 100%;
-  height: 100%;
+  margin: auto;
 }
 
 .stashThumbnail .btn {
@@ -126,11 +126,12 @@ body {
   bottom: 0px;
   right: 0px;
   left: 0px;
-  z-index: 5;
+  z-index: 20;
   opacity: 0.8;
   background-color: white;
   text-align: center;
   padding: 2em 0.2em 1.5em 0.2em;
+  display: none;
 }
 
 .stashThumbnail .overlay i {
@@ -138,7 +139,11 @@ body {
 }
 
 .overlayed .stashThumbnail .overlay {
-  z-index: 20;
+  display: block;
+}
+
+.stashThumbnail .overlay .icon-spinner {
+  display: none;
 }
 
 .stashThumbnail .overlay .btn-action {
@@ -171,21 +176,8 @@ body {
 
 .rotatingLeft .stashThumbnail .overlay .icon-spinner, 
 .rotatingRight .stashThumbnail .overlay .icon-spinner {
+  display: inline-block;
   color: orange;
-}
-
-.stashThumbnail .title {
-  cursor: default;
-  display: none;
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  left: 0px;
-  height: 10em;
-  z-index: 20;
-  background-color: white;
-  text-align: center;
-  padding: 2em 0.2em 1.5em 0.2em;
 }
 
 .stashThumbnail .buttonBar {
@@ -197,7 +189,7 @@ body {
   z-index: 20;
   background-color: white;
   text-align: center;
-  padding: 2em 0.2em 1.5em 0.2em;
+  padding: 1em 0.2em 0.5em 0.2em;
   /*color: #007dbc;*/
 }
 

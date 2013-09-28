@@ -85,25 +85,23 @@
     </h3>
 
     <h3>Stash keeping flux</h3>
-    <div id="stash" data-infinite-scroll="nextPictures()" data-infinite-scroll-distance="2" data-infinite-scroll-immediate-check="false">
+    <div id="stash" data-infinite-scroll="nextPictures()" data-infinite-scroll-distance="3" data-infinite-scroll-immediate-check="false">
       <div>
+      
 		<div class="stashPicture" data-ng-repeat="picture in stash.pictures" 
             data-ng-class="{'selected' : picture.selected, 'removed' : picture.removed,
             'overlayed' : picture.overlayed,
             'rotatingLeft' : picture.rotatingLeft,'rotatingRight' : picture.rotatingRight}"
             data-ng-click="selectPicture($event, picture)" 
-            style="height: {{picture.height}}px; width: {{picture.width}}px; font-size: {{scale/100}}em;">
-          <div class="stashThumbnail" style="
-              height: {{picture.height * hoverZoom}}px; 
-              width: {{picture.width * hoverZoom}}px; 
-              margin-left: {{-(hoverZoom - 1) * picture.width / 2}}px; 
-              margin-top: {{-(hoverZoom - 1) * picture.height / 2}}px;">
+            style="height: {{picture.initialHeight}}px; width: {{picture.initialWidth}}px; font-size: {{scale/100}}em;">
+          <div class="stashThumbnail" style="height: {{picture.initialHeight}}px; width: {{picture.initialWidth}}px;">
             
             <%-- 
             <img src="http://lorempixel.com/{{picture.thumbnailWidth}}/{{picture.thumbnailHeight}}"
                 class="img-rounded" />
             --%>
-            <img data-ng-src="{{picture.thumbnailUrl}}" class="img-rounded" />
+            <img data-ng-src="{{picture.thumbnailUrl}}" width="{{picture.displayWidth}}" height="{{picture.displayHeight}}" 
+            	class="img-rounded" title="{{picture.name}}" />
                 
             <div class="overlay" data-ng-click="$event.stopPropagation();">
               <p>{{picture.waitingMsg}}</p>
@@ -112,11 +110,7 @@
                 <i class="icon-action"></i>
               </button>
             </div>
-            
-            <div class="title" data-ng-click="$event.stopPropagation();">
-              
-            </div>
-            
+
             <div class="buttonBar" data-ng-click="$event.stopPropagation();">
               <span class="btn-group">
                 <button type="button" class="icon newShoot btn btn-mini btn-info" title="new shoot"
@@ -149,6 +143,7 @@
                 </button>
               </span>
             </div>
+            
           </div>
         </div>
         
