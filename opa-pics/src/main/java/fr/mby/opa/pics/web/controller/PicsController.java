@@ -38,12 +38,15 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
 import fr.mby.opa.pics.model.Album;
@@ -89,9 +92,9 @@ public class PicsController implements IPortalApp {
 	}
 
 	@ResponseBody
+	@ResponseStatus(value = HttpStatus.CREATED)
 	@RequestMapping(value = "album", method = RequestMethod.POST)
-	public Album createAlbumJson(@RequestBody @Valid final Album album, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
+	public Album createAlbumJson(@Valid @RequestBody final Album album) throws Exception {
 
 		this.albumDao.createAlbum(album);
 
@@ -100,8 +103,7 @@ public class PicsController implements IPortalApp {
 
 	@ResponseBody
 	@RequestMapping(value = "album", method = RequestMethod.PUT)
-	public Album updateAlbumJson(@RequestBody @Valid final Album album, final HttpServletRequest request,
-			final HttpServletResponse response) throws Exception {
+	public Album updateAlbumJson(@Valid @RequestBody final Album album) throws Exception {
 
 		final Album updatedAlbum = this.albumDao.updateAlbum(album);
 
@@ -231,6 +233,13 @@ public class PicsController implements IPortalApp {
 		} while (pictures != null && pictures.size() > 0);
 
 		return "index";
+	}
+
+	@ExceptionHandler
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	@ResponseBody
+	public String handleMethodArgumentNotValidException(final MethodArgumentNotValidException error) {
+		return "Bad request: " + error.getMessage();
 	}
 
 	protected void buildPicturesJson(final List<Picture> pictures) throws JSONException {
