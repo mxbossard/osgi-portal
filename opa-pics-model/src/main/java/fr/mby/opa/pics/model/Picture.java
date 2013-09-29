@@ -36,6 +36,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -58,7 +59,7 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 		@NamedQuery(name = Picture.LOAD_FULL_PICTURE_BY_ID, query = "SELECT p"
 				+ " FROM Picture p JOIN FETCH p.image JOIN FETCH p.thumbnail WHERE p.id = :id"),
 		@NamedQuery(name = Picture.FIND_PICTURE_ID_BY_HASH, query = "SELECT p.id"
-				+ " FROM Picture p WHERE p.hash = :hash"),
+				+ " FROM Picture p WHERE p.originalHash = :hash"),
 		@NamedQuery(name = Picture.FIND_PICTURE_BY_ALBUM_ORDER_BY_DATE, query = "SELECT new fr.mby.opa.pics.model.Picture"
 				+ "(p.id, p.filename, p.name, p.originalTime, p.creationTime, p.width, p.height, p.format, p.thumbnailWidth,"
 				+ " p.thumbnailHeight, p.jsonMetadata, p.imageId, p.thumbnailId)"
@@ -68,7 +69,7 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 				+ " FROM Picture p WHERE p.originalTime > :since ORDER BY p.originalTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
-@Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"hash"}))
+@Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"originalHash"}))
 // indexes = {@Index(columnList = "id"), @Index(columnList = "uniqueHash"), @Index(columnList = "creationTime")}
 @JsonInclude(Include.NON_NULL)
 public class Picture {
@@ -90,9 +91,16 @@ public class Picture {
 	@Column(name = "ID")
 	private Long id;
 
+	// TODO ranme HASH to ORIGINAL_HASH
 	@Basic(optional = false)
 	@Column(name = "HASH", nullable = false, updatable = false, unique = true)
-	private String hash;
+	private String originalHash;
+
+	// TODO config current Hash
+	// @Basic(optional = false)
+	// @Column(name = "CURRENT_HASH", nullable = false, updatable = true, unique = true)
+	@Transient
+	private String currentHash;
 
 	@Basic(optional = false)
 	@Column(name = "FILENAME", nullable = false, updatable = false)
@@ -248,8 +256,8 @@ public class Picture {
 	 * 
 	 * @return the uniqueHash
 	 */
-	public String getHash() {
-		return this.hash;
+	public String getOriginalHash() {
+		return this.originalHash;
 	}
 
 	/**
@@ -258,8 +266,8 @@ public class Picture {
 	 * @param hash
 	 *            the uniqueHash to set
 	 */
-	public void setHash(final String hash) {
-		this.hash = hash;
+	public void setOriginalHash(final String hash) {
+		this.originalHash = hash;
 	}
 
 	/**

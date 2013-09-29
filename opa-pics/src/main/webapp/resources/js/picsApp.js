@@ -3,6 +3,7 @@ var app = angular.module('pics', ['infinite-scroll']);
 app.controller('PicsCtrl', function($scope, $http, $timeout) {
 	'use strict';
 
+	$scope.stash = null;
 	$scope.lastSinceTime = 0;
 	$scope.scale = 100;
 	$scope.searchPicturesLock = false;
@@ -12,9 +13,10 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 	$scope.stashRows = [];
 	$scope.stashRowsToReechantillonate = [];
 	$scope.reechantillonatingPageSize = 200;
+	$scope.picturesToAddInStash = [];
 
 	$scope.nextPictures = function() {
-		getNextPictures($http, $scope);
+		getNextPictures($http, $timeout, $scope);
 	};
 
 	$scope.selectAlbum = function(album) {
@@ -25,7 +27,18 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 		console.log(width);
 		$scope.stash = buildNewStash(width, $scope.scale);
 
-		getNextPictures($http, $scope);
+		getNextPictures($http, $timeout, $scope);
+	};
+
+	$scope.createAlbum = function($event) {
+		var name = $scope.newAlbumName;
+		if (name) {
+			var newAlbum = {};
+			newAlbum.name = name;
+
+			var url = createAlbumJsonUrl;
+			$http.post(url, newAlbum);
+		}
 	};
 
 	$scope.reechantillonateStash = function(event) {
@@ -132,7 +145,7 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 
 });
 
-function getNextPictures($http, $scope) {
+function getNextPictures($http, $timeout, $scope) {
 	if (!$scope.searchPicturesLock) {
 		// Pseudo synchronization
 		$scope.searchPicturesLock = true;
@@ -148,13 +161,38 @@ function getNextPictures($http, $scope) {
 
 					angular.forEach(data, function(value, key) {
 						$scope.stash.addPicture(value);
+						$scope.picturesToAddInStash.push(value);
 					});
+
+					var lock = $scope.loadingStashLock;
+					if (!lock) {
+						// addPicturesToStashDelayed($timeout, $scope);
+					}
 				}
 
 				$scope.searchPicturesLock = false;
 			}).error(function(data, status, headers, config) {
 				$scope.searchPicturesLock = false;
 			});
+		}
+	}
+}
+
+function addPicturesToStashDelayed($timeout, $scope) {
+	$scope.loadingStashLock = true;
+
+	var picturesToAdd = $scope.picturesToAddInStash;
+	if (picturesToAdd && picturesToAdd.length > 0) {
+		var picture = picturesToAdd.splice(0, 1)[0];
+		picture.show = true;
+		// $scope.stash.addPicture(picture);
+
+		if (picturesToAdd.length > 0) {
+			$timeout(function() {
+				addPicturesToStashDelayed($timeout, $scope);
+			}, 200);
+		} else {
+			$scope.loadingStashLock = false;
 		}
 	}
 }
@@ -283,6 +321,7 @@ function buildNewStash(width, scale) {
 
 function initPicture(picture) {
 	picture.selected = false;
+	picture.show = true;
 
 	// Build thumbnail URL
 	var thumbnailUrl = getImageUrl.replace(/{:imageId}/, picture.thumbnailId);

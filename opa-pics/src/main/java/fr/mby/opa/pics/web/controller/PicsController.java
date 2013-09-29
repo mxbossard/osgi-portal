@@ -39,6 +39,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -89,12 +90,22 @@ public class PicsController implements IPortalApp {
 
 	@ResponseBody
 	@RequestMapping(value = "album", method = RequestMethod.POST)
-	public Album createAlbumJson(@Valid final Album album, final HttpServletRequest request,
+	public Album createAlbumJson(@RequestBody @Valid final Album album, final HttpServletRequest request,
 			final HttpServletResponse response) throws Exception {
 
 		this.albumDao.createAlbum(album);
 
 		return album;
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "album", method = RequestMethod.PUT)
+	public Album updateAlbumJson(@RequestBody @Valid final Album album, final HttpServletRequest request,
+			final HttpServletResponse response) throws Exception {
+
+		final Album updatedAlbum = this.albumDao.updateAlbum(album);
+
+		return updatedAlbum;
 	}
 
 	@ResponseBody
@@ -152,7 +163,12 @@ public class PicsController implements IPortalApp {
 		Assert.notNull(id, "Picture Id not supplied !");
 		Assert.notNull(angle, "Rotating angle not supplied !");
 
-		final Picture rotatedPicture = this.pictureService.rotatePicture(id, angle);
+		Picture rotatedPicture = null;
+
+		final Integer normalizedAngle = ((angle / 90) % 4) * 90;
+		if (normalizedAngle != 0) {
+			rotatedPicture = this.pictureService.rotatePicture(id, normalizedAngle);
+		}
 
 		return rotatedPicture;
 	}

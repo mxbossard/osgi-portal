@@ -4,7 +4,7 @@ body {
 }
 
 #albums ul {
-  white-space: nowrap;
+  white-space: wrap;
   margin: 0px;
 }
 
@@ -45,7 +45,6 @@ body {
 
 #stash {
   width: 100%;
-  font-size: 0.8em;
 }
 
 .stashRow {
@@ -73,6 +72,7 @@ body {
   cursor: pointer;
   z-index: 1;
   text-align: center;
+  overflow: hidden;
 }
 
 .stashThumbnail:HOVER {
@@ -190,6 +190,7 @@ body {
   background-color: white;
   text-align: center;
   padding: 1em 0.2em 0.5em 0.2em;
+  font-size: 0.7em;
   /*color: #007dbc;*/
 }
 
@@ -198,6 +199,14 @@ body {
   background-color: rgba(255,255,255);
   background-color: rgba(255,255,255, 0.7);
   /*border: 5px solid red;*/
+}
+
+.stashThumbnail .buttonBar .btn-group {
+  font-size: 1em;
+}
+
+.stashThumbnail .buttonBar .btn-group>.btn+.btn {
+	margin-left: -4px;
 }
 
 .stashThumbnail .buttonBar .btn {

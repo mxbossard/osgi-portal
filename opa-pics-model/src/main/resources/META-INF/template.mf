@@ -6,6 +6,7 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: ${bundlor.template.classPath}
 Meta-Persistence: 
 Import-Package: 
+ javax.validation;version="${validation-api.version:major-range}",
  javax.persistence;jpa="2.0";version="1.1.0",
  org.eclipse.persistence.internal.jpa.rs.metadata.model;version="2.4.2",
  org.eclipse.persistence.internal.weaving;version="2.4.2",

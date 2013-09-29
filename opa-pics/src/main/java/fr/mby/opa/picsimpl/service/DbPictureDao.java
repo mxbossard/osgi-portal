@@ -245,7 +245,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	protected void testHashUniqueness(final Picture picture, final EntityManager em)
 			throws PictureAlreadyExistsException {
 		final Query findPicByHashQuery = em.createNamedQuery(Picture.FIND_PICTURE_ID_BY_HASH);
-		findPicByHashQuery.setParameter("hash", picture.getHash());
+		findPicByHashQuery.setParameter("hash", picture.getOriginalHash());
 		final List<?> results = findPicByHashQuery.getResultList();
 		if (!results.isEmpty()) {
 			// A picture with same hash was found

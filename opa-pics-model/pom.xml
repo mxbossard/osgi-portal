@@ -17,6 +17,7 @@
 		<jpa.version>2.0.5</jpa.version>
 		<joda-time.version>2.3</joda-time.version>
 		
+		<validation-api.version>1.1.0.Final</validation-api.version>
 		<jackson.version>1.9.13</jackson.version>
 		
 		<eclipselink.version>2.4.2</eclipselink.version>
@@ -38,7 +39,14 @@
 		    <artifactId>joda-time</artifactId>
 		    <version>${joda-time.version}</version>
 		</dependency>
-				
+						
+		<!-- Validation API -->
+		<dependency>
+		    <groupId>javax.validation</groupId>
+		    <artifactId>validation-api</artifactId>
+		    <version>${validation-api.version}</version>
+		</dependency>
+		
 		<!-- Jackson Annotations -->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>

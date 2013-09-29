@@ -31,6 +31,8 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.eclipse.persistence.annotations.Convert;
 import org.eclipse.persistence.annotations.Converter;
@@ -51,7 +53,8 @@ import fr.mby.opa.pics.model.converter.JodaDateTimeJsonSerializer;
 		@NamedQuery(name = Album.LOAD_FULL_ALBUM_BY_ID, query = "SELECT a FROM Album a "
 				+ "LEFT JOIN FETCH a.selectedOrderingProposal LEFT JOIN FETCH a.pictures WHERE a.id = :id"),
 		@NamedQuery(name = Album.FIND_ALL_ALBUMS_ORDER_BY_DATE, query = "SELECT new fr.mby.opa.pics.model.Album"
-				+ "(a.id, a.name, a.description, a.creationTime)" + " FROM Album a ORDER BY a.creationTime ASC")})
+				+ "(a.id, a.name, a.description, a.creationTime, (SELECT count(p.id) FROM Picture p WHERE p.album.id = a.id))"
+				+ " FROM Album a ORDER BY a.creationTime ASC")})
 @Entity
 @Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "ALBUM")
@@ -75,12 +78,14 @@ public class Album {
 	 * @param description
 	 * @param creationTime
 	 */
-	public Album(final Long id, final String name, final String description, final ReadableDateTime creationTime) {
+	public Album(final Long id, final String name, final String description, final ReadableDateTime creationTime,
+			final Integer size) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.creationTime = creationTime;
+		this.size = size;
 	}
 
 	@Id
@@ -89,7 +94,9 @@ public class Album {
 	private Long id;
 
 	@Basic(optional = false)
-	@Column(name = "NAME")
+	@Column(name = "NAME", nullable = false)
+	@NotNull
+	@Pattern(regexp = "[A-Za-z0-9 _./\\-]+")
 	private String name;
 
 	@Basic
@@ -97,7 +104,7 @@ public class Album {
 	private String description;
 
 	@Basic(optional = false)
-	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP")
+	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false)
 	@Convert("jodaDateTime")
 	@JsonSerialize(using = JodaDateTimeJsonSerializer.class)
 	private ReadableDateTime creationTime;
@@ -114,6 +121,8 @@ public class Album {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "album")
 	private List<Picture> pictures;
+
+	private transient Integer size;
 
 	/**
 	 * Getter of id.
@@ -265,6 +274,25 @@ public class Album {
 	 */
 	public void setPictures(final List<Picture> pictures) {
 		this.pictures = pictures;
+	}
+
+	/**
+	 * Getter of size.
+	 * 
+	 * @return the size
+	 */
+	public Integer getSize() {
+		return this.size;
+	}
+
+	/**
+	 * Setter of size.
+	 * 
+	 * @param size
+	 *            the size to set
+	 */
+	public void setSize(final Integer size) {
+		this.size = size;
 	}
 
 }

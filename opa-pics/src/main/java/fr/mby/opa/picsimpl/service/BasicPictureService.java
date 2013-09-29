@@ -79,7 +79,7 @@ public class BasicPictureService implements IPictureService {
 			}
 
 			picture = this.pictureFactory.build(filename, contents);
-			picture.setHash(uniqueHash);
+			picture.setOriginalHash(uniqueHash);
 		}
 
 		return picture;
