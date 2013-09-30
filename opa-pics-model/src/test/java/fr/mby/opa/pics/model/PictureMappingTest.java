@@ -23,7 +23,6 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 import javax.persistence.PersistenceUnit;
 
-import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public class PictureMappingTest {
 
 		final Album album = new Album();
 		album.setName("Album");
-		album.setCreationTime(new DateTime());
+		album.setCreationTime(new Timestamp(0L));
 
 		final Picture picture = this.buildPicture(album);
 
@@ -87,7 +86,7 @@ public class PictureMappingTest {
 
 	@Test
 	public void testPersistProposals() throws Exception {
-		final DateTime now = new DateTime();
+		final Timestamp now = new Timestamp(System.currentTimeMillis());
 
 		final Album a1 = new Album();
 		a1.setCreationTime(now);

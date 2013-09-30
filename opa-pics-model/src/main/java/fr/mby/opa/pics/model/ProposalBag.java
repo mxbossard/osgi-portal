@@ -16,6 +16,7 @@
 
 package fr.mby.opa.pics.model;
 
+import java.sql.Timestamp;
 import java.util.Collection;
 
 import javax.persistence.Basic;
@@ -31,11 +32,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-import org.joda.time.ReadableDateTime;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 
 /**
  * Proposal to Order an Album.
@@ -46,7 +45,6 @@ import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
  * 
  */
 @Entity
-@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "PROPOSAL_BAG")
 public class ProposalBag {
 
@@ -68,9 +66,9 @@ public class ProposalBag {
 	private Boolean locked;
 
 	@Basic(optional = false)
-	@Column(name = "CREATION_TIME")
-	@Convert("jodaDateTime")
-	private ReadableDateTime creationTime;
+	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp creationTime;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BASE_PROPOSAL_ID", updatable = false)
@@ -166,7 +164,7 @@ public class ProposalBag {
 	 * 
 	 * @return the creationTime
 	 */
-	public ReadableDateTime getCreationTime() {
+	public Timestamp getCreationTime() {
 		return this.creationTime;
 	}
 
@@ -176,7 +174,7 @@ public class ProposalBag {
 	 * @param creationTime
 	 *            the creationTime to set
 	 */
-	public void setCreationTime(final ReadableDateTime creationTime) {
+	public void setCreationTime(final Timestamp creationTime) {
 		this.creationTime = creationTime;
 	}
 

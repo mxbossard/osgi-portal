@@ -16,6 +16,8 @@
 
 package fr.mby.opa.pics.model;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -29,11 +31,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-import org.joda.time.ReadableDateTime;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 
 /**
  * A RankingProposal rank a Picture in a Shoot. Multiple RankingProposal are grouped in a ProposalBag.
@@ -48,7 +48,6 @@ import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
  * 
  */
 @Entity
-@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "RANKING_PROPOSAL", uniqueConstraints = {@UniqueConstraint(columnNames = "PROPOSAL_BAG_ID,PICTURE_ID"),
 		@UniqueConstraint(columnNames = "PROPOSAL_BAG_ID,SHOOT_ID,RANK")})
 public class RankingProposal {
@@ -63,9 +62,9 @@ public class RankingProposal {
 	private Integer rank;
 
 	@Basic(optional = false)
-	@Column(name = "CREATION_TIME")
-	@Convert("jodaDateTime")
-	private ReadableDateTime creationTime;
+	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp creationTime;
 
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "PROPOSAL_BAG_ID", nullable = false, updatable = false)
@@ -122,7 +121,7 @@ public class RankingProposal {
 	 * 
 	 * @return the creationTime
 	 */
-	public ReadableDateTime getCreationTime() {
+	public Timestamp getCreationTime() {
 		return this.creationTime;
 	}
 
@@ -132,7 +131,7 @@ public class RankingProposal {
 	 * @param creationTime
 	 *            the creationTime to set
 	 */
-	public void setCreationTime(final ReadableDateTime creationTime) {
+	public void setCreationTime(final Timestamp creationTime) {
 		this.creationTime = creationTime;
 	}
 

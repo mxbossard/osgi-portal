@@ -38,18 +38,18 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.util.Assert;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-
-import com.google.common.collect.Iterables;
 
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.Picture;
@@ -58,7 +58,6 @@ import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureService;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.UnsupportedPictureTypeException;
-import fr.mby.opa.pics.web.form.PicturesUploadForm;
 import fr.mby.opa.pics.web.jquery.FileMeta;
 import fr.mby.opa.pics.web.jquery.FileMetaList;
 
@@ -98,59 +97,6 @@ public class UploadPicturesController {
 		return "file_upload_form";
 	}
 
-	@RequestMapping(value = "/save", method = RequestMethod.POST)
-	public String save(@ModelAttribute("uploadForm") final PicturesUploadForm uploadForm, final Model map)
-			throws Exception {
-		final Collection<String> uploadedPicturesNames = new ArrayList<String>();
-		final Collection<String> alreayExistingPicturesNames = new ArrayList<String>();
-
-		final Collection<MultipartFile> pictures = uploadForm.getPictures();
-
-		if (null != pictures && pictures.size() > 0) {
-			final Collection<Future<Picture>> futures = new ArrayList<>(pictures.size());
-
-			final Iterator<MultipartFile> multipartFileIt = pictures.iterator();
-			while (multipartFileIt.hasNext()) {
-				final MultipartFile multipartFile = multipartFileIt.next();
-
-				final ExecutorService executorService = Executors.newFixedThreadPool(Runtime.getRuntime()
-						.availableProcessors());
-				final Future<Picture> future = executorService.submit(new Callable<Picture>() {
-
-					@Override
-					public Picture call() throws Exception {
-						Picture picture = null;
-						try {
-							picture = UploadPicturesController.this.createPicture(multipartFile.getOriginalFilename(),
-									multipartFile.getBytes());
-
-							// Free memory: we don't need blobs
-							picture.setThumbnail(null);
-							picture.setImage(null);
-						} catch (final PictureAlreadyExistsException e) {
-							alreayExistingPicturesNames.add(e.getFilename());
-						}
-
-						return picture;
-					}
-				});
-
-				futures.add(future);
-			}
-
-			for (final Future<Picture> future : futures) {
-				final Picture picture = future.get();
-				if (picture != null) {
-					uploadedPicturesNames.add(picture.getFilename());
-				}
-			}
-
-		}
-
-		map.addAttribute("picturesNames", uploadedPicturesNames);
-		return "file_upload_success";
-	}
-
 	/***************************************************
 	 * URL: /upload/jqueryUpload upload(): receives files
 	 * 
@@ -162,8 +108,10 @@ public class UploadPicturesController {
 	 ****************************************************/
 	@ResponseBody
 	@RequestMapping(value = "/jqueryUpload", method = RequestMethod.POST)
-	public FileMetaList jqueryUpload(final MultipartHttpServletRequest request, final HttpServletResponse response)
-			throws Exception {
+	public FileMetaList jqueryUpload(@RequestParam final Long albumId, final MultipartHttpServletRequest request,
+			final HttpServletResponse response) throws Exception {
+		Assert.notNull(albumId, "No Album Id supplied !");
+
 		final FileMetaList files = new FileMetaList();
 
 		// 1. build an iterator
@@ -206,7 +154,7 @@ public class UploadPicturesController {
 
 							final FileMeta pictureMeta = new FileMeta();
 							try {
-								final Picture picture = UploadPicturesController.this.createPicture(
+								final Picture picture = UploadPicturesController.this.createPicture(albumId,
 										pictureFileName.toString(), pictureContents);
 								final Long imageId = picture.getImage().getId();
 								final Long thumbnailId = picture.getThumbnail().getId();
@@ -248,7 +196,7 @@ public class UploadPicturesController {
 				final FileMeta fileMeta = new FileMeta();
 				try {
 					final byte[] fileContents = mpf.getBytes();
-					final Picture picture = this.createPicture(originalFilename, fileContents);
+					final Picture picture = this.createPicture(albumId, originalFilename, fileContents);
 
 					final Long imageId = picture.getImage().getId();
 					final Long thumbnailId = picture.getThumbnail().getId();
@@ -275,30 +223,27 @@ public class UploadPicturesController {
 		return files;
 	}
 
-	protected Picture createPicture(final String filename, final byte[] contents) throws PictureAlreadyExistsException,
-			IOException, UnsupportedPictureTypeException {
-		final Picture picture = this.pictureService.createPicture(filename, contents);
+	@ExceptionHandler(Exception.class)
+	@ResponseBody
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public String handleException(final Exception e) {
+		return "return error object instead";
+	}
 
-		if (picture != null) {
-			UploadPicturesController.this.pictureDao.createPicture(picture, UploadPicturesController.this.initAlbum());
+	protected Picture createPicture(final Long albumId, final String filename, final byte[] contents)
+			throws PictureAlreadyExistsException, IOException, UnsupportedPictureTypeException {
+		Picture picture = null;
+
+		final Album album = this.albumDao.findAlbumById(albumId);
+		if (album != null) {
+			picture = this.pictureService.createPicture(filename, contents);
+
+			if (picture != null) {
+				UploadPicturesController.this.pictureDao.createPicture(picture, album);
+			}
 		}
 
 		return picture;
-	}
-
-	protected Album initAlbum() {
-		final Collection<Album> albums = this.albumDao.findAllAlbums();
-		Album firstAlbum = Iterables.getFirst(albums, null);
-
-		if (firstAlbum == null) {
-			final Album newAlbum = new Album();
-			newAlbum.setName("myFirstAlbum");
-			newAlbum.setCreationTime(new DateTime());
-
-			firstAlbum = this.albumDao.createAlbum(newAlbum);
-		}
-
-		return firstAlbum;
 	}
 
 	protected List<Path> processArchive(final MultipartFile multipartFile) throws IOException {

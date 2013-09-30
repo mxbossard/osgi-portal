@@ -40,15 +40,12 @@ import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
-import org.eclipse.persistence.annotations.Converter;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
 import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 
 /**
@@ -68,7 +65,6 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 		@NamedQuery(name = Picture.FIND_ALL_PICTURES_ORDER_BY_DATE, query = "SELECT p"
 				+ " FROM Picture p WHERE p.originalTime > :since ORDER BY p.originalTime ASC")})
 @Entity
-@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "PICTURE", uniqueConstraints = @UniqueConstraint(columnNames = {"originalHash"}))
 // indexes = {@Index(columnList = "id"), @Index(columnList = "uniqueHash"), @Index(columnList = "creationTime")}
 @JsonInclude(Include.NON_NULL)

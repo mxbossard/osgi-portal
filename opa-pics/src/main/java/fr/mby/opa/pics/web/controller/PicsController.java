@@ -16,6 +16,7 @@
 
 package fr.mby.opa.pics.web.controller;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -95,6 +96,10 @@ public class PicsController implements IPortalApp {
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@RequestMapping(value = "album", method = RequestMethod.POST)
 	public Album createAlbumJson(@Valid @RequestBody final Album album) throws Exception {
+		Assert.notNull(album, "No Album supplied !");
+
+		album.setCreationTime(new Timestamp(System.currentTimeMillis()));
+		album.setLocked(false);
 
 		this.albumDao.createAlbum(album);
 
@@ -240,6 +245,13 @@ public class PicsController implements IPortalApp {
 	@ResponseBody
 	public String handleMethodArgumentNotValidException(final MethodArgumentNotValidException error) {
 		return "Bad request: " + error.getMessage();
+	}
+
+	@ExceptionHandler(Exception.class)
+	@ResponseBody
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public String handleException(final Exception e) {
+		return "return error object instead";
 	}
 
 	protected void buildPicturesJson(final List<Picture> pictures) throws JSONException {

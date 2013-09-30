@@ -16,6 +16,7 @@
 
 package fr.mby.opa.pics.model;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -34,16 +35,11 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-import org.joda.time.ReadableDateTime;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
-import fr.mby.opa.pics.model.converter.JodaDateTimeJsonSerializer;
+import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 
 /**
  * @author Maxime Bossard - 2013
@@ -56,7 +52,6 @@ import fr.mby.opa.pics.model.converter.JodaDateTimeJsonSerializer;
 				+ "(a.id, a.name, a.description, a.creationTime, (SELECT count(p.id) FROM Picture p WHERE p.album.id = a.id))"
 				+ " FROM Album a ORDER BY a.creationTime ASC")})
 @Entity
-@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "ALBUM")
 @JsonInclude(Include.NON_NULL)
 public class Album {
@@ -78,7 +73,7 @@ public class Album {
 	 * @param description
 	 * @param creationTime
 	 */
-	public Album(final Long id, final String name, final String description, final ReadableDateTime creationTime,
+	public Album(final Long id, final String name, final String description, final Timestamp creationTime,
 			final Integer size) {
 		super();
 		this.id = id;
@@ -104,10 +99,13 @@ public class Album {
 	private String description;
 
 	@Basic(optional = false)
-	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false)
-	@Convert("jodaDateTime")
-	@JsonSerialize(using = JodaDateTimeJsonSerializer.class)
-	private ReadableDateTime creationTime;
+	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp creationTime;
+
+	// @Basic(optional = false)
+	// @Column(name = "LOCKED", nullable = false)
+	private transient Boolean locked;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SELECTED_ORDERING_PROPOSAL_ID")
@@ -186,7 +184,7 @@ public class Album {
 	 * 
 	 * @return the creationTime
 	 */
-	public ReadableDateTime getCreationTime() {
+	public Timestamp getCreationTime() {
 		return this.creationTime;
 	}
 
@@ -196,7 +194,7 @@ public class Album {
 	 * @param creationTime
 	 *            the creationTime to set
 	 */
-	public void setCreationTime(final ReadableDateTime creationTime) {
+	public void setCreationTime(final Timestamp creationTime) {
 		this.creationTime = creationTime;
 	}
 
@@ -293,6 +291,25 @@ public class Album {
 	 */
 	public void setSize(final Integer size) {
 		this.size = size;
+	}
+
+	/**
+	 * Getter of locked.
+	 * 
+	 * @return the locked
+	 */
+	public Boolean getLocked() {
+		return this.locked;
+	}
+
+	/**
+	 * Setter of locked.
+	 * 
+	 * @param locked
+	 *            the locked to set
+	 */
+	public void setLocked(final Boolean locked) {
+		this.locked = locked;
 	}
 
 }
