@@ -12,6 +12,9 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Pics</title>
 	
+	<!-- CSS adjustments for browsers with JavaScript disabled -->
+	<noscript><link rel="stylesheet" href="resources/css/jquery.fileupload-ui-noscript.css"></noscript>
+
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
 	
@@ -163,5 +166,8 @@
       </div>
       <div class="clearfix"></div>
     </div>
+    
+    <jsp:include page="uploadForm.jsp" />
+    
 </body>
 </html>

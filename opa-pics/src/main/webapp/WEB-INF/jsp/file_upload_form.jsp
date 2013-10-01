@@ -7,7 +7,7 @@
     <title>Pics Upload</title>
 
 	<!-- Bootstrap styles -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css">
 
 	<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 	<link rel="stylesheet" href="resources/css/jquery.fileupload-ui.css">
@@ -21,8 +21,9 @@
 	</style>
 	
 		 
-	 <spring:url value="upload/jqueryUpload" var="jqueryUploadActionUrl" />
+	<spring:url var="jqueryUploadActionUrl" value="upload/jqueryUpload?albumId={{selectedAlbum.id}}" />
 	<spring:url var="getImageUrl" value="/image/{:imageId}" />
+	
 	<script type="text/javascript">
 		var jqueryUploadActionUrl = '${jqueryUploadActionUrl}';
 		var getImageUrl = '${getImageUrl}';
