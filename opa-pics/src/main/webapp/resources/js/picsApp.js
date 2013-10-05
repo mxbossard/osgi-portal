@@ -1,33 +1,39 @@
 var app = angular.module('pics', ['infinite-scroll']);
 
-app.controller('PicsCtrl', function($scope, $http, $timeout) {
-	'use strict';
+app.service('PicsService', function() {
+	"use strict";
 
-	$scope.stash = null;
-	$scope.lastSinceTime = 0;
-	$scope.scale = 100;
-	$scope.searchPicturesLock = false;
-	$scope.stashWidth = getBodyWidth();
-	$scope.scale = 100;
-	$scope.selectedPictures = [];
-	$scope.stashRows = [];
-	$scope.stashRowsToReechantillonate = [];
-	$scope.reechantillonatingPageSize = 200;
-	$scope.picturesToAddInStash = [];
+	var service = {
+		_eventTarget : new MbyUtils.event.EventTarget('PicsService'),
+		changeAlbum : function(album) {
+			this._eventTarget.fireEvent(new MbyUtils.event.Event('albumChange', {
+				'album' : album
+			}));
+		},
+		onAlbumChange : function(callback) {
+			this._eventTarget.addEventListener(new MbyUtils.event.EventListener('albumChange', function(event) {
+				callback(event.properties.album);
+			}));
+		}
+	};
 
-	$scope.nextPictures = function() {
-		getNextPictures($http, $timeout, $scope);
+	return service;
+});
+
+app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService) {
+	"use strict";
+
+	$scope.selectedAlbum = null;
+
+	// On page init
+	$scope.init = function() {
+		$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
+			$scope.albums = data;
+		});
 	};
 
 	$scope.selectAlbum = function(album) {
-		$scope.selectedAlbum = album;
-		$scope.lastSinceTime = 0;
-
-		var width = $scope.stashWidth;
-		console.log(width);
-		$scope.stash = buildNewStash(width, $scope.scale);
-
-		getNextPictures($http, $timeout, $scope);
+		PicsService.changeAlbum(album);
 	};
 
 	$scope.createAlbum = function($event) {
@@ -39,6 +45,26 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 			var url = createAlbumJsonUrl;
 			$http.post(url, newAlbum);
 		}
+	};
+
+});
+
+app.controller('StashCtrl', function($scope, $http, $timeout, PicsService) {
+	"use strict";
+
+	$scope.stash = null;
+	$scope.lastSinceTime = 0;
+	$scope.scale = 100;
+	$scope.searchPicturesLock = false;
+	$scope.stashWidth = null;
+	$scope.scale = 100;
+	$scope.selectedPictures = [];
+	$scope.reechantillonatingPageSize = 200;
+	$scope.picturesToAddInStash = [];
+
+	// On page init
+	$scope.init = function() {
+		$scope.stashWidth = getBodyWidth();
 	};
 
 	$scope.reechantillonateStash = function(event) {
@@ -138,9 +164,17 @@ app.controller('PicsCtrl', function($scope, $http, $timeout) {
 		}
 	};
 
-	// On page init
-	$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
-		$scope.albums = data;
+	// Register album change callback
+	PicsService.onAlbumChange(function(album) {
+
+		$scope.selectedAlbum = album;
+		$scope.lastSinceTime = 0;
+
+		var width = $scope.stashWidth;
+		console.log(width);
+		$scope.stash = buildNewStash(width, $scope.scale);
+
+		getNextPictures($http, $timeout, $scope);
 	});
 
 });
