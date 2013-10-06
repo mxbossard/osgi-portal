@@ -20,6 +20,7 @@ import java.sql.Timestamp;
 import java.util.List;
 
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -32,9 +33,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -103,22 +106,26 @@ public class Album {
 	@JsonSerialize(using = TimestampJsonSerializer.class)
 	private Timestamp creationTime;
 
-	// @Basic(optional = false)
-	// @Column(name = "LOCKED", nullable = false)
-	private transient Boolean locked;
+	@Basic(optional = false)
+	@Column(name = "LOCKED", nullable = false)
+	private Boolean locked;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	@JoinColumn(name = "SELECTED_ORDERING_PROPOSAL_ID")
 	private ProposalBag selectedOrderingProposal;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<ProposalBag> submitedOrderingProposals;
 
-	@OneToMany(fetch = FetchType.LAZY)
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<ProposalBag> validatedOrderingProposals;
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "album")
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "album", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Picture> pictures;
+
+	@Version
+	@JsonIgnore
+	private Long version;
 
 	private transient Integer size;
 

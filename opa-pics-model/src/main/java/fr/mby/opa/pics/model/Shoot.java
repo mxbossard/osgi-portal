@@ -16,6 +16,8 @@
 
 package fr.mby.opa.pics.model;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,20 +25,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
-import org.eclipse.persistence.annotations.Convert;
-import org.eclipse.persistence.annotations.Converter;
-import org.joda.time.ReadableDateTime;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-import fr.mby.opa.pics.model.converter.JodaDateTimeConverter;
+import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 @Entity
-@Converter(name = "jodaDateTime", converterClass = JodaDateTimeConverter.class)
 @Table(name = "SHOOT")
+@JsonInclude(Include.NON_NULL)
 public class Shoot {
 
 	@Id
@@ -45,14 +49,23 @@ public class Shoot {
 	private Long id;
 
 	@Basic(optional = false)
-	@Column(name = "START_TIME", columnDefinition = "TIMESTAMP")
-	@Convert("jodaDateTime")
-	private ReadableDateTime startTime;
+	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp creationTime;
 
 	@Basic(optional = false)
-	@Column(name = "END_TIME", columnDefinition = "TIMESTAMP")
-	@Convert("jodaDateTime")
-	private ReadableDateTime endTime;
+	@Column(name = "START_TIME", columnDefinition = "TIMESTAMP", nullable = false)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp startTime;
+
+	@Basic(optional = false)
+	@Column(name = "END_TIME", columnDefinition = "TIMESTAMP", nullable = false)
+	@JsonSerialize(using = TimestampJsonSerializer.class)
+	private Timestamp endTime;
+
+	@Version
+	@JsonIgnore
+	private Long version;
 
 	/**
 	 * Getter of id.
@@ -74,11 +87,30 @@ public class Shoot {
 	}
 
 	/**
+	 * Getter of creationTime.
+	 * 
+	 * @return the creationTime
+	 */
+	public Timestamp getCreationTime() {
+		return this.creationTime;
+	}
+
+	/**
+	 * Setter of creationTime.
+	 * 
+	 * @param creationTime
+	 *            the creationTime to set
+	 */
+	public void setCreationTime(final Timestamp creationTime) {
+		this.creationTime = creationTime;
+	}
+
+	/**
 	 * Getter of startTime.
 	 * 
 	 * @return the startTime
 	 */
-	public ReadableDateTime getStartTime() {
+	public Timestamp getStartTime() {
 		return this.startTime;
 	}
 
@@ -88,7 +120,7 @@ public class Shoot {
 	 * @param startTime
 	 *            the startTime to set
 	 */
-	public void setStartTime(final ReadableDateTime startTime) {
+	public void setStartTime(final Timestamp startTime) {
 		this.startTime = startTime;
 	}
 
@@ -97,7 +129,7 @@ public class Shoot {
 	 * 
 	 * @return the endTime
 	 */
-	public ReadableDateTime getEndTime() {
+	public Timestamp getEndTime() {
 		return this.endTime;
 	}
 
@@ -107,7 +139,7 @@ public class Shoot {
 	 * @param endTime
 	 *            the endTime to set
 	 */
-	public void setEndTime(final ReadableDateTime endTime) {
+	public void setEndTime(final Timestamp endTime) {
 		this.endTime = endTime;
 	}
 

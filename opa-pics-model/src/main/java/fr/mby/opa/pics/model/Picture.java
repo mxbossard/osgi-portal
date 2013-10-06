@@ -36,7 +36,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
@@ -87,15 +86,12 @@ public class Picture {
 	@Column(name = "ID")
 	private Long id;
 
-	// TODO ranme HASH to ORIGINAL_HASH
 	@Basic(optional = false)
-	@Column(name = "HASH", nullable = false, updatable = false, unique = true)
+	@Column(name = "ORIGINAL_HASH", nullable = false, updatable = false, unique = true)
 	private String originalHash;
 
-	// TODO config current Hash
-	// @Basic(optional = false)
-	// @Column(name = "CURRENT_HASH", nullable = false, updatable = true, unique = true)
-	@Transient
+	@Basic(optional = false)
+	@Column(name = "CURRENT_HASH", nullable = false, updatable = true, unique = true)
 	private String currentHash;
 
 	@Basic(optional = false)
@@ -108,15 +104,11 @@ public class Picture {
 
 	@Basic(optional = false)
 	@Column(name = "ORIGINAL_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
-	// @Convert("jodaDateTime")
-	// @JsonSerialize(using = JodaDateTimeJsonSerializer.class)
 	@JsonSerialize(using = TimestampJsonSerializer.class)
 	private Timestamp originalTime;
 
 	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
-	// @Convert("jodaDateTime")
-	// @JsonSerialize(using = JodaDateTimeJsonSerializer.class)
 	@JsonSerialize(using = TimestampJsonSerializer.class)
 	private Timestamp creationTime;
 
@@ -167,7 +159,7 @@ public class Picture {
 	@Column(name = "IMAGE_ID", nullable = false, insertable = false, updatable = false)
 	private Long imageId;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false, orphanRemoval = true)
 	@JoinColumn(name = "IMAGE_ID", nullable = false, updatable = false)
 	@JsonIgnore
 	private BinaryImage image;
@@ -176,7 +168,7 @@ public class Picture {
 	@Column(name = "THUMBNAIL_ID", nullable = false, insertable = false, updatable = false)
 	private Long thumbnailId;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false, orphanRemoval = true)
 	@JoinColumn(name = "THUMBNAIL_ID", nullable = false, updatable = false)
 	@JsonIgnore
 	private BinaryImage thumbnail;
@@ -187,6 +179,7 @@ public class Picture {
 	private Album album;
 
 	@Version
+	@JsonIgnore
 	private Long version;
 
 	/** */

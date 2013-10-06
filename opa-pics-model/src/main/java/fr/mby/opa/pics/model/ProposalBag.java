@@ -31,7 +31,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
@@ -46,6 +50,7 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
  */
 @Entity
 @Table(name = "PROPOSAL_BAG")
+@JsonInclude(Include.NON_NULL)
 public class ProposalBag {
 
 	@Id
@@ -82,6 +87,10 @@ public class ProposalBag {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
 	private Collection<EraseProposal> eraseProposals;
+
+	@Version
+	@JsonIgnore
+	private Long version;
 
 	/**
 	 * Getter of id.

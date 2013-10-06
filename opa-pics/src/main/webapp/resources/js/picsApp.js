@@ -25,13 +25,20 @@ window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService
 
 	$scope.selectedAlbum = null;
 
+	function initAlbum(album) {
+		if (album) {
+			album.size = album.size || 0;
+			album.label = album.name + " (" + album.size + ")";
+		}
+	}
+
 	// On page init
 	$scope.init = function() {
 		$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
 			var albums = data;
 			if (albums) {
 				angular.forEach(albums, function(value, key) {
-					value.label = value.name + " (" + value.size + ")";
+					initAlbum(value);
 				});
 			}
 			$scope.albums = albums;
@@ -49,15 +56,26 @@ window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService
 			newAlbum.name = name;
 
 			var url = createAlbumJsonUrl;
-			$http.post(url, newAlbum);
+			$http.post(url, newAlbum).success(function(data) {
+				var createdAlbum = data;
+				if (createdAlbum) {
+					initAlbum(createdAlbum);
+					$scope.albums.push(createdAlbum);
+				}
+			});
 		}
 	};
 
 	$scope.deleteAlbum = function(album) {
+		"use strict";
 		var confirm = window.confirm("Are you sure you want to delete album: " + album.name + " ?");
 		if (confirm) {
-			var index = $scope.albums.indexOf(album);
-			$scope.albums.splice(index, 1);
+			var url = deleteAlbumUrl.replace(/{:albumId}/, album.id); // album.id
+			$http['delete'](url).success(function(data) {
+				// Remove album from scope.
+				var index = $scope.albums.indexOf(album);
+				$scope.albums.splice(index, 1);
+			});
 		}
 
 		if ($scope.selectedAlbum == album) {

@@ -61,6 +61,7 @@ public class AlbumController {
 	private IPictureDao pictureDao;
 
 	@ResponseBody
+	@ResponseStatus(value = HttpStatus.OK)
 	@RequestMapping(method = RequestMethod.GET)
 	public Collection<Album> findAllAlbumsJson(final HttpServletRequest request, final HttpServletResponse response)
 			throws Exception {
@@ -84,6 +85,7 @@ public class AlbumController {
 	}
 
 	@ResponseBody
+	@ResponseStatus(value = HttpStatus.OK)
 	@RequestMapping(method = RequestMethod.PUT)
 	public Album updateAlbumJson(@Valid @RequestBody final Album album) throws Exception {
 
@@ -92,7 +94,19 @@ public class AlbumController {
 		return updatedAlbum;
 	}
 
+	@ResponseStatus(value = HttpStatus.OK)
+	@RequestMapping(value = "{albumId}", method = RequestMethod.DELETE)
+	public void removeAlbum(@PathVariable final Long albumId) throws Exception {
+		Assert.notNull(albumId, "No Album Id supplied !");
+
+		final Album album = this.albumDao.findAlbumById(albumId);
+		Assert.notNull(album, "No Album found !");
+
+		this.albumDao.deleteAlbum(album);
+	}
+
 	@ResponseBody
+	@ResponseStatus(value = HttpStatus.OK)
 	@RequestMapping(value = "{albumId}/pictures", method = RequestMethod.GET)
 	public List<Picture> findAlbumPicturesJson(@PathVariable final Long albumId,
 			@RequestParam(value = "since", required = false) final Long since, final HttpServletRequest request,
@@ -108,6 +122,13 @@ public class AlbumController {
 	@ResponseBody
 	public String handleMethodArgumentNotValidException(final MethodArgumentNotValidException error) {
 		return "Bad request: " + error.getMessage();
+	}
+
+	@ExceptionHandler(IllegalArgumentException.class)
+	@ResponseBody
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	public String handleIllegalArgumentException(final IllegalArgumentException e) {
+		return "Error while validating arguments !";
 	}
 
 	@ExceptionHandler(Exception.class)

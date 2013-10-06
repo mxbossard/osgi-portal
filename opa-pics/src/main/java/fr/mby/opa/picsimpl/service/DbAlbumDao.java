@@ -75,7 +75,8 @@ public class DbAlbumDao extends AbstractPicsDao implements IAlbumDao {
 				}
 
 				final Album updatedAlbum = em.merge(album);
-				em.lock(album, LockModeType.NONE);
+				em.lock(managedAlbum, LockModeType.NONE);
+
 				return updatedAlbum;
 			}
 		};
@@ -97,8 +98,7 @@ public class DbAlbumDao extends AbstractPicsDao implements IAlbumDao {
 					throw new PictureNotFoundException();
 				}
 
-				em.remove(album);
-				em.lock(album, LockModeType.NONE);
+				em.remove(managedAlbum);
 			}
 		};
 	}

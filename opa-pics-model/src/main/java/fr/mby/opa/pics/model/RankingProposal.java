@@ -30,7 +30,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.persistence.Version;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
@@ -50,6 +54,7 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 @Entity
 @Table(name = "RANKING_PROPOSAL", uniqueConstraints = {@UniqueConstraint(columnNames = "PROPOSAL_BAG_ID,PICTURE_ID"),
 		@UniqueConstraint(columnNames = "PROPOSAL_BAG_ID,SHOOT_ID,RANK")})
+@JsonInclude(Include.NON_NULL)
 public class RankingProposal {
 
 	@Id
@@ -77,6 +82,10 @@ public class RankingProposal {
 	@ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "PICTURE_ID", nullable = false)
 	private Picture picture;
+
+	@Version
+	@JsonIgnore
+	private Long version;
 
 	/**
 	 * Getter of id.

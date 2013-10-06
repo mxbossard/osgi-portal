@@ -30,7 +30,7 @@ public interface IAlbumDao {
 
 	Album updateAlbum(Album album) throws AlbumNotFoundException;
 
-	void deleteAlbum(Album picture) throws AlbumNotFoundException;
+	void deleteAlbum(Album album) throws AlbumNotFoundException;
 
 	Album findAlbumById(Long id);
 

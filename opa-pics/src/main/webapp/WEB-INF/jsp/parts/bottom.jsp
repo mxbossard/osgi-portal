@@ -9,6 +9,7 @@
 
 <c:url var="findAllAlbumsJsonUrl" value="/album" />
 <c:url var="createAlbumJsonUrl" value="/album" />
+<c:url var="deleteAlbumUrl" value="/album/{:albumId}" />
 <c:url var="findAllPicturesOfAlbumJsonUrl" value="/album/{:albumId}/pictures" />
 <c:url var="getPictureOfAlbumUrl" value="/album/{:albumId}/pictures/{:pictureId}" />
 <c:url var="getImageUrl" value="/image/{:imageId}" />
@@ -16,6 +17,7 @@
 <script type="text/javascript">
 	var findAllAlbumsJsonUrl = '${findAllAlbumsJsonUrl}';
 	var createAlbumJsonUrl = '${createAlbumJsonUrl}';
+	var deleteAlbumUrl = '${deleteAlbumUrl}';
 	var findAllPicturesOfAlbumJsonUrl = '${findAllPicturesOfAlbumJsonUrl}';
 	var getImageUrl = '${getImageUrl}';
 	var getPictureOfAlbumUrl = '${getPictureOfAlbumUrl}';
