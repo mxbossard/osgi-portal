@@ -53,11 +53,18 @@
 	</bean>
  
 	<bean id="picsController" class="fr.mby.opa.pics.web.controller.PicsController">
+	</bean>
 	
+	<bean id="albumController" class="fr.mby.opa.pics.web.controller.AlbumController">
+	</bean>
+	
+	<bean id="pictureController" class="fr.mby.opa.pics.web.controller.PictureController">
+	</bean>
+	
+	<bean id="imageController" class="fr.mby.opa.pics.web.controller.ImageController">
 	</bean>
 	
 	<bean id="picturesUploadController" class="fr.mby.opa.pics.web.controller.UploadPicturesController">
-	
 	</bean>
 
 </beans>

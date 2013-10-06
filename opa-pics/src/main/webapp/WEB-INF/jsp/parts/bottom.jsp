@@ -10,9 +10,9 @@
 <c:url var="findAllAlbumsJsonUrl" value="/album" />
 <c:url var="createAlbumJsonUrl" value="/album" />
 <c:url var="findAllPicturesOfAlbumJsonUrl" value="/album/{:albumId}/pictures" />
-<c:url var="getImageUrl" value="/image/{:imageId}" />
 <c:url var="getPictureOfAlbumUrl" value="/album/{:albumId}/pictures/{:pictureId}" />
-<c:url var="rotatePictureUrl" value="/rotate/{:pictureId}/{:angle}" />
+<c:url var="getImageUrl" value="/image/{:imageId}" />
+<c:url var="rotatePictureUrl" value="/picture/{:pictureId}/rotate/{:angle}" />
 <script type="text/javascript">
 	var findAllAlbumsJsonUrl = '${findAllAlbumsJsonUrl}';
 	var createAlbumJsonUrl = '${createAlbumJsonUrl}';

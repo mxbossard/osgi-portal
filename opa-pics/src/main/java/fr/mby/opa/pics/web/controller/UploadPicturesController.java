@@ -66,8 +66,10 @@ import fr.mby.opa.pics.web.jquery.FileMetaList;
  * 
  */
 @Controller
-@RequestMapping("upload")
+@RequestMapping(UploadPicturesController.UPLOAD_CONTROLLER_PATH)
 public class UploadPicturesController {
+
+	public static final String UPLOAD_CONTROLLER_PATH = "/upload";
 
 	private static final String PICTURE_ALREADY_EXISTS_MSG = "Picture already exists in the database : ";
 
@@ -162,9 +164,10 @@ public class UploadPicturesController {
 								pictureMeta.setFileName(pictureFileName);
 								pictureMeta.setFileSize(pictureContents.length / 1024 + " Kb");
 								pictureMeta.setFileType(Files.probeContentType(picturePath));
-								pictureMeta.setUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + imageId));
-								pictureMeta.setThumbnailUrl(response.encodeURL(PicsController.GET_IMAGE_PATH
-										+ thumbnailId));
+								pictureMeta.setUrl(response.encodeURL(ImageController.IMAGE_CONTROLLER_PATH + "/"
+										+ imageId));
+								pictureMeta.setThumbnailUrl(response.encodeURL(ImageController.IMAGE_CONTROLLER_PATH
+										+ "/" + thumbnailId));
 							} catch (final PictureAlreadyExistsException e) {
 								// Picture already exists !
 								pictureMeta.setError(UploadPicturesController.PICTURE_ALREADY_EXISTS_MSG
@@ -205,8 +208,9 @@ public class UploadPicturesController {
 					fileMeta.setFileSize(mpf.getSize() / 1024 + " Kb");
 					fileMeta.setFileType(mpf.getContentType());
 					fileMeta.setBytes(fileContents);
-					fileMeta.setUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + imageId));
-					fileMeta.setThumbnailUrl(response.encodeURL(PicsController.GET_IMAGE_PATH + thumbnailId));
+					fileMeta.setUrl(response.encodeURL(ImageController.IMAGE_CONTROLLER_PATH + "/" + imageId));
+					fileMeta.setThumbnailUrl(response.encodeURL(ImageController.IMAGE_CONTROLLER_PATH + "/"
+							+ thumbnailId));
 
 					// 2.4 add to files
 					files.add(fileMeta);
