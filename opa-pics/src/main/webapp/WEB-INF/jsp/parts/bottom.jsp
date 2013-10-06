@@ -22,9 +22,6 @@
 	var rotatePictureUrl = '${rotatePictureUrl}';
 </script>
 
-<!-- Mby-utils.js -->
-<script type="text/javascript" src="resources/js/mby-utils-min.js"></script>
-
 <!-- Jquery for Infinite-scroll -->
 <script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.js"></script>
 	
@@ -34,5 +31,8 @@
 <!-- Infinite-scroll -->
 <script type="text/javascript" src="resources/js/ng-infinite-scroll.min.js"></script>
 
+<!-- Mby-utils.js -->
+<script type="text/javascript" src="resources/js/mby-utils-min.js"></script>
 
+<!-- PicsApp.js -->
 <script type="text/javascript" src="resources/js/picsApp.js"></script>

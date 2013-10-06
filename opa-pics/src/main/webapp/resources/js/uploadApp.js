@@ -11,56 +11,58 @@
 
 	var isOnGitHub = false, url = jqueryUploadActionUrl;
 
-	angular.module('picsUpload', ['blueimp.fileupload']).config(
-			[
-					'$httpProvider',
-					'fileUploadProvider',
-					function($httpProvider, fileUploadProvider) {
-						delete $httpProvider.defaults.headers.common['X-Requested-With'];
-						fileUploadProvider.defaults.redirect = window.location.href.replace(/\/[^\/]*$/,
-								'/cors/result.html?%s');
+	window.app = window.app
+			|| angular.module('pics', ['blueimp.fileupload']).config(
+					[
+							'$httpProvider',
+							'fileUploadProvider',
+							function($httpProvider, fileUploadProvider) {
+								delete $httpProvider.defaults.headers.common['X-Requested-With'];
+								fileUploadProvider.defaults.redirect = window.location.href.replace(/\/[^\/]*$/,
+										'/cors/result.html?%s');
 
-						var disableSlowLoading = true;
-						// disableImageMetaDataLoad : disableSlowLoading,
+								var disableSlowLoading = true;
+								// disableImageMetaDataLoad : disableSlowLoading,
 
-						// Demo settings:
-						angular.extend(fileUploadProvider.defaults, {
-							// Enable image resizing, except for Android and Opera,
-							// which actually support image resizing, but fail to
-							// send Blob objects via XHR requests:
-							disableImageResize : true,
-							maxFileSize : false,
-							acceptFileTypes : /(\.|\/)(gif|jpe?g|png|zip)$/i,
-							limitConcurrentUploads : 3,
-							maxNumberOfFiles : 50,
+								// Demo settings:
+								angular.extend(fileUploadProvider.defaults, {
+									// Enable image resizing, except for Android and Opera,
+									// which actually support image resizing, but fail to
+									// send Blob objects via XHR requests:
+									disableImageResize : true,
+									maxFileSize : false,
+									acceptFileTypes : /(\.|\/)(gif|jpe?g|png|zip)$/i,
+									limitConcurrentUploads : 3,
+									maxNumberOfFiles : 50,
 
-							disableImagePreview : disableSlowLoading,
-							disableImageMetaDataSave : disableSlowLoading,
-							disableImageLoad : disableSlowLoading,
-							disableExifThumbnail : disableSlowLoading,
-							disableExifSub : disableSlowLoading,
-							disableExifGps : disableSlowLoading,
-							loadImageMaxFileSize : 0
-						});
+									disableImagePreview : disableSlowLoading,
+									disableImageMetaDataSave : disableSlowLoading,
+									disableImageLoad : disableSlowLoading,
+									disableExifThumbnail : disableSlowLoading,
+									disableExifSub : disableSlowLoading,
+									disableExifGps : disableSlowLoading,
+									loadImageMaxFileSize : 0
+								});
 
-					}])
+							}]);
 
-	.controller('DemoFileUploadController', ['$scope', '$http', '$filter', '$window', function($scope, $http) {
-		$scope.options = {
-			url : url
-		};
-		if (!isOnGitHub) {
-			$scope.loadingFiles = true;
-			$http.get(url).then(function(response) {
-				$scope.loadingFiles = false;
-				$scope.queue = response.data.files || [];
-			}, function() {
-				$scope.loadingFiles = false;
-			});
-		}
-	}])
+	window.app.controller('DemoFileUploadController', ['$scope', '$http', '$filter', '$window',
+			function($scope, $http) {
+				$scope.options = {
+					url : url
+				};
+				if (!isOnGitHub) {
+					$scope.loadingFiles = true;
+					$http.get(url).then(function(response) {
+						$scope.loadingFiles = false;
+						$scope.queue = response.data.files || [];
+					}, function() {
+						$scope.loadingFiles = false;
+					});
+				}
+			}]);
 
-	.controller('FileDestroyController', ['$scope', '$http', function($scope, $http) {
+	window.app.controller('FileDestroyController', ['$scope', '$http', function($scope, $http) {
 		var file = $scope.file, state;
 		if (file.url) {
 			file.$state = function() {

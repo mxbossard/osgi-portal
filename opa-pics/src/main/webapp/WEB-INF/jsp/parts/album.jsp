@@ -2,7 +2,7 @@
 	<ul>
 		<li data-ng-repeat="album in albums" data-ng-class="{'selected': album.id == selectedAlbum.id}">
 			<span>
-				<span data-ng-click="selectAlbum(album)">{{album.name}} ({{album.size}})</span>
+				<span data-ng-click="selectAlbum(album)">{{album.label}}</span>
 				<span data-ng-click="deleteAlbum(album)">[x]</span>
 			</span>
 		</li>

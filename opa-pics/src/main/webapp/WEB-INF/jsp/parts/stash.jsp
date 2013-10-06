@@ -14,7 +14,7 @@
 		  	<input type="number" class="input-small" name="scale" id="scale" min="10" step="10" max="300" data-ng-model="scale" />
 		  	% | Reechantillonating page size 
 		  	<input type="number" class="input-small" name="scale" id="scale" min="10" step="10" max="1000" 
-		  		data-ng-model="reechantillonatingPageSize" />
+		  		data-ng-model="reechantillonatingPageSize"  />
 		  	|
 		  	<button type="button" class="btn btn-danger" data-ng-click="reechantillonateStash($event)">
 		    	<i class="icon-time"></i><span> Reechantillonate</span>

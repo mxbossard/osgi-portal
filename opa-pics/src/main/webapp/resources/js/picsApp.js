@@ -1,16 +1,16 @@
-var app = angular.module('pics', ['infinite-scroll']);
+window.app = window.app || angular.module('pics', ['infinite-scroll']);
 
-app.service('PicsService', function() {
+window.app.service('PicsService', function() {
 	"use strict";
 
 	var service = {
 		_eventTarget : new MbyUtils.event.EventTarget('PicsService'),
-		changeAlbum : function(album) {
+		selectAlbum : function(album) {
 			this._eventTarget.fireEvent(new MbyUtils.event.Event('albumChange', {
 				'album' : album
 			}));
 		},
-		onAlbumChange : function(callback) {
+		onAlbumSelection : function(callback) {
 			this._eventTarget.addEventListener(new MbyUtils.event.EventListener('albumChange', function(event) {
 				callback(event.properties.album);
 			}));
@@ -20,7 +20,7 @@ app.service('PicsService', function() {
 	return service;
 });
 
-app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService) {
+window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService) {
 	"use strict";
 
 	$scope.selectedAlbum = null;
@@ -28,12 +28,18 @@ app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService) {
 	// On page init
 	$scope.init = function() {
 		$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
-			$scope.albums = data;
+			var albums = data;
+			if (albums) {
+				angular.forEach(albums, function(value, key) {
+					value.label = value.name + " (" + value.size + ")";
+				});
+			}
+			$scope.albums = albums;
 		});
 	};
 
 	$scope.selectAlbum = function(album) {
-		PicsService.changeAlbum(album);
+		PicsService.selectAlbum(album);
 	};
 
 	$scope.createAlbum = function($event) {
@@ -62,7 +68,7 @@ app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService) {
 
 });
 
-app.controller('StashCtrl', function($scope, $http, PicsService, StashService) {
+window.app.controller('StashCtrl', function($scope, $http, PicsService, StashService) {
 	"use strict";
 
 	$scope.scale = 100;
@@ -146,7 +152,7 @@ app.controller('StashCtrl', function($scope, $http, PicsService, StashService) {
 	};
 
 	// Register album change callback
-	PicsService.onAlbumChange(function(album) {
+	PicsService.onAlbumSelection(function(album) {
 		$scope.selectedAlbum = album;
 		$scope.lastSinceTime = 0;
 
@@ -160,7 +166,7 @@ app.controller('StashCtrl', function($scope, $http, PicsService, StashService) {
 
 });
 
-app.service('StashService', function($http, $timeout) {
+window.app.service('StashService', function($http, $timeout) {
 	"use strict";
 
 	function buildNewStash(width, scale) {
