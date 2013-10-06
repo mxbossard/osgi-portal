@@ -30,7 +30,7 @@
 		</h3>
 	</div>
 	
-	<div id="stash-pictures" data-infinite-scroll="nextPictures()" data-infinite-scroll-distance="1" data-infinite-scroll-immediate-check="false">
+	<div id="stash-pictures" data-infinite-scroll="loadNextPictures()" data-infinite-scroll-distance="1" data-infinite-scroll-immediate-check="false">
 		<div>
 	      
 			<div class="stashPicture" data-ng-repeat="picture in stash.pictures" 
