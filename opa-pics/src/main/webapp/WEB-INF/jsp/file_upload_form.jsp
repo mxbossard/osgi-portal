@@ -30,10 +30,10 @@
 	<h1>Pics Upload</h1>
 	
 	<div data-ng-controller="AlbumCtrl" data-ng-init="init()">
-		<select id="albumSelector" data-ng-options="album.id as album.label for album in albums" 
-			data-ng-model="selectedAlbum" data-ng-change="selectAlbum(album)" required>
+		<%-- data-ng-options="album.id as album.label for album in albums"  --%>
+		<select id="albumSelector" data-ng-model="selectedAlbumId" data-ng-change="selectAlbum()" required>
 			<option value="null" selected="selected" disabled="disabled">--- Choose an album ---</option>
-	      	<%-- <option data-ng-repeat="album in albums" value="{{album.id}}">{{album.name}} - {{album.size}}</option> --%>
+	      	<option data-ng-repeat="(id, album) in albums" value="{{id}}">{{album.name}} - {{album.size}}</option>
 	    </select>
 	</div>
 

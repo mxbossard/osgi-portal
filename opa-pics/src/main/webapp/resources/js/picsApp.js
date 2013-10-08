@@ -24,6 +24,7 @@ window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService
 	"use strict";
 
 	$scope.selectedAlbum = null;
+	$scope.selectedAlbumId = "null";
 
 	function initAlbum(album) {
 		if (album) {
@@ -45,7 +46,10 @@ window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService
 		});
 	};
 
-	$scope.selectAlbum = function(album) {
+	$scope.selectAlbum = function() {
+		var album = $scope.albums[$scope.selectedAlbumId];
+
+		alert('selected: ' + album.label);
 		PicsService.selectAlbum(album);
 	};
 
@@ -61,6 +65,7 @@ window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService
 				if (createdAlbum) {
 					initAlbum(createdAlbum);
 					$scope.albums.push(createdAlbum);
+					$scope.newAlbumName = "";
 				}
 			});
 		}
