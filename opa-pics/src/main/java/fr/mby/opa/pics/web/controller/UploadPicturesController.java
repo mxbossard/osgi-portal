@@ -69,7 +69,7 @@ import fr.mby.opa.pics.web.jquery.FileMetaList;
 @RequestMapping(UploadPicturesController.UPLOAD_CONTROLLER_PATH)
 public class UploadPicturesController {
 
-	public static final String UPLOAD_CONTROLLER_PATH = "/upload";
+	public static final String UPLOAD_CONTROLLER_PATH = "upload";
 
 	private static final String PICTURE_ALREADY_EXISTS_MSG = "Picture already exists in the database : ";
 

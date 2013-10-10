@@ -45,7 +45,7 @@ import fr.mby.opa.pics.service.IPictureDao;
 @RequestMapping(ImageController.IMAGE_CONTROLLER_PATH)
 public class ImageController {
 
-	public static final String IMAGE_CONTROLLER_PATH = "/image";
+	public static final String IMAGE_CONTROLLER_PATH = "image";
 
 	@Autowired
 	private IPictureDao pictureDao;

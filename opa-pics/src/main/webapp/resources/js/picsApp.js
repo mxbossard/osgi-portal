@@ -1,466 +1,478 @@
-window.app = window.app || angular.module('pics', ['infinite-scroll']);
+(function() {
+	'use strict';
 
-window.app.service('PicsService', function() {
-	"use strict";
+	window.app = window.app || angular.module('pics', ['infinite-scroll']);
 
-	var service = {
-		_eventTarget : new MbyUtils.event.EventTarget('PicsService'),
-		selectAlbum : function(album) {
-			this._eventTarget.fireEvent(new MbyUtils.event.Event('albumChange', {
-				'album' : album
-			}));
-		},
-		onAlbumSelection : function(callback) {
-			this._eventTarget.addEventListener(new MbyUtils.event.EventListener('albumChange', function(event) {
-				callback(event.properties.album);
-			}));
-		}
-	};
+	window.app.service('PicsService', function() {
+		'use strict';
 
-	return service;
-});
-
-window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService) {
-	"use strict";
-
-	$scope.selectedAlbum = null;
-	$scope.selectedAlbumId = "null";
-
-	function initAlbum(album) {
-		if (album) {
-			album.size = album.size || 0;
-			album.label = album.name + " (" + album.size + ")";
-		}
-	}
-
-	// On page init
-	$scope.init = function() {
-		$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
-			var albums = data;
-			if (albums) {
-				angular.forEach(albums, function(value, key) {
-					initAlbum(value);
-				});
+		var service = {
+			_eventTarget : new MbyUtils.event.EventTarget('PicsService'),
+			selectAlbum : function(album) {
+				this._eventTarget.fireEvent(new MbyUtils.event.Event('albumChange', {
+					'album' : album
+				}));
+			},
+			onAlbumSelection : function(callback) {
+				this._eventTarget.addEventListener(new MbyUtils.event.EventListener('albumChange', function(event) {
+					callback(event.properties.album);
+				}));
 			}
-			$scope.albums = albums;
-		});
-	};
+		};
 
-	$scope.selectAlbum = function() {
-		var album = $scope.albums[$scope.selectedAlbumId];
-
-		alert('selected: ' + album.label);
-		PicsService.selectAlbum(album);
-	};
-
-	$scope.createAlbum = function($event) {
-		var name = $scope.newAlbumName;
-		if (name) {
-			var newAlbum = {};
-			newAlbum.name = name;
-
-			var url = createAlbumJsonUrl;
-			$http.post(url, newAlbum).success(function(data) {
-				var createdAlbum = data;
-				if (createdAlbum) {
-					initAlbum(createdAlbum);
-					$scope.albums.push(createdAlbum);
-					$scope.newAlbumName = "";
-				}
-			});
-		}
-	};
-
-	$scope.deleteAlbum = function(album) {
-		"use strict";
-		var confirm = window.confirm("Are you sure you want to delete album: " + album.name + " ?");
-		if (confirm) {
-			var url = deleteAlbumUrl.replace(/{:albumId}/, album.id); // album.id
-			$http['delete'](url).success(function(data) {
-				// Remove album from scope.
-				var index = $scope.albums.indexOf(album);
-				$scope.albums.splice(index, 1);
-			});
-		}
-
-		if ($scope.selectedAlbum == album) {
-			$scope.selectedAlbum = null;
-		}
-
-	};
-
-});
-
-window.app.controller('StashCtrl', function($scope, $http, PicsService, StashService) {
-	"use strict";
-
-	$scope.scale = 100;
-	$scope.stashWidth = null;
-	$scope.reechantillonatingPageSize = 200;
-
-	// On page init
-	$scope.init = function() {
-		$scope.stashWidth = getBodyWidth();
-	};
-
-	$scope.loadNextPictures = function() {
-		StashService.loadNextPictures();
-	};
-
-	$scope.reechantillonateStash = function(event) {
-		var pageSize = $scope.reechantillonatingPageSize;
-		StashService.reechantillonate($scope.stashWidth, $scope.scale, pageSize);
-	};
-
-	$scope.addRandomPicture = function(number) {
-		var stash = StashService._stash;
-		if (stash) {
-			if (!number || number < 1) {
-				number = 1;
-			}
-
-			for ( var k = 0; k < number; k++) {
-				var newPic = {};
-				var width = Math.floor(Math.random() * 600) + 100; // 50 - 450
-				// var height = Math.floor(Math.random() * 100) + 50; // 50 - 150
-				var height = 200;
-
-				newPic.thumbnail = 'http://placehold.it/' + width + 'x' + height;
-				newPic.image = 'http://placehold.it/' + width + 'x' + height;
-				newPic.thumbnailWidth = width;
-				newPic.thumbnailHeight = height;
-
-				stash.addPicture(newPic);
-			}
-		}
-	};
-
-	$scope.startAddRandomPicture = function() {
-		$scope.autoAdding = setTimeout(function() {
-			$scope.startAddRandomPicture();
-			$scope.addRandomPicture();
-		}, 10);
-	};
-
-	$scope.stopAddRandomPicture = function() {
-		clearInterval($scope.autoAdding);
-	};
-
-	$scope.selectPicture = function($event, picture) {
-		console.log('toggle selection on picture');
-
-		StashService.togglePictureSelection(picture);
-	};
-
-	$scope.rotatePictureLeft = function($event, picture) {
-		StashService.rotatePicture(picture, -90);
-	};
-
-	$scope.rotatePictureRight = function($event, picture) {
-		StashService.rotatePicture(picture, 90);
-	};
-
-	$scope.removePicture = function($event, picture) {
-		StashService.togglePictureRemoval(picture);
-	};
-
-	$scope.overlayAction = function($event, picture) {
-		if (picture.overlayed) {
-			if (picture.selected) {
-				$scope.selectPicture($event, picture);
-			} else if (picture.removed) {
-				$scope.removePicture($event, picture);
-			}
-		}
-	};
-
-	// Register album change callback
-	PicsService.onAlbumSelection(function(album) {
-		$scope.selectedAlbum = album;
-		$scope.lastSinceTime = 0;
-
-		var width = $scope.stashWidth;
-
-		StashService.initStash(album, width, $scope.scale);
-		StashService.loadNextPictures();
-
-		$scope.stash = StashService._stash;
+		return service;
 	});
 
-});
+	window.app.controller('AlbumCtrl', function($scope, $http, $timeout, PicsService) {
+		'use strict';
 
-window.app.service('StashService', function($http, $timeout) {
-	"use strict";
+		$scope.selectedAlbum = null;
+		$scope.selectedAlbumKey = "null";
 
-	function buildNewStash(width, scale) {
-		var stash = {
-			pictures : [],
-			size : 0,
-			rows : [],
-			scale : (scale) ? scale / 100 : 1,
-			width : (width) ? width : 600,
-			margin : 1,
-			getLastRow : function() {
-				if (this.rows.length < 1) {
-					this.addNewRow();
+		function initAlbum(album) {
+			if (album) {
+				album.size = album.size || 0;
+				album.label = album.name + " (" + album.size + ")";
+			}
+		}
+
+		// On page init
+		$scope.init = function() {
+			$http.get(findAllAlbumsJsonUrl).success(function(data, status) {
+				var albums = data;
+				if (albums) {
+					angular.forEach(albums, function(value, key) {
+						initAlbum(value);
+					});
 				}
-				return this.rows[this.rows.length - 1];
-			},
-			addNewRow : function() {
-				var parentStash = this;
-				var newRow = {
-					pictures : [],
-					height : 0,
-					width : 0,
-					addPicture : function(picture) {
-						var nbPic = this.pictures.length || 0;
-						var hypotheticWidth = nbPic * parentStash.margin + this.width + picture.displayWidth;
-						if (hypotheticWidth > parentStash.width) {
-							return false;
-						}
+				$scope.albums = albums;
+			});
+		};
 
-						this.pictures.push(picture);
-						this.height = Math.max(this.height, picture.displayHeight);
-						this.width += picture.displayWidth;
+		$scope.selectAlbum = function(album) {
+			if (album) {
+				PicsService.selectAlbum(album);
+			}
+		};
 
-						return true;
-					},
-					finalizeRow : function() {
-						var ratio = (parentStash.width - parentStash.margin * this.pictures.length) / this.width;
-						this.height = Math.round(this.height * ratio);
+		$scope.createAlbum = function($event) {
+			var name = $scope.newAlbumName;
+			if (name) {
+				var newAlbum = {};
+				newAlbum.name = name;
 
-						var offset = 0;
-						angular.forEach(this.pictures, function(value, key) {
-							// Enlarge thumbnails of row to occupy all the width
-							var exactWidth = value.displayWidth * ratio + offset;
-							var roundedWidth = Math.round(exactWidth);
-
-							// offset due to rounding
-							offset = exactWidth - roundedWidth;
-
-							value.displayWidth = roundedWidth;
-							value.displayHeight = this.height;
-
-							value.initialWidth = value.displayWidth;
-							value.initialHeight = value.displayHeight;
-						}, this);
+				var url = createAlbumJsonUrl;
+				$http.post(url, newAlbum).success(function(data) {
+					var createdAlbum = data;
+					if (createdAlbum) {
+						initAlbum(createdAlbum);
+						$scope.albums.push(createdAlbum);
+						$scope.newAlbumName = "";
 					}
-				};
-				this.rows.push(newRow);
-				console.log('Added new row: #' + (this.rows.length - 1));
+				});
+			}
+		};
 
-				return newRow;
-			},
-			addPicture : function(picture) {
-				initPicture(picture);
+		$scope.deleteAlbum = function(album) {
+			'use strict';
+			var confirm = window.confirm("Are you sure you want to delete album: " + album.name + " ?");
+			if (confirm) {
+				var url = deleteAlbumUrl.replace(/{:albumId}/, album.id); // album.id
+				$http['delete'](url).success(function(data) {
+					// Remove album from scope.
+					var index = $scope.albums.indexOf(album);
+					$scope.albums.splice(index, 1);
+				});
+			}
 
-				this.pictures.push(picture);
+			if ($scope.selectedAlbum == album) {
+				$scope.selectedAlbum = null;
+			}
 
-				this._addPictureInternal(picture);
-			},
-			_addPictureInternal : function(picture) {
-				// Rescale
-				picture.displayWidth = Math.round(picture.thumbnailWidth * this.scale);
-				picture.displayHeight = Math.round(picture.thumbnailHeight * this.scale);
+		};
 
-				var lastRow = this.getLastRow();
-				var enoughSpace = lastRow.addPicture(picture);
-				if (!enoughSpace) {
-					// Not enough space in row for the picture
-					lastRow.finalizeRow();
+		$scope.getSelectedAlbum = function() {
+			var album = $scope.albums[$scope.selectedAlbumKey];
 
-					var newRow = this.addNewRow();
-					newRow.addPicture(picture);
+			return album;
+		};
+
+	});
+
+	window.app.controller('StashCtrl', function($scope, $http, PicsService, StashService) {
+		'use strict';
+
+		$scope.scale = 100;
+		$scope.stashWidth = null;
+		$scope.reechantillonatingPageSize = 200;
+
+		// On page init
+		$scope.init = function() {
+			$scope.stashWidth = getBodyWidth();
+		};
+
+		$scope.loadNextPictures = function() {
+			StashService.loadNextPictures();
+		};
+
+		$scope.reechantillonateStash = function(event) {
+			var pageSize = $scope.reechantillonatingPageSize;
+			StashService.reechantillonate($scope.stashWidth, $scope.scale, pageSize);
+		};
+
+		$scope.addRandomPicture = function(number) {
+			var stash = StashService._stash;
+			if (stash) {
+				if (!number || number < 1) {
+					number = 1;
 				}
-				this.size++;
-			},
-			reechantillonate : function(width, scale, pageSize) {
-				// Stop current job
-				if (this.job) {
-					$timeout.cancel(this.job);
-				}
 
-				// Update stash configuration
-				this.scale = (scale) ? scale / 100 : 1;
-				this.width = (width) ? width : 600;
-				this.size = 0;
+				for ( var k = 0; k < number; k++) {
+					var newPic = {};
+					var width = Math.floor(Math.random() * 600) + 100; // 50 - 450
+					// var height = Math.floor(Math.random() * 100) + 50; // 50 - 150
+					var height = 200;
 
-				// Purge rows
-				this.rows.length = 0;
+					newPic.thumbnail = 'http://placehold.it/' + width + 'x' + height;
+					newPic.image = 'http://placehold.it/' + width + 'x' + height;
+					newPic.thumbnailWidth = width;
+					newPic.thumbnailHeight = height;
 
-				// Launch reechantonation process
-				this._reechantillonatePageInternal(0, pageSize);
-			},
-			_reechantillonatePageInternal : function(page, pageSize) {
-				for ( var k = page * pageSize; k < (page + 1) * pageSize; k++) {
-					if (k < this.pictures.length) {
-						this._addPictureInternal(this.pictures[k]);
-					}
-				}
-
-				var parentStash = this;
-				if ((page + 1) * pageSize < this.pictures.length) {
-					parentStash.job = $timeout(function() {
-						parentStash._reechantillonatePageInternal(page + 1, pageSize);
-					}, 500);
+					stash.addPicture(newPic);
 				}
 			}
 		};
 
-		return stash;
-	}
+		$scope.startAddRandomPicture = function() {
+			$scope.autoAdding = setTimeout(function() {
+				$scope.startAddRandomPicture();
+				$scope.addRandomPicture();
+			}, 10);
+		};
 
-	function initPicture(picture) {
-		if (picture) {
-			picture.selected = false;
-			picture.show = true;
+		$scope.stopAddRandomPicture = function() {
+			clearInterval($scope.autoAdding);
+		};
 
-			// Build thumbnail URL
-			var thumbnailUrl = getImageUrl.replace(/{:imageId}/, picture.thumbnailId);
-			picture.thumbnailUrl = thumbnailUrl;
+		$scope.selectPicture = function($event, picture) {
+			console.log('toggle selection on picture');
 
-			// Build image URL
-			var imageUrl = getImageUrl.replace(/{:imageId}/, picture.imageId);
-			picture.imageUrl = imageUrl;
-		}
-	}
+			StashService.togglePictureSelection(picture);
+		};
 
-	function updatePicture(pictureInStash, newPicture) {
-		if (pictureInStash && newPicture) {
-			initPicture(newPicture);
+		$scope.rotatePictureLeft = function($event, picture) {
+			StashService.rotatePicture(picture, -90);
+		};
 
-			pictureInStash.width = newPicture.width;
-			pictureInStash.height = newPicture.height;
-			pictureInStash.size = newPicture.size;
-			pictureInStash.format = newPicture.format;
+		$scope.rotatePictureRight = function($event, picture) {
+			StashService.rotatePicture(picture, 90);
+		};
 
-			pictureInStash.thumbnailWidth = newPicture.thumbnailWidth;
-			pictureInStash.thumbnailHeight = newPicture.thumbnailHeight;
-			pictureInStash.thumbnailSize = newPicture.thumbnailSize;
-			pictureInStash.thumbnailFormat = newPicture.thumbnailFormat;
+		$scope.removePicture = function($event, picture) {
+			StashService.togglePictureRemoval(picture);
+		};
 
-			pictureInStash.thumbnailUrl = newPicture.thumbnailUrl;
-			pictureInStash.imageUrl = newPicture.imageUrl;
-		}
-	}
-
-	var service = {
-		_stash : null,
-		_album : null,
-		_lastSinceTime : 0,
-		_loadingLocked : false,
-		_selectedPictures : [],
-		_removedPictures : [],
-		initStash : function(album, width, scale) {
-			this._stash = buildNewStash(width, scale);
-			this._album = album;
-		},
-		reechantillonate : function(stashWidth, scale, pageSize) {
-			if (this._stash) {
-				this._stash.reechantillonate(stashWidth, scale, pageSize);
+		$scope.overlayAction = function($event, picture) {
+			if (picture.overlayed) {
+				if (picture.selected) {
+					$scope.selectPicture($event, picture);
+				} else if (picture.removed) {
+					$scope.removePicture($event, picture);
+				}
 			}
-		},
-		loadNextPictures : function() {
-			if (!this._loadingLocked && this._album) {
-				// Pseudo synchronization
-				this._loadingLocked = true;
+		};
 
-				var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, this._album.id) + '&since='
-						+ this._lastSinceTime;
+		// Register album change callback
+		PicsService.onAlbumSelection(function(album) {
+			$scope.selectedAlbum = album;
+			$scope.lastSinceTime = 0;
 
-				var service = this;
-				$http.get(url).success(function(data, status) {
-					if (data && data.length > 0) {
-						service._lastSinceTime = data[data.length - 1].originalTime;
+			var width = $scope.stashWidth;
 
-						angular.forEach(data, function(value, key) {
-							service._stash.addPicture(value);
-						});
+			StashService.initStash(album, width, $scope.scale);
+			StashService.loadNextPictures();
+
+			$scope.stash = StashService._stash;
+		});
+
+	});
+
+	window.app.service('StashService', function($http, $timeout) {
+		'use strict';
+
+		function buildNewStash(width, scale) {
+			var stash = {
+				pictures : [],
+				size : 0,
+				rows : [],
+				scale : (scale) ? scale / 100 : 1,
+				width : (width) ? width : 600,
+				margin : 1,
+				getLastRow : function() {
+					if (this.rows.length < 1) {
+						this.addNewRow();
+					}
+					return this.rows[this.rows.length - 1];
+				},
+				addNewRow : function() {
+					var parentStash = this;
+					var newRow = {
+						pictures : [],
+						height : 0,
+						width : 0,
+						addPicture : function(picture) {
+							var nbPic = this.pictures.length || 0;
+							var hypotheticWidth = nbPic * parentStash.margin + this.width + picture.displayWidth;
+							if (hypotheticWidth > parentStash.width) {
+								return false;
+							}
+
+							this.pictures.push(picture);
+							this.height = Math.max(this.height, picture.displayHeight);
+							this.width += picture.displayWidth;
+
+							return true;
+						},
+						finalizeRow : function() {
+							var ratio = (parentStash.width - parentStash.margin * this.pictures.length) / this.width;
+							this.height = Math.round(this.height * ratio);
+
+							var offset = 0;
+							angular.forEach(this.pictures, function(value, key) {
+								// Enlarge thumbnails of row to occupy all the width
+								var exactWidth = value.displayWidth * ratio + offset;
+								var roundedWidth = Math.round(exactWidth);
+
+								// offset due to rounding
+								offset = exactWidth - roundedWidth;
+
+								value.displayWidth = roundedWidth;
+								value.displayHeight = this.height;
+
+								value.initialWidth = value.displayWidth;
+								value.initialHeight = value.displayHeight;
+							}, this);
+						}
+					};
+					this.rows.push(newRow);
+					console.log('Added new row: #' + (this.rows.length - 1));
+
+					return newRow;
+				},
+				addPicture : function(picture) {
+					initPicture(picture);
+
+					this.pictures.push(picture);
+
+					this._addPictureInternal(picture);
+				},
+				_addPictureInternal : function(picture) {
+					// Rescale
+					picture.displayWidth = Math.round(picture.thumbnailWidth * this.scale);
+					picture.displayHeight = Math.round(picture.thumbnailHeight * this.scale);
+
+					var lastRow = this.getLastRow();
+					var enoughSpace = lastRow.addPicture(picture);
+					if (!enoughSpace) {
+						// Not enough space in row for the picture
+						lastRow.finalizeRow();
+
+						var newRow = this.addNewRow();
+						newRow.addPicture(picture);
+					}
+					this.size++;
+				},
+				reechantillonate : function(width, scale, pageSize) {
+					// Stop current job
+					if (this.job) {
+						$timeout.cancel(this.job);
 					}
 
-					service._loadingLocked = false;
-				}).error(function(data, status, headers, config) {
-					service._loadingLocked = false;
-				});
-			}
-		},
-		togglePictureSelection : function(picture) {
-			picture.selected = !picture.selected;
-			picture.overlayed = picture.selected;
+					// Update stash configuration
+					this.scale = (scale) ? scale / 100 : 1;
+					this.width = (width) ? width : 600;
+					this.size = 0;
 
-			var array = this._selectedPictures;
-			if (picture.selected) {
-				array.push(picture);
-			} else {
-				array.splice(array.indexOf(picture), 1);
-			}
-		},
-		togglePictureRemoval : function(picture) {
-			picture.removed = !picture.removed;
-			picture.overlayed = picture.removed;
+					// Purge rows
+					this.rows.length = 0;
 
-			var array = this._removedPictures;
-			if (picture.removed) {
-				array.push(picture);
-			} else {
-				array.splice(array.indexOf(picture), 1);
-			}
-		},
-		rotatePicture : function(picture, angle) {
-			if (picture && angle != 0) {
-
-				if (angle > 0) {
-					picture.waitingMsg = 'Rotating to the right...';
-					picture.rotatingRight = true;
-				} else if (angle < 0) {
-					picture.waitingMsg = 'Rotating to the left...';
-					picture.rotatingLeft = true;
-				}
-
-				picture.overlayed = true;
-				var url = rotatePictureUrl.replace(/{:pictureId}/, picture.id).replace(/{:angle}/, angle);
-
-				$http.get(url).success(function(data, status) {
-					var newPicture = data;
-					updatePicture(picture, newPicture);
-
-					var initialRatio = picture.initialWidth / picture.initialHeight;
-					var newRatio = newPicture.thumbnailWidth / newPicture.thumbnailHeight;
-
-					if (initialRatio >= 1 && newRatio >= 1 || initialRatio < 1 && newRatio < 1) {
-						// Same orientation than initial display
-						picture.displayHeight = picture.initialHeight;
-						picture.displayWidth = picture.initialWidth;
-					} else {
-						// Orientation change
-						var ratioW = picture.thumbnailWidth / picture.initialWidth;
-						var ratioH = picture.thumbnailHeight / picture.initialHeight;
-						if (ratioW > ratioH) {
-							// We need to fix width
-							picture.displayWidth = picture.initialWidth;
-							picture.displayHeight = Math.round(picture.displayWidth / newRatio);
-						} else {
-							// We need to fix height
-							picture.displayHeight = picture.initialHeight;
-							picture.displayWidth = Math.round(picture.displayHeight * newRatio);
+					// Launch reechantonation process
+					this._reechantillonatePageInternal(0, pageSize);
+				},
+				_reechantillonatePageInternal : function(page, pageSize) {
+					for ( var k = page * pageSize; k < (page + 1) * pageSize; k++) {
+						if (k < this.pictures.length) {
+							this._addPictureInternal(this.pictures[k]);
 						}
 					}
 
-					picture.rotatingLeft = false;
-					picture.rotatingRight = false;
-					picture.overlayed = false;
-				});
+					var parentStash = this;
+					if ((page + 1) * pageSize < this.pictures.length) {
+						parentStash.job = $timeout(function() {
+							parentStash._reechantillonatePageInternal(page + 1, pageSize);
+						}, 500);
+					}
+				}
+			};
+
+			return stash;
+		}
+
+		function initPicture(picture) {
+			if (picture) {
+				picture.selected = false;
+				picture.show = true;
+
+				// Build thumbnail URL
+				var thumbnailUrl = getImageUrl.replace(/{:imageId}/, picture.thumbnailId);
+				picture.thumbnailUrl = thumbnailUrl;
+
+				// Build image URL
+				var imageUrl = getImageUrl.replace(/{:imageId}/, picture.imageId);
+				picture.imageUrl = imageUrl;
 			}
 		}
 
-	};
+		function updatePicture(pictureInStash, newPicture) {
+			if (pictureInStash && newPicture) {
+				initPicture(newPicture);
 
-	return service;
-});
+				pictureInStash.width = newPicture.width;
+				pictureInStash.height = newPicture.height;
+				pictureInStash.size = newPicture.size;
+				pictureInStash.format = newPicture.format;
 
-function getBodyWidth() {
-	return document.getElementsByTagName("body")[0].offsetWidth;
-}
+				pictureInStash.thumbnailWidth = newPicture.thumbnailWidth;
+				pictureInStash.thumbnailHeight = newPicture.thumbnailHeight;
+				pictureInStash.thumbnailSize = newPicture.thumbnailSize;
+				pictureInStash.thumbnailFormat = newPicture.thumbnailFormat;
+
+				pictureInStash.thumbnailUrl = newPicture.thumbnailUrl;
+				pictureInStash.imageUrl = newPicture.imageUrl;
+			}
+		}
+
+		var service = {
+			_stash : null,
+			_album : null,
+			_lastSinceTime : 0,
+			_loadingLocked : false,
+			_selectedPictures : [],
+			_removedPictures : [],
+			initStash : function(album, width, scale) {
+				this._stash = buildNewStash(width, scale);
+				this._album = album;
+				this._lastSinceTime = 0;
+			},
+			reechantillonate : function(stashWidth, scale, pageSize) {
+				if (this._stash) {
+					this._stash.reechantillonate(stashWidth, scale, pageSize);
+				}
+			},
+			loadNextPictures : function() {
+				console.log('loadNextPictures...');
+				if (!this._loadingLocked && this._album) {
+					// Pseudo synchronization
+					this._loadingLocked = true;
+
+					var url = findAllPicturesOfAlbumJsonUrl.replace(/{:albumId}/, this._album.id) + '&since='
+							+ this._lastSinceTime;
+
+					var service = this;
+					$http.get(url).success(function(data, status) {
+						if (data && data.length > 0) {
+							service._lastSinceTime = data[data.length - 1].originalTime;
+
+							angular.forEach(data, function(value, key) {
+								service._stash.addPicture(value);
+							});
+						}
+
+						service._loadingLocked = false;
+					}).error(function(data, status, headers, config) {
+						service._loadingLocked = false;
+					});
+				}
+			},
+			togglePictureSelection : function(picture) {
+				picture.selected = !picture.selected;
+				picture.overlayed = picture.selected;
+
+				var array = this._selectedPictures;
+				if (picture.selected) {
+					array.push(picture);
+				} else {
+					array.splice(array.indexOf(picture), 1);
+				}
+			},
+			togglePictureRemoval : function(picture) {
+				picture.removed = !picture.removed;
+				picture.overlayed = picture.removed;
+
+				var array = this._removedPictures;
+				if (picture.removed) {
+					array.push(picture);
+				} else {
+					array.splice(array.indexOf(picture), 1);
+				}
+			},
+			rotatePicture : function(picture, angle) {
+				if (picture && angle != 0) {
+
+					if (angle > 0) {
+						picture.waitingMsg = 'Rotating to the right...';
+						picture.rotatingRight = true;
+					} else if (angle < 0) {
+						picture.waitingMsg = 'Rotating to the left...';
+						picture.rotatingLeft = true;
+					}
+
+					picture.overlayed = true;
+					var url = rotatePictureUrl.replace(/{:pictureId}/, picture.id).replace(/{:angle}/, angle);
+
+					$http.get(url).success(function(data, status) {
+						var newPicture = data;
+						updatePicture(picture, newPicture);
+
+						var initialRatio = picture.initialWidth / picture.initialHeight;
+						var newRatio = newPicture.thumbnailWidth / newPicture.thumbnailHeight;
+
+						if (initialRatio >= 1 && newRatio >= 1 || initialRatio < 1 && newRatio < 1) {
+							// Same orientation than initial display
+							picture.displayHeight = picture.initialHeight;
+							picture.displayWidth = picture.initialWidth;
+						} else {
+							// Orientation change
+							var ratioW = picture.thumbnailWidth / picture.initialWidth;
+							var ratioH = picture.thumbnailHeight / picture.initialHeight;
+							if (ratioW > ratioH) {
+								// We need to fix width
+								picture.displayWidth = picture.initialWidth;
+								picture.displayHeight = Math.round(picture.displayWidth / newRatio);
+							} else {
+								// We need to fix height
+								picture.displayHeight = picture.initialHeight;
+								picture.displayWidth = Math.round(picture.displayHeight * newRatio);
+							}
+						}
+
+						picture.rotatingLeft = false;
+						picture.rotatingRight = false;
+						picture.overlayed = false;
+					});
+				}
+			}
+
+		};
+
+		return service;
+	});
+
+	function getBodyWidth() {
+		return document.getElementsByTagName("body")[0].offsetWidth;
+	}
+
+}());
 
 /*
  * function getNextPictures($http, $timeout, $scope) { if (!$scope.searchPicturesLock) { // Pseudo synchronization

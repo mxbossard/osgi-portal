@@ -260,6 +260,25 @@ public class Picture {
 	}
 
 	/**
+	 * Getter of currentHash.
+	 * 
+	 * @return the currentHash
+	 */
+	public String getCurrentHash() {
+		return this.currentHash;
+	}
+
+	/**
+	 * Setter of currentHash.
+	 * 
+	 * @param currentHash
+	 *            the currentHash to set
+	 */
+	public void setCurrentHash(final String currentHash) {
+		this.currentHash = currentHash;
+	}
+
+	/**
 	 * Getter of filename.
 	 * 
 	 * @return the filename

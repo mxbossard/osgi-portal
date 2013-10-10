@@ -52,7 +52,7 @@ import fr.mby.opa.pics.service.IPictureDao;
 @RequestMapping(AlbumController.ALBUM_CONTROLLER_PATH)
 public class AlbumController {
 
-	public static final String ALBUM_CONTROLLER_PATH = "/album";
+	public static final String ALBUM_CONTROLLER_PATH = "album";
 
 	@Autowired
 	private IAlbumDao albumDao;

@@ -46,20 +46,28 @@
 
 							}]);
 
-	window.app.controller('DemoFileUploadController', ['$scope', '$http', '$filter', '$window',
-			function($scope, $http) {
+	window.app.controller('PicsFileUploadController', ['$scope', '$http', 'PicsService',
+			function($scope, $http, PicsService) {
+				$scope.selectedAlbum = null;
+				$scope.uploadFileUrl = null;
 				$scope.options = {
-					url : url
+					url : null
 				};
-				if (!isOnGitHub) {
-					$scope.loadingFiles = true;
-					$http.get(url).then(function(response) {
-						$scope.loadingFiles = false;
-						$scope.queue = response.data.files || [];
-					}, function() {
-						$scope.loadingFiles = false;
-					});
-				}
+
+				/*
+				 * if (!isOnGitHub) { $scope.loadingFiles = true; $http.get(url).then(function(response) {
+				 * $scope.loadingFiles = false; $scope.queue = response.data.files || []; }, function() {
+				 * $scope.loadingFiles = false; }); }
+				 */
+
+				// Register album change callback
+				PicsService.onAlbumSelection(function(album) {
+					$scope.selectedAlbum = album;
+
+					var ulpoadUrl = url.replace(/{:albumId}/, album.id);
+					$scope.options.url = ulpoadUrl;
+					$scope.uploadFileUrl = ulpoadUrl;
+				});
 			}]);
 
 	window.app.controller('FileDestroyController', ['$scope', '$http', function($scope, $http) {

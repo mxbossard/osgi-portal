@@ -45,9 +45,9 @@ import fr.mby.opa.pics.service.IPictureService;
 @RequestMapping(PictureController.PICTURE_CONTROLLER_PATH)
 public class PictureController {
 
-	public static final String PICTURE_CONTROLLER_PATH = "/picture";
+	public static final String PICTURE_CONTROLLER_PATH = "picture";
 
-	public static final String ROTATE_PICTURE_PATH = "/rotate";
+	public static final String ROTATE_PICTURE_SUBPATH = "/rotate";
 
 	@Autowired
 	private IAlbumDao albumDao;
@@ -59,7 +59,7 @@ public class PictureController {
 	private IPictureService pictureService;
 
 	@ResponseBody
-	@RequestMapping(value = "{id}" + PictureController.ROTATE_PICTURE_PATH + "/{angle}", method = RequestMethod.GET)
+	@RequestMapping(value = "{id}" + PictureController.ROTATE_PICTURE_SUBPATH + "/{angle}", method = RequestMethod.GET)
 	public Picture rotatePictureJson(@PathVariable final Long id, @PathVariable final Integer angle,
 			final HttpServletRequest request, final HttpServletResponse response) throws Exception {
 		Assert.notNull(id, "Picture Id not supplied !");

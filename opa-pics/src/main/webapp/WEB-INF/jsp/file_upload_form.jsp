@@ -7,12 +7,15 @@
     <title>Pics Upload</title>
 
 	<!-- Bootstrap styles -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/2.3.2/css/bootstrap.min.css">
+	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
 
 	<!-- CSS to style the file input field as button and adjust the Bootstrap progress bars -->
 	<link rel="stylesheet" href="resources/css/jquery.fileupload-ui.css">
 	<!-- CSS adjustments for browsers with JavaScript disabled -->
 	<noscript><link rel="stylesheet" href="resources/css/jquery.fileupload-ui-noscript.css"></noscript>
+	
+	<!-- Custom CSS -->
+	<link rel="stylesheet" href="resources/css/uploadApp.css">
 	
 	<style>
 		/* Hide Angular JS elements before initializing */
@@ -20,6 +23,16 @@
 		    display: none;
 		}
 	</style>
+		
+	<spring:url var="findAllAlbumsJsonUrl" value="/album" />
+	<spring:url var="jqueryUploadActionUrl" value="upload/jqueryUpload?albumId={:albumId}" />
+	<spring:url var="getImageUrl" value="/image/{:imageId}" />
+
+	<script type="text/javascript">
+		var findAllAlbumsJsonUrl = '${findAllAlbumsJsonUrl}';
+		var jqueryUploadActionUrl = '${jqueryUploadActionUrl}';
+		var getImageUrl = '${getImageUrl}';
+	</script>
 	
 </head>
 <body>
@@ -29,17 +42,9 @@
 	
 	<h1>Pics Upload</h1>
 	
-	<div data-ng-controller="AlbumCtrl" data-ng-init="init()">
-		<%-- data-ng-options="album.id as album.label for album in albums"  --%>
-		<select id="albumSelector" data-ng-model="selectedAlbumId" data-ng-change="selectAlbum()" required>
-			<option value="null" selected="selected" disabled="disabled">--- Choose an album ---</option>
-	      	<option data-ng-repeat="(id, album) in albums" value="{{id}}">{{album.name}} - {{album.size}}</option>
-	    </select>
-	</div>
-
 	<!-- The file upload form used as target for the file upload widget -->
-    <form id="fileupload" action="${jqueryUploadActionUrl}" method="POST" enctype="multipart/form-data" 
-    	data-ng-controller="DemoFileUploadController" data-file-upload="options" 
+    <form id="fileupload" action="{{uploadFileUrl}}" method="POST" enctype="multipart/form-data" 
+    	data-ng-controller="PicsFileUploadController" data-ng-init="init()" data-file-upload="options" 
     	data-ng-class="{'fileupload-processing': processing() || loadingFiles}">
     	
         <!-- Redirect browsers with JavaScript disabled to the origin page -->
@@ -47,17 +52,26 @@
         <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
         <div class="fileupload-buttonbar">
             <div class="col-lg-7">
+            	<!-- Select to choose an album. -->
+            	<span data-ng-controller="AlbumCtrl" data-ng-init="init()">
+					<%-- data-ng-options="album.id as album.label for album in albums"  --%>
+					<select id="albumSelector" class="input-sm" data-ng-model="selectedAlbumKey" 
+							data-ng-change="selectAlbum(getSelectedAlbum())" required>
+						<option value="null" selected="selected" disabled="disabled">--- Choose an album ---</option>
+				      	<option data-ng-repeat="(key, album) in albums" value="{{key}}">{{album.label}}</option>
+				    </select>
+				</span>
                 <!-- The fileinput-button span is used to style the file input field as button -->
-                <span class="btn btn-success fileinput-button" data-ng-class="{disabled: disabled}">
+                <span class="btn btn-sm btn-success fileinput-button" data-ng-class="{disabled: disabled}">
                     <i class="glyphicon glyphicon-plus"></i>
                     <span>Add files...</span>
                     <input type="file" name="files[]" multiple data-ng-disabled="disabled">
                 </span>
-                <button type="button" class="btn btn-primary start" data-ng-click="submit()">
+                <button type="button" class="btn btn-sm btn-primary start" data-ng-click="submit()">
                     <i class="glyphicon glyphicon-upload"></i>
                     <span>Start upload</span>
                 </button>
-                <button type="button" class="btn btn-warning cancel" data-ng-click="cancel()">
+                <button type="button" class="btn btn-sm btn-warning cancel" data-ng-click="cancel()">
                     <i class="glyphicon glyphicon-ban-circle"></i>
                     <span>Cancel upload</span>
                 </button>
@@ -119,17 +133,6 @@
 	<%-- angular.min.js --%>
 	<script data-require="angular.js@1.0.x" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.js" data-semver="1.0.8"></script>
 	
-	
-	<spring:url var="findAllAlbumsJsonUrl" value="/album" />
-	<spring:url var="jqueryUploadActionUrl" value="upload/jqueryUpload?albumId=0" />
-	<spring:url var="getImageUrl" value="/image/{:imageId}" />
-
-	<script type="text/javascript">
-		var findAllAlbumsJsonUrl = '${findAllAlbumsJsonUrl}';
-		var jqueryUploadActionUrl = '${jqueryUploadActionUrl}';
-		var getImageUrl = '${getImageUrl}';
-	</script>
-
 	<!-- The jQuery UI widget factory, can be omitted if jQuery UI is already included -->
 	<!-- <script src="resources/js/vendor/jquery.ui.widget.js"></script> -->
 	<!-- The Load Image plugin is included for the preview images and image resizing functionality -->

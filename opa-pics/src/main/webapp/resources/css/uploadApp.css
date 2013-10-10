@@ -1,4 +1,8 @@
-
 .progress {
 	margin-bottom: 0;
+}
+
+.fileupload-buttonbar .btn,
+.fileupload-buttonbar .toggle {
+  margin-bottom: 0;
 }

@@ -80,6 +80,7 @@ public class BasicPictureService implements IPictureService {
 
 			picture = this.pictureFactory.build(filename, contents);
 			picture.setOriginalHash(uniqueHash);
+			picture.setCurrentHash(uniqueHash);
 		}
 
 		return picture;
@@ -120,6 +121,8 @@ public class BasicPictureService implements IPictureService {
 				picture.setHeight(rotatedImage.getHeight());
 				picture.setWidth(rotatedImage.getWidth());
 				picture.setSize(rotatedData.length);
+				final String uniqueHash = this.generateHash(rotatedData);
+				picture.setCurrentHash(uniqueHash);
 
 				picture.setThumbnail(thumbnail);
 				picture.setThumbnailFormat(thumbnail.getFormat());
