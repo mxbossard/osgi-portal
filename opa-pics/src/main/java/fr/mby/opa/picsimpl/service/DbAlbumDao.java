@@ -74,8 +74,15 @@ public class DbAlbumDao extends AbstractPicsDao implements IAlbumDao {
 					throw new AlbumNotFoundException();
 				}
 
-				final Album updatedAlbum = em.merge(album);
-				em.lock(managedAlbum, LockModeType.NONE);
+				Album updatedAlbum = null;
+
+				if (!managedAlbum.getLocked()) {
+					// Update album if not locked !
+					managedAlbum.setName(album.getName());
+					managedAlbum.setDescription(album.getDescription());
+
+					updatedAlbum = em.merge(managedAlbum);
+				}
 
 				return updatedAlbum;
 			}

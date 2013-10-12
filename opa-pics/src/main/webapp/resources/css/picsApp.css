@@ -3,28 +3,16 @@ body {
   overflow-y: scroll;
 }
 
-#albums ul {
-  white-space: wrap;
-  margin: 0px;
-}
-
-#albums li {
-  display: inline;
-  list-style-type: none;
-  padding-left: 2px;
-  padding-right: 2px;
-}
-
-#albums span[data-ng-click] {
+#module-album span[data-ng-click] {
   cursor: pointer;
   color: blue;
 }
 
-#albums span[data-ng-click]:HOVER {
+#module-album span[data-ng-click]:HOVER {
   text-decoration: underline;
 }
 
-#albums .selected span {
+#module-album .selected span {
   color: red;
 }
 
@@ -43,8 +31,12 @@ body {
   border: 1px solid gray;
 }
 
-#stash {
+#module-stash {
   width: 100%;
+}
+
+#stash-toolbar {
+  margin-bottom: 10px;
 }
 
 .stashRow {
@@ -92,13 +84,6 @@ body {
 }
 
 .stashPicture:not(.selected) .stashThumbnail:HOVER img {
-  /*
-  width: 120%;
-  height: 120%;
-  top: -10%;
-  left: -10%;
-  */
-  /*opacity: 0.8;*/
   background-color: transparent;
 }
 
@@ -134,10 +119,6 @@ body {
   display: none;
 }
 
-.stashThumbnail .overlay i {
-  font-size: 2em;
-}
-
 .overlayed .stashThumbnail .overlay {
   display: block;
 }
@@ -150,6 +131,7 @@ body {
   display: none;
   cursor: pointer;
   margin: auto;
+  font-size: 2em;
 }
 
 /* On selection hide spinner and show check icon. */
@@ -158,9 +140,17 @@ body {
 }
 .selected .stashThumbnail .overlay .btn-action {
   display: block;
+  color: #ffffff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+.selected .stashThumbnail .overlay .btn-action:HOVER {
+  color: #ffffff;
+  background-color: #47a447;
+  border-color: #398439;
 }
 .selected .stashThumbnail .overlay .icon-action:before {
-  content: "\f046";
+  content: "\e067";
 }
 
 /* On remove hide spinner and show remove icon. */
@@ -169,9 +159,17 @@ body {
 }
 .removed .stashThumbnail .overlay .btn-action {
   display: block;
+  color: #ffffff;
+  background-color: #d9534f;
+  border-color: #d43f3a;
+}
+.removed .stashThumbnail .overlay .btn-action:HOVER {
+  color: #ffffff;
+  background-color: #d2322d;
+  border-color: #ac2925;
 }
 .removed .stashThumbnail .overlay .icon-action:before {
-  content: "\f057";
+  content: "\e088";
 }
 
 .rotatingLeft .stashThumbnail .overlay .icon-spinner, 
@@ -190,8 +188,6 @@ body {
   background-color: white;
   text-align: center;
   padding: 1em 0.2em 0.5em 0.2em;
-  font-size: 0.7em;
-  /*color: #007dbc;*/
 }
 
 .stashPicture:not(.selected):not(.removed):not(.overlayed) .stashThumbnail:HOVER .buttonBar {
@@ -201,19 +197,6 @@ body {
   /*border: 5px solid red;*/
 }
 
-.stashThumbnail .buttonBar .btn-group {
-  font-size: 1em;
-}
-
-.stashThumbnail .buttonBar .btn-group>.btn+.btn {
-	margin-left: -0.4em;
-}
-
 .stashThumbnail .buttonBar .btn {
-  font-size: 1em;
   margin-bottom: 0.5em;
-}
-
-.stashThumbnail .buttonBar .icon-large {
-  
 }

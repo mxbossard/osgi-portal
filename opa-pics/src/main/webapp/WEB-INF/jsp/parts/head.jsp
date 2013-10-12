@@ -5,8 +5,13 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 
 
+<!-- Bootstrap styles -->
+<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.css">
+
+<%--
 <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" rel="stylesheet">
 <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
-
+ --%>
+ 
 <c:url var="picsAppCssUrl" value="/resources/css/picsApp.css" />
 <link rel="stylesheet" href="${picsAppCssUrl}" />

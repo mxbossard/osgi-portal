@@ -108,7 +108,7 @@ public class Album {
 
 	@Basic(optional = false)
 	@Column(name = "LOCKED", nullable = false)
-	private Boolean locked;
+	private Boolean locked = false;
 
 	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	@JoinColumn(name = "SELECTED_ORDERING_PROPOSAL_ID")

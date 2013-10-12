@@ -17,14 +17,13 @@
 	<jsp:include page="parts/head.jsp" />
 	
 </head>
-<!-- data-ng-controller="PicsCtrl" -->
+
 <body>
 	<h2>Pics</h2>	
 		
 	<spring:url value="/upload" var="uploadFormUrl" />
 	<a href="${uploadFormUrl}">Upload pics form</a>
 	
-    <h3>Albums</h3>
 	<jsp:include page="parts/album.jsp" />
 
 	<jsp:include page="parts/stash.jsp" />

@@ -52,6 +52,7 @@
 		$scope.selectAlbum = function(album) {
 			if (album) {
 				PicsService.selectAlbum(album);
+				$scope.selectedAlbum = album;
 			}
 		};
 
@@ -68,6 +69,30 @@
 						initAlbum(createdAlbum);
 						$scope.albums.push(createdAlbum);
 						$scope.newAlbumName = "";
+					}
+				});
+			}
+		};
+
+		$scope.updateSelectedAlbum = function($event) {
+			var selectedAlbum = $scope.selectedAlbum;
+			if (selectedAlbum) {
+				var fieldsToUpdate = {
+					id : selectedAlbum.id,
+					name : selectedAlbum.name,
+					description : selectedAlbum.description
+				};
+
+				var url = createAlbumJsonUrl;
+				$http.put(url, fieldsToUpdate).success(function(data) {
+					var updatedAlbum = data;
+					if (updatedAlbum) {
+						updatedAlbum.size = selectedAlbum.size;
+						initAlbum(updatedAlbum);
+
+						var key = $scope.albums.indexOf(selectedAlbum);
+						$scope.albums[key] = updatedAlbum;
+						$scope.selectedAlbum = updatedAlbum;
 					}
 				});
 			}
