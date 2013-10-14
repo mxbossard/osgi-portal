@@ -42,10 +42,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import fr.mby.opa.pics.dao.IAlbumDao;
+import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.IAlbumDao;
-import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureService;
 import fr.mby.portal.api.app.IAppConfig;
 import fr.mby.portal.api.app.IPortalApp;

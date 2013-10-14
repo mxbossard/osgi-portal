@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.picsimpl.service;
+package fr.mby.opa.picsimpl.dao;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,9 +29,9 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterables;
 
+import fr.mby.opa.pics.dao.IAlbumDao;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.service.AlbumNotFoundException;
-import fr.mby.opa.pics.service.IAlbumDao;
 import fr.mby.opa.pics.service.PictureNotFoundException;
 import fr.mby.utils.common.jpa.EmCallback;
 import fr.mby.utils.common.jpa.TxCallback;

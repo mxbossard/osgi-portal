@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.picsimpl.service;
+package fr.mby.opa.picsimpl.dao;
 
 import java.sql.Timestamp;
 import java.util.Collections;
@@ -30,10 +30,10 @@ import org.springframework.util.Assert;
 
 import com.google.common.collect.Iterables;
 
+import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.PictureNotFoundException;
 import fr.mby.utils.common.jpa.EmCallback;

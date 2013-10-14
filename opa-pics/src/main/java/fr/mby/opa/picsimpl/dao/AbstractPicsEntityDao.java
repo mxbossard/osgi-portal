@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.picsimpl.dao;
 
-import fr.mby.opa.pics.model.Album;
-import fr.mby.opa.pics.model.ProposalBag;
-import fr.mby.opa.pics.model.Session;
-import fr.mby.opa.pics.model.Shoot;
-import fr.mby.opa.pics.model.CasingProposal;
+import javax.persistence.EntityManagerFactory;
+
+import fr.mby.opa.pics.model.IPicsPersistenceUnit;
+import fr.mby.utils.common.jpa.AbstractEntityOsgiJpaDao;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IProposalDao {
+public abstract class AbstractPicsEntityDao<T> extends AbstractEntityOsgiJpaDao<T> {
 
-	ProposalBag createOrderingProposal(ProposalBag proposal, Album album);
+	@Override
+	protected String getPersistenceUnitName() {
+		return IPicsPersistenceUnit.PU_NAME;
+	}
 
-	CasingProposal createUnitProposal(CasingProposal proposal);
+	@Override
+	protected EntityManagerFactory getEmf() {
+		final EntityManagerFactory emf = super.getEmf();
 
-	Session createSession(Session session);
+		// emf.getCache().evictAll();
 
-	Shoot createShoot(Shoot session);
+		return emf;
+	}
 
 }

@@ -14,28 +14,18 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.picsimpl.dao;
 
-import java.util.Collection;
+import org.springframework.stereotype.Repository;
 
-import fr.mby.opa.pics.model.Album;
+import fr.mby.opa.pics.dao.ISessionDao;
+import fr.mby.opa.pics.model.Session;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAlbumDao {
-
-	Album createAlbum(Album album);
-
-	Album updateAlbum(Album album) throws AlbumNotFoundException;
-
-	void deleteAlbum(Album album) throws AlbumNotFoundException;
-
-	Album findAlbumById(Long id);
-
-	Album loadAlbumById(Long id);
-
-	Collection<Album> findAllAlbums();
+@Repository
+public class DbSessionDao extends AbstractPicsEntityDao<Session> implements ISessionDao {
 
 }

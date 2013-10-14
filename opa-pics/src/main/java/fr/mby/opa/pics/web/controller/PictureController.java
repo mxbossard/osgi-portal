@@ -31,9 +31,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import fr.mby.opa.pics.dao.IAlbumDao;
+import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.IAlbumDao;
-import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureService;
 
 /**

@@ -38,10 +38,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import fr.mby.opa.pics.dao.IAlbumDao;
+import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.IAlbumDao;
-import fr.mby.opa.pics.service.IPictureDao;
 
 /**
  * @author Maxime Bossard - 2013

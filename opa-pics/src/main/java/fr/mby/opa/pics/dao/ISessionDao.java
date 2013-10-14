@@ -14,31 +14,15 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.picsimpl.service;
+package fr.mby.opa.pics.dao;
 
-import javax.persistence.EntityManagerFactory;
-
-import fr.mby.opa.pics.model.IPicsPersistenceUnit;
-import fr.mby.utils.common.jpa.AbstractOsgiJpaDao;
+import fr.mby.opa.pics.model.Session;
+import fr.mby.utils.common.jpa.IEntityOsgiJpaDao;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public abstract class AbstractPicsDao extends AbstractOsgiJpaDao {
-
-	@Override
-	protected String getPersistenceUnitName() {
-		return IPicsPersistenceUnit.PU_NAME;
-	}
-
-	@Override
-	protected EntityManagerFactory getEmf() {
-		final EntityManagerFactory emf = super.getEmf();
-
-		emf.getCache().evictAll();
-
-		return emf;
-	}
+public interface ISessionDao extends IEntityOsgiJpaDao<Session> {
 
 }

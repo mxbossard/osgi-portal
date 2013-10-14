@@ -33,8 +33,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.model.BinaryImage;
-import fr.mby.opa.pics.service.IPictureDao;
 
 /**
  * @author Maxime Bossard - 2013

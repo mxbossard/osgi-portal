@@ -51,10 +51,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import fr.mby.opa.pics.dao.IAlbumDao;
+import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.IAlbumDao;
-import fr.mby.opa.pics.service.IPictureDao;
 import fr.mby.opa.pics.service.IPictureService;
 import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.UnsupportedPictureTypeException;

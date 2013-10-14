@@ -14,36 +14,29 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.pics.dao;
 
-import java.util.List;
+import java.util.Collection;
 
 import fr.mby.opa.pics.model.Album;
-import fr.mby.opa.pics.model.BinaryImage;
-import fr.mby.opa.pics.model.Picture;
+import fr.mby.opa.pics.service.AlbumNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IPictureDao {
+public interface IAlbumDao {
 
-	Picture createPicture(Picture picture, Album album) throws PictureAlreadyExistsException;
+	Album createAlbum(Album album);
 
-	Picture updatePicture(Picture picture) throws PictureNotFoundException;
+	Album updateAlbum(Album album) throws AlbumNotFoundException;
 
-	void deletePicture(Picture picture) throws PictureNotFoundException;
+	void deleteAlbum(Album album) throws AlbumNotFoundException;
 
-	List<Picture> findPicturesByAlbumId(Long albumId, Long since);
+	Album findAlbumById(Long id);
 
-	Picture findPictureById(Long id);
+	Album loadAlbumById(Long id);
 
-	Long findPictureIdByHash(String hash);
-
-	Picture loadFullPictureById(Long id);
-
-	BinaryImage findImageById(Long id);
-
-	List<Picture> findAllPictures(Long since);
+	Collection<Album> findAllAlbums();
 
 }
