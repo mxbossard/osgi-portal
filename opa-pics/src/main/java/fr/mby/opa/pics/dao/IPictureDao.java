@@ -18,11 +18,11 @@ package fr.mby.opa.pics.dao;
 
 import java.util.List;
 
+import fr.mby.opa.pics.exception.PictureAlreadyExistsException;
+import fr.mby.opa.pics.exception.PictureNotFoundException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.PictureAlreadyExistsException;
-import fr.mby.opa.pics.service.PictureNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013

@@ -19,6 +19,7 @@ package fr.mby.opa.pics.service;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
+import fr.mby.opa.pics.exception.PictureAlreadyExistsException;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
 

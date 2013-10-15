@@ -19,6 +19,7 @@ package fr.mby.opa.pics.service;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 
+import fr.mby.opa.pics.exception.PictureAlreadyExistsException;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
 

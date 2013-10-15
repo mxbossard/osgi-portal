@@ -53,10 +53,10 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import fr.mby.opa.pics.dao.IAlbumDao;
 import fr.mby.opa.pics.dao.IPictureDao;
+import fr.mby.opa.pics.exception.PictureAlreadyExistsException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.service.IPictureService;
-import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.UnsupportedPictureTypeException;
 import fr.mby.opa.pics.web.jquery.FileMeta;
 import fr.mby.opa.pics.web.jquery.FileMetaList;

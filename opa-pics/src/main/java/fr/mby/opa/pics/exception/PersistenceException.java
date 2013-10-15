@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
-
+package fr.mby.opa.pics.exception;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class PictureNotFoundException extends RuntimeException {
+public abstract class PersistenceException extends RuntimeException {
 
 	/** Svuid. */
-	private static final long serialVersionUID = -2862728452281040361L;
+	private static final long serialVersionUID = 8488634700308125878L;
 
 }

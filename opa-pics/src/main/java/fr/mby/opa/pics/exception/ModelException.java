@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.pics.exception;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class AlbumNotFoundException extends RuntimeException {
+public abstract class ModelException extends Exception {
 
 	/** Svuid. */
-	private static final long serialVersionUID = 7963992473509879236L;
+	private static final long serialVersionUID = -5906659389186636150L;
 
 }

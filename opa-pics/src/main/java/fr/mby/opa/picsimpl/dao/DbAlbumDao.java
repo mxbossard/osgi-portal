@@ -30,9 +30,9 @@ import org.springframework.util.Assert;
 import com.google.common.collect.Iterables;
 
 import fr.mby.opa.pics.dao.IAlbumDao;
+import fr.mby.opa.pics.exception.AlbumNotFoundException;
+import fr.mby.opa.pics.exception.PictureNotFoundException;
 import fr.mby.opa.pics.model.Album;
-import fr.mby.opa.pics.service.AlbumNotFoundException;
-import fr.mby.opa.pics.service.PictureNotFoundException;
 import fr.mby.utils.common.jpa.EmCallback;
 import fr.mby.utils.common.jpa.TxCallback;
 import fr.mby.utils.common.jpa.TxCallbackReturn;

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.service;
+package fr.mby.opa.pics.exception;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class PictureAlreadyExistsException extends RuntimeException {
+public class PictureAlreadyExistsException extends PersistenceException {
 
 	/** Svuid. */
 	private static final long serialVersionUID = 124596910270874219L;

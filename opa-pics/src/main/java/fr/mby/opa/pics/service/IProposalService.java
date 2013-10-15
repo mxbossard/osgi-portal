@@ -29,7 +29,11 @@ import fr.mby.opa.pics.model.RankingProposal;
  */
 public interface IProposalService {
 
-	ProposalBag createProposalBag(Album album, ProposalBag parent);
+	ProposalBag createProposalBag(String name, String description, Album album, ProposalBag parent);
+
+	ProposalBag updateProposalBag(ProposalBag proposalBag);
+
+	ProposalBag commitProposalBag(ProposalBag proposalBag);
 
 	CasingProposal createCasingProposal(Picture picture);
 

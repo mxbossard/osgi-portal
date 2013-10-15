@@ -32,11 +32,11 @@ import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 
 import fr.mby.opa.pics.dao.IPictureDao;
+import fr.mby.opa.pics.exception.PictureAlreadyExistsException;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.service.IPictureFactory;
 import fr.mby.opa.pics.service.IPictureService;
-import fr.mby.opa.pics.service.PictureAlreadyExistsException;
 import fr.mby.opa.pics.service.UnsupportedPictureTypeException;
 import fr.mby.utils.common.image.ImageHelper;
 

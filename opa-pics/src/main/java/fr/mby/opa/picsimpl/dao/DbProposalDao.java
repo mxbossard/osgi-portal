@@ -17,14 +17,22 @@
 package fr.mby.opa.picsimpl.dao;
 
 import javax.persistence.EntityManager;
+import javax.persistence.PersistenceException;
+import javax.persistence.Query;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.util.Assert;
 
+import com.google.common.collect.Iterables;
+
 import fr.mby.opa.pics.dao.IProposalDao;
+import fr.mby.opa.pics.exception.ProposalBagLockedException;
+import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.AbstractUnitProposal;
 import fr.mby.opa.pics.model.ProposalBag;
+import fr.mby.utils.common.jpa.EmCallback;
 import fr.mby.utils.common.jpa.TxCallback;
+import fr.mby.utils.common.jpa.TxCallbackReturn;
 
 /**
  * @author Maxime Bossard - 2013
@@ -50,6 +58,32 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
+	public ProposalBag updateProposalBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
+			ProposalBagLockedException {
+		Assert.notNull(proposalBag, "No ProposalBag supplied !");
+		Assert.notNull(proposalBag.getId(), "Id should be set for update !");
+
+		if (proposalBag.isCommited()) {
+			throw new ProposalBagLockedException();
+		}
+
+		return this.updateProposalBagInternal(proposalBag);
+	}
+
+	@Override
+	public ProposalBag commitProposalBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
+			ProposalBagLockedException {
+		Assert.notNull(proposalBag, "No ProposalBag supplied !");
+		if (proposalBag.isCommited()) {
+			throw new ProposalBagLockedException();
+		}
+
+		proposalBag.setCommited(true);
+
+		return this.updateProposalBagInternal(proposalBag);
+	}
+
+	@Override
 	public AbstractUnitProposal createProposal(final AbstractUnitProposal proposal) {
 		Assert.notNull(proposal, "No Proposal supplied !");
 		Assert.isNull(proposal.getId(), "Id should not be set for creation !");
@@ -67,8 +101,41 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 
 	@Override
 	public ProposalBag findLastProposalBag(final Long albumId) {
-		// TODO Auto-generated method stub
-		return null;
+		Assert.notNull(albumId, "Album Id should be supplied !");
+
+		final EmCallback<ProposalBag> emCallback = new EmCallback<ProposalBag>(this.getEmf()) {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected ProposalBag executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				final Query findLastBagQuery = em.createNamedQuery(ProposalBag.FIND_LAST_PROPOSAL_BAG);
+				findLastBagQuery.setParameter("albumId", albumId);
+
+				final ProposalBag bag = Iterables.getFirst(findLastBagQuery.getResultList(), null);
+				return bag;
+			}
+		};
+
+		return emCallback.getReturnedValue();
+	}
+
+	/**
+	 * @param proposalBag
+	 * @return
+	 */
+	protected ProposalBag updateProposalBagInternal(final ProposalBag proposalBag) {
+		final TxCallbackReturn<ProposalBag> txCallback = new TxCallbackReturn<ProposalBag>(this.getEmf()) {
+
+			@Override
+			protected ProposalBag executeInTransaction(final EntityManager em) {
+				final ProposalBag updatedBag = em.merge(proposalBag);
+
+				return updatedBag;
+			}
+		};
+
+		final ProposalBag updatedBag = txCallback.getReturnedValue();
+		return updatedBag;
 	}
 
 }

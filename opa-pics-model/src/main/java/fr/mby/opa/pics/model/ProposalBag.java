@@ -28,6 +28,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -48,10 +51,14 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
  * @author Maxime Bossard - 2013
  * 
  */
+@NamedQueries({@NamedQuery(name = ProposalBag.FIND_LAST_PROPOSAL_BAG, query = "SELECT bag"
+		+ " FROM ProposalBag bag WHERE bag.album.id = :albumId ORDER BY bag.creationTime DESC LIMIT 1"),})
 @Entity
 @Table(name = "PROPOSAL_BAG")
 @JsonInclude(Include.NON_NULL)
 public class ProposalBag {
+
+	public static final String FIND_LAST_PROPOSAL_BAG = "FIND_LAST_PROPOSAL_BAG";
 
 	@Id
 	@Column(name = "ID")
@@ -67,8 +74,9 @@ public class ProposalBag {
 	private String description;
 
 	@Basic(optional = false)
+	// TODO rename COMMITED
 	@Column(name = "LOCKED")
-	private Boolean locked;
+	private Boolean commited;
 
 	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
@@ -87,6 +95,11 @@ public class ProposalBag {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
 	private Collection<EraseProposal> eraseProposals;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "ALBUM_ID", nullable = false, updatable = false)
+	@JsonIgnore
+	private Album album;
 
 	@Version
 	@JsonIgnore
@@ -150,22 +163,22 @@ public class ProposalBag {
 	}
 
 	/**
-	 * Getter of locked.
+	 * Getter of commited.
 	 * 
-	 * @return the locked
+	 * @return the commited
 	 */
-	public Boolean getLocked() {
-		return this.locked;
+	public Boolean isCommited() {
+		return this.commited;
 	}
 
 	/**
-	 * Setter of locked.
+	 * Setter of commited.
 	 * 
-	 * @param locked
-	 *            the locked to set
+	 * @param commited
+	 *            the commited to set
 	 */
-	public void setLocked(final Boolean locked) {
-		this.locked = locked;
+	public void setCommited(final Boolean commited) {
+		this.commited = commited;
 	}
 
 	/**
@@ -261,6 +274,25 @@ public class ProposalBag {
 	 */
 	public void setEraseProposals(final Collection<EraseProposal> eraseProposals) {
 		this.eraseProposals = eraseProposals;
+	}
+
+	/**
+	 * Getter of album.
+	 * 
+	 * @return the album
+	 */
+	public Album getAlbum() {
+		return this.album;
+	}
+
+	/**
+	 * Setter of album.
+	 * 
+	 * @param album
+	 *            the album to set
+	 */
+	public void setAlbum(final Album album) {
+		this.album = album;
 	}
 
 }

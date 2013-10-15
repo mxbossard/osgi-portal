@@ -31,11 +31,11 @@ import org.springframework.util.Assert;
 import com.google.common.collect.Iterables;
 
 import fr.mby.opa.pics.dao.IPictureDao;
+import fr.mby.opa.pics.exception.PictureAlreadyExistsException;
+import fr.mby.opa.pics.exception.PictureNotFoundException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.BinaryImage;
 import fr.mby.opa.pics.model.Picture;
-import fr.mby.opa.pics.service.PictureAlreadyExistsException;
-import fr.mby.opa.pics.service.PictureNotFoundException;
 import fr.mby.utils.common.jpa.EmCallback;
 import fr.mby.utils.common.jpa.TxCallback;
 import fr.mby.utils.common.jpa.TxCallbackReturn;
@@ -80,8 +80,8 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 			@Override
 			protected Picture executeInTransaction(final EntityManager em) {
 				final Picture updatedPicture = em.merge(picture);
-				em.flush();
-				em.refresh(updatedPicture);
+				// em.flush();
+				// em.refresh(updatedPicture);
 				return updatedPicture;
 			}
 		};

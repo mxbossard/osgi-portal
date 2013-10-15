@@ -14,29 +14,16 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.pics.dao;
+package fr.mby.opa.pics.exception;
 
-import java.util.Collection;
-
-import fr.mby.opa.pics.exception.AlbumNotFoundException;
-import fr.mby.opa.pics.model.Album;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public interface IAlbumDao {
+public class ProposalBagLockedException extends ModelException {
 
-	Album createAlbum(Album album);
-
-	Album updateAlbum(Album album) throws AlbumNotFoundException;
-
-	void deleteAlbum(Album album) throws AlbumNotFoundException;
-
-	Album findAlbumById(Long id);
-
-	Album loadAlbumById(Long id);
-
-	Collection<Album> findAllAlbums();
+	/** Svuid. */
+	private static final long serialVersionUID = -680630552604809253L;
 
 }
