@@ -67,7 +67,7 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 			throw new ProposalBagLockedException();
 		}
 
-		return this.updateProposalBagInternal(proposalBag);
+		return this._updateProposalBagInternal(proposalBag);
 	}
 
 	@Override
@@ -80,10 +80,10 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 
 		proposalBag.setCommited(true);
 
-		return this.updateProposalBagInternal(proposalBag);
+		return this._updateProposalBagInternal(proposalBag);
 	}
 
-	@Override
+	// @Override
 	public AbstractUnitProposal createProposal(final AbstractUnitProposal proposal) {
 		Assert.notNull(proposal, "No Proposal supplied !");
 		Assert.isNull(proposal.getId(), "Id should not be set for creation !");
@@ -110,6 +110,7 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 			protected ProposalBag executeWithEntityManager(final EntityManager em) throws PersistenceException {
 				final Query findLastBagQuery = em.createNamedQuery(ProposalBag.FIND_LAST_PROPOSAL_BAG);
 				findLastBagQuery.setParameter("albumId", albumId);
+				findLastBagQuery.setMaxResults(1);
 
 				final ProposalBag bag = Iterables.getFirst(findLastBagQuery.getResultList(), null);
 				return bag;
@@ -123,13 +124,14 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	 * @param proposalBag
 	 * @return
 	 */
-	protected ProposalBag updateProposalBagInternal(final ProposalBag proposalBag) {
+	protected ProposalBag _updateProposalBagInternal(final ProposalBag proposalBag) {
 		final TxCallbackReturn<ProposalBag> txCallback = new TxCallbackReturn<ProposalBag>(this.getEmf()) {
 
 			@Override
 			protected ProposalBag executeInTransaction(final EntityManager em) {
 				final ProposalBag updatedBag = em.merge(proposalBag);
-
+				em.flush();
+				em.refresh(updatedBag);
 				return updatedBag;
 			}
 		};

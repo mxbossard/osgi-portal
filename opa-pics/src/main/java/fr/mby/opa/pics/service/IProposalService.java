@@ -16,12 +16,15 @@
 
 package fr.mby.opa.pics.service;
 
+import fr.mby.opa.pics.exception.ProposalBagLockedException;
+import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.CasingProposal;
 import fr.mby.opa.pics.model.EraseProposal;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.RankingProposal;
+import fr.mby.opa.pics.model.Session;
 
 /**
  * @author Maxime Bossard - 2013
@@ -31,14 +34,16 @@ public interface IProposalService {
 
 	ProposalBag createProposalBag(String name, String description, Album album, ProposalBag parent);
 
-	ProposalBag updateProposalBag(ProposalBag proposalBag);
+	ProposalBag updateProposalBag(ProposalBag proposalBag) throws ProposalBagNotFoundException,
+			ProposalBagLockedException;
 
-	ProposalBag commitProposalBag(ProposalBag proposalBag);
+	ProposalBag commitProposalBag(ProposalBag proposalBag) throws ProposalBagNotFoundException,
+			ProposalBagLockedException;
 
-	CasingProposal createCasingProposal(Picture picture);
+	CasingProposal createCasingProposal(Picture picture, Session session);
 
-	RankingProposal createRankingProposal(Picture picture);
+	RankingProposal createRankingProposal(Picture picture, int rank);
 
-	EraseProposal createEraseProposal(Picture picture);
+	EraseProposal createEraseProposal(Picture picture, boolean erase);
 
 }

@@ -80,8 +80,8 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 			@Override
 			protected Picture executeInTransaction(final EntityManager em) {
 				final Picture updatedPicture = em.merge(picture);
-				// em.flush();
-				// em.refresh(updatedPicture);
+				em.flush();
+				em.refresh(updatedPicture);
 				return updatedPicture;
 			}
 		};

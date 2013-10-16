@@ -52,7 +52,7 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
  * 
  */
 @NamedQueries({@NamedQuery(name = ProposalBag.FIND_LAST_PROPOSAL_BAG, query = "SELECT bag"
-		+ " FROM ProposalBag bag WHERE bag.album.id = :albumId ORDER BY bag.creationTime DESC LIMIT 1"),})
+		+ " FROM ProposalBag bag WHERE bag.album.id = :albumId ORDER BY bag.creationTime DESC"),})
 @Entity
 @Table(name = "PROPOSAL_BAG")
 @JsonInclude(Include.NON_NULL)

@@ -23,12 +23,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import fr.mby.opa.pics.dao.IProposalDao;
+import fr.mby.opa.pics.exception.ProposalBagLockedException;
+import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.CasingProposal;
 import fr.mby.opa.pics.model.EraseProposal;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.RankingProposal;
+import fr.mby.opa.pics.model.Session;
 import fr.mby.opa.pics.service.IProposalService;
 
 /**
@@ -61,33 +64,58 @@ public class BasicProposalService implements IProposalService {
 	}
 
 	@Override
-	public ProposalBag updateProposalBag(final ProposalBag proposalBag) {
-		// TODO Auto-generated method stub
-		return null;
+	public ProposalBag updateProposalBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
+			ProposalBagLockedException {
+		Assert.notNull(proposalBag, "No ProposalBag supplied !");
+
+		// TODO check Bag integrity : all proposal are on same album ?
+
+		final ProposalBag updatedBag = this.proposalDao.updateProposalBag(proposalBag);
+		return updatedBag;
 	}
 
 	@Override
-	public ProposalBag commitProposalBag(final ProposalBag proposalBag) {
-		// TODO Auto-generated method stub
-		return null;
+	public ProposalBag commitProposalBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
+			ProposalBagLockedException {
+		Assert.notNull(proposalBag, "No ProposalBag supplied !");
+
+		final ProposalBag commitedBag = this.proposalDao.commitProposalBag(proposalBag);
+		return commitedBag;
 	}
 
 	@Override
-	public CasingProposal createCasingProposal(final Picture picture) {
-		// TODO Auto-generated method stub
-		return null;
+	public CasingProposal createCasingProposal(final Picture picture, final Session session) {
+		final CasingProposal proposal = new CasingProposal();
+		proposal.setCreationTime(this._getCurrentTimestamp());
+		proposal.setPicture(picture);
+		proposal.setSession(session);
+
+		return proposal;
 	}
 
 	@Override
-	public RankingProposal createRankingProposal(final Picture picture) {
-		// TODO Auto-generated method stub
-		return null;
+	public RankingProposal createRankingProposal(final Picture picture, final int rank) {
+		final RankingProposal proposal = new RankingProposal();
+		proposal.setCreationTime(this._getCurrentTimestamp());
+		proposal.setPicture(picture);
+		proposal.setRank(rank);
+
+		return proposal;
 	}
 
 	@Override
-	public EraseProposal createEraseProposal(final Picture picture) {
-		// TODO Auto-generated method stub
-		return null;
+	public EraseProposal createEraseProposal(final Picture picture, final boolean erase) {
+		final EraseProposal proposal = new EraseProposal();
+		proposal.setCreationTime(this._getCurrentTimestamp());
+		proposal.setPicture(picture);
+		proposal.setErasable(erase);
+
+		return proposal;
+	}
+
+	protected Timestamp _getCurrentTimestamp() {
+		final Timestamp now = new Timestamp(System.currentTimeMillis());
+		return now;
 	}
 
 }

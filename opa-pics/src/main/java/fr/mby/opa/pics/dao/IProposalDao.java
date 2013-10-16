@@ -18,7 +18,6 @@ package fr.mby.opa.pics.dao;
 
 import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
-import fr.mby.opa.pics.model.AbstractUnitProposal;
 import fr.mby.opa.pics.model.ProposalBag;
 
 /**
@@ -35,7 +34,7 @@ public interface IProposalDao {
 	ProposalBag commitProposalBag(ProposalBag proposalBag) throws ProposalBagNotFoundException,
 			ProposalBagLockedException;
 
-	AbstractUnitProposal createProposal(AbstractUnitProposal proposal);
+	// AbstractUnitProposal createProposal(AbstractUnitProposal proposal);
 
 	ProposalBag findLastProposalBag(Long albumId);
 
