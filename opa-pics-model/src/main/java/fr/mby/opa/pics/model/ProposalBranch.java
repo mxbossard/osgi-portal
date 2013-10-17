@@ -17,11 +17,12 @@
 package fr.mby.opa.pics.model;
 
 import java.sql.Timestamp;
-import java.util.Collection;
+import java.util.List;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,7 +33,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -52,19 +52,19 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
  * 
  */
 @NamedQueries({
-		@NamedQuery(name = ProposalBag.FIND_LAST_ALBUM_BAG, query = "SELECT bag"
-				+ " FROM ProposalBag bag WHERE bag.branch.album.id = :albumId ORDER BY bag.creationTime DESC"),
-		@NamedQuery(name = ProposalBag.FIND_BRANCH_BAGS_UNTIL, query = "SELECT bag"
-				+ " FROM ProposalBag bag WHERE bag.branch.id = :branchId AND bag.creationTime < :until"
-				+ " ORDER BY bag.creationTime DESC")})
+		@NamedQuery(name = ProposalBranch.FIND_BRANCHES_OF_ALBUM, query = "SELECT br"
+				+ " FROM ProposalBranch br WHERE br.album.id = :albumId ORDER BY br.creationTime DESC"),
+		@NamedQuery(name = ProposalBranch.LOAD_BRANCH_UNTIL, query = "SELECT br"
+				+ " FROM ProposalBranch br WHERE br.id = :branchId AND br.creationTime < :until"
+				+ " ORDER BY br.creationTime DESC")})
 @Entity
-@Table(name = "PROPOSAL_BAG")
+@Table(name = "PROPOSAL_BRANCH")
 @JsonInclude(Include.NON_NULL)
-public class ProposalBag {
+public class ProposalBranch {
 
-	public static final String FIND_LAST_ALBUM_BAG = "FIND_LAST_ALBUM_BAG";
+	public static final String FIND_BRANCHES_OF_ALBUM = "FIND_BRANCHES_OF_ALBUM";
 
-	public static final String FIND_BRANCH_BAGS_UNTIL = "FIND_BRANCH_BAGS_UNTIL";
+	public static final String LOAD_BRANCH_UNTIL = "LOAD_BRANCH_UNTIL";
 
 	@Version
 	@JsonIgnore
@@ -84,31 +84,18 @@ public class ProposalBag {
 	private String description;
 
 	@Basic(optional = false)
-	// TODO rename COMMITED
-	@Column(name = "LOCKED")
-	private Boolean commited;
-
-	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
 	@JsonSerialize(using = TimestampJsonSerializer.class)
 	private Timestamp creationTime;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "BASE_PROPOSAL_ID", updatable = false)
-	private ProposalBag baseProposal;
-
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PROPOSAL_BRANCH_ID", updatable = false)
-	private ProposalBranch branch;
-
+	@ElementCollection
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
-	private Collection<CasingProposal> casingProposals;
+	private List<ProposalBag> proposalBags;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
-	private Collection<RankingProposal> rankingProposals;
-
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
-	private Collection<EraseProposal> eraseProposals;
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "ALBUM_ID", nullable = false, updatable = false)
+	@JsonIgnore
+	private Album album;
 
 	/**
 	 * Getter of id.
@@ -168,25 +155,6 @@ public class ProposalBag {
 	}
 
 	/**
-	 * Getter of commited.
-	 * 
-	 * @return the commited
-	 */
-	public Boolean isCommited() {
-		return this.commited;
-	}
-
-	/**
-	 * Setter of commited.
-	 * 
-	 * @param commited
-	 *            the commited to set
-	 */
-	public void setCommited(final Boolean commited) {
-		this.commited = commited;
-	}
-
-	/**
 	 * Getter of creationTime.
 	 * 
 	 * @return the creationTime
@@ -206,98 +174,41 @@ public class ProposalBag {
 	}
 
 	/**
-	 * Getter of baseProposal.
+	 * Getter of album.
 	 * 
-	 * @return the baseProposal
+	 * @return the album
 	 */
-	public ProposalBag getBaseProposal() {
-		return this.baseProposal;
+	public Album getAlbum() {
+		return this.album;
 	}
 
 	/**
-	 * Setter of baseProposal.
+	 * Setter of album.
 	 * 
-	 * @param baseProposal
-	 *            the baseProposal to set
+	 * @param album
+	 *            the album to set
 	 */
-	public void setBaseProposal(final ProposalBag baseProposal) {
-		this.baseProposal = baseProposal;
+	public void setAlbum(final Album album) {
+		this.album = album;
 	}
 
 	/**
-	 * Getter of casingProposals.
+	 * Getter of proposalBags.
 	 * 
-	 * @return the casingProposals
+	 * @return the proposalBags
 	 */
-	public Collection<CasingProposal> getCasingProposals() {
-		return this.casingProposals;
+	public List<ProposalBag> getProposalBags() {
+		return this.proposalBags;
 	}
 
 	/**
-	 * Setter of casingProposals.
+	 * Setter of proposalBags.
 	 * 
-	 * @param casingProposals
-	 *            the casingProposals to set
+	 * @param proposalBags
+	 *            the proposalBags to set
 	 */
-	public void setCasingProposals(final Collection<CasingProposal> casingProposals) {
-		this.casingProposals = casingProposals;
-	}
-
-	/**
-	 * Getter of rankingProposals.
-	 * 
-	 * @return the rankingProposals
-	 */
-	public Collection<RankingProposal> getRankingProposals() {
-		return this.rankingProposals;
-	}
-
-	/**
-	 * Setter of rankingProposals.
-	 * 
-	 * @param rankingProposals
-	 *            the rankingProposals to set
-	 */
-	public void setRankingProposals(final Collection<RankingProposal> rankingProposals) {
-		this.rankingProposals = rankingProposals;
-	}
-
-	/**
-	 * Getter of eraseProposals.
-	 * 
-	 * @return the eraseProposals
-	 */
-	public Collection<EraseProposal> getEraseProposals() {
-		return this.eraseProposals;
-	}
-
-	/**
-	 * Setter of eraseProposals.
-	 * 
-	 * @param eraseProposals
-	 *            the eraseProposals to set
-	 */
-	public void setEraseProposals(final Collection<EraseProposal> eraseProposals) {
-		this.eraseProposals = eraseProposals;
-	}
-
-	/**
-	 * Getter of branch.
-	 * 
-	 * @return the branch
-	 */
-	public ProposalBranch getBranch() {
-		return this.branch;
-	}
-
-	/**
-	 * Setter of branch.
-	 * 
-	 * @param branch
-	 *            the branch to set
-	 */
-	public void setBranch(final ProposalBranch branch) {
-		this.branch = branch;
+	public void setProposalBags(final List<ProposalBag> proposalBags) {
+		this.proposalBags = proposalBags;
 	}
 
 }

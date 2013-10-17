@@ -17,6 +17,7 @@
 package fr.mby.opa.picsimpl.service;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,7 @@ import fr.mby.opa.pics.model.CasingProposal;
 import fr.mby.opa.pics.model.EraseProposal;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.model.ProposalBag;
+import fr.mby.opa.pics.model.ProposalBranch;
 import fr.mby.opa.pics.model.RankingProposal;
 import fr.mby.opa.pics.model.Session;
 import fr.mby.opa.pics.service.IProposalService;
@@ -45,42 +47,78 @@ public class BasicProposalService implements IProposalService {
 	private IProposalDao proposalDao;
 
 	@Override
-	public ProposalBag createProposalBag(final String name, final String description, final Album album,
-			final ProposalBag parent) {
+	public ProposalBranch createBranch(final String name, final String description, final Album album,
+			final ProposalBranch fork) {
 		Assert.hasText(name, "No name supplied !");
 		Assert.notNull(album, "No Album supplied !");
 
+		final ProposalBranch branch = new ProposalBranch();
+		branch.setCreationTime(new Timestamp(System.currentTimeMillis()));
+		branch.setName(name);
+		branch.setDescription(description);
+
+		if (fork != null) {
+			// We fork the branch => we duplicate it
+			// TODO
+		}
+
+		final ProposalBranch createdBranch = this.proposalDao.createBranch(branch);
+
+		return createdBranch;
+	}
+
+	@Override
+	public ProposalBag createBag(final String name, final String description, final ProposalBranch branch) {
+		Assert.hasText(name, "No name supplied !");
+		Assert.notNull(branch, "No ProposalBranch supplied !");
+
 		final ProposalBag bag = new ProposalBag();
-		bag.setAlbum(album);
-		bag.setBaseProposal(parent);
+		bag.setBranch(branch);
 		bag.setCreationTime(new Timestamp(System.currentTimeMillis()));
 		bag.setName(name);
 		bag.setDescription(description);
 		bag.setCommited(false);
 
-		final ProposalBag createdBag = this.proposalDao.createProposalBag(bag);
+		// TODO retrieve parent bag
+
+		final ProposalBag createdBag = this.proposalDao.createBag(bag);
 
 		return createdBag;
 	}
 
 	@Override
-	public ProposalBag updateProposalBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
+	public ProposalBag updateBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
 			ProposalBagLockedException {
 		Assert.notNull(proposalBag, "No ProposalBag supplied !");
 
-		// TODO check Bag integrity : all proposal are on same album ?
-
-		final ProposalBag updatedBag = this.proposalDao.updateProposalBag(proposalBag);
+		final ProposalBag updatedBag = this.proposalDao.updateBag(proposalBag);
 		return updatedBag;
 	}
 
 	@Override
-	public ProposalBag commitProposalBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
+	public ProposalBag commitBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
 			ProposalBagLockedException {
 		Assert.notNull(proposalBag, "No ProposalBag supplied !");
 
-		final ProposalBag commitedBag = this.proposalDao.commitProposalBag(proposalBag);
+		// TODO pull full revision to this bag and descend diff
+
+		final ProposalBag commitedBag = this.proposalDao.commitBag(proposalBag);
 		return commitedBag;
+	}
+
+	@Override
+	public ProposalBag findLastBag(final long albumId) {
+		return this.proposalDao.findLastBag(albumId);
+	}
+
+	@Override
+	public List<ProposalBranch> findAllBranches(final long albumId) {
+		return this.proposalDao.findAllBranches(albumId);
+	}
+
+	@Override
+	public List<ProposalBag> findBagAncestry(final long branchId, final long until) {
+		return this.proposalDao.findBagAncestry(branchId, until);
 	}
 
 	@Override

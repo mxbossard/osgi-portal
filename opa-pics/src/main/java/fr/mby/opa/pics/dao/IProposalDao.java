@@ -16,9 +16,12 @@
 
 package fr.mby.opa.pics.dao;
 
+import java.util.List;
+
 import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.ProposalBag;
+import fr.mby.opa.pics.model.ProposalBranch;
 
 /**
  * @author Maxime Bossard - 2013
@@ -26,23 +29,18 @@ import fr.mby.opa.pics.model.ProposalBag;
  */
 public interface IProposalDao {
 
-	ProposalBag createProposalBag(ProposalBag proposalBag);
+	ProposalBranch createBranch(ProposalBranch branch);
 
-	ProposalBag updateProposalBag(ProposalBag proposalBag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException;
+	ProposalBag createBag(ProposalBag bag);
 
-	ProposalBag commitProposalBag(ProposalBag proposalBag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException;
+	ProposalBag updateBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException;
 
-	// AbstractUnitProposal createProposal(AbstractUnitProposal proposal);
+	ProposalBag commitBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException;
 
-	ProposalBag findLastProposalBag(Long albumId);
+	ProposalBag findLastBag(long albumId);
 
-	/*
-	 * CasingProposal createCasingProposal(CasingProposal proposal);
-	 * 
-	 * RankingProposal createRankingProposal(RankingProposal proposal);
-	 * 
-	 * EraseProposal createEraseProposal(EraseProposal proposal);
-	 */
+	List<ProposalBranch> findAllBranches(long albumId);
+
+	List<ProposalBag> findBagAncestry(long branchId, long until);
+
 }

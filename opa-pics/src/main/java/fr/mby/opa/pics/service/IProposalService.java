@@ -16,6 +16,8 @@
 
 package fr.mby.opa.pics.service;
 
+import java.util.List;
+
 import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.Album;
@@ -23,6 +25,7 @@ import fr.mby.opa.pics.model.CasingProposal;
 import fr.mby.opa.pics.model.EraseProposal;
 import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.model.ProposalBag;
+import fr.mby.opa.pics.model.ProposalBranch;
 import fr.mby.opa.pics.model.RankingProposal;
 import fr.mby.opa.pics.model.Session;
 
@@ -32,13 +35,19 @@ import fr.mby.opa.pics.model.Session;
  */
 public interface IProposalService {
 
-	ProposalBag createProposalBag(String name, String description, Album album, ProposalBag parent);
+	ProposalBranch createBranch(String name, String description, Album album, ProposalBranch fork);
 
-	ProposalBag updateProposalBag(ProposalBag proposalBag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException;
+	ProposalBag createBag(String name, String description, ProposalBranch branch);
 
-	ProposalBag commitProposalBag(ProposalBag proposalBag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException;
+	ProposalBag updateBag(ProposalBag proposalBag) throws ProposalBagNotFoundException, ProposalBagLockedException;
+
+	ProposalBag commitBag(ProposalBag proposalBag) throws ProposalBagNotFoundException, ProposalBagLockedException;
+
+	ProposalBag findLastBag(long albumId);
+
+	List<ProposalBranch> findAllBranches(long albumId);
+
+	List<ProposalBag> findBagAncestry(long branchId, long until);
 
 	CasingProposal createCasingProposal(Picture picture, Session session);
 
