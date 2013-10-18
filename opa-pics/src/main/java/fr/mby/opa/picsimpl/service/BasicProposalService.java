@@ -79,8 +79,6 @@ public class BasicProposalService implements IProposalService {
 		bag.setDescription(description);
 		bag.setCommited(false);
 
-		// TODO retrieve parent bag
-
 		final ProposalBag createdBag = this.proposalDao.createBag(bag);
 
 		return createdBag;

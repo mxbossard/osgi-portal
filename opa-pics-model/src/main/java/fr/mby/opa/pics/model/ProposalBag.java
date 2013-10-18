@@ -53,10 +53,14 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
  */
 @NamedQueries({
 		@NamedQuery(name = ProposalBag.FIND_LAST_ALBUM_BAG, query = "SELECT bag"
-				+ " FROM ProposalBag bag WHERE bag.branch.album.id = :albumId ORDER BY bag.creationTime DESC"),
+				+ " FROM ProposalBag bag WHERE bag.branch.album.id = :albumId AND bag.creationTime = ("
+				+ " 	SELECT MAX(bag.creationTime) FROM ProposalBag bag WHERE bag.branch.album.id = :albumId )"),
 		@NamedQuery(name = ProposalBag.FIND_BRANCH_BAGS_UNTIL, query = "SELECT bag"
 				+ " FROM ProposalBag bag WHERE bag.branch.id = :branchId AND bag.creationTime < :until"
-				+ " ORDER BY bag.creationTime DESC")})
+				+ " ORDER BY bag.creationTime DESC"),
+		@NamedQuery(name = ProposalBag.FIND_LAST_BRANCH_BAG, query = "SELECT bag"
+				+ " FROM ProposalBag bag WHERE bag.branch.id = :branchId AND bag.creationTime = ("
+				+ " 	SELECT MAX(bag.creationTime) FROM ProposalBag bag WHERE bag.branch.id = :branchId )")})
 @Entity
 @Table(name = "PROPOSAL_BAG")
 @JsonInclude(Include.NON_NULL)
@@ -65,6 +69,8 @@ public class ProposalBag {
 	public static final String FIND_LAST_ALBUM_BAG = "FIND_LAST_ALBUM_BAG";
 
 	public static final String FIND_BRANCH_BAGS_UNTIL = "FIND_BRANCH_BAGS_UNTIL";
+
+	public static final String FIND_LAST_BRANCH_BAG = "FIND_LAST_BRANCH_BAG";
 
 	@Version
 	@JsonIgnore
@@ -97,7 +103,7 @@ public class ProposalBag {
 	@JoinColumn(name = "BASE_PROPOSAL_ID", updatable = false)
 	private ProposalBag baseProposal;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "PROPOSAL_BRANCH_ID", updatable = false)
 	private ProposalBranch branch;
 

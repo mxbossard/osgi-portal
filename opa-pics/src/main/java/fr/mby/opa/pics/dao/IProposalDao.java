@@ -31,6 +31,8 @@ public interface IProposalDao {
 
 	ProposalBranch createBranch(ProposalBranch branch);
 
+	ProposalBranch updateBranch(ProposalBranch branch);
+
 	ProposalBag createBag(ProposalBag bag);
 
 	ProposalBag updateBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException;

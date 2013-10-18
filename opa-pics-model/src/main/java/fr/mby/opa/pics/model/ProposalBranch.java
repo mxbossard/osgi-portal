@@ -33,6 +33,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
 
@@ -91,6 +92,10 @@ public class ProposalBranch {
 	@ElementCollection
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
 	private List<ProposalBag> proposalBags;
+
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "HEAD_BAG_ID", updatable = true)
+	private ProposalBag head;
 
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
 	@JoinColumn(name = "ALBUM_ID", nullable = false, updatable = false)
@@ -209,6 +214,25 @@ public class ProposalBranch {
 	 */
 	public void setProposalBags(final List<ProposalBag> proposalBags) {
 		this.proposalBags = proposalBags;
+	}
+
+	/**
+	 * Getter of head.
+	 * 
+	 * @return the head
+	 */
+	public ProposalBag getHead() {
+		return this.head;
+	}
+
+	/**
+	 * Setter of head.
+	 * 
+	 * @param head
+	 *            the head to set
+	 */
+	public void setHead(final ProposalBag head) {
+		this.head = head;
 	}
 
 }

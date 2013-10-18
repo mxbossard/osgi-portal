@@ -19,6 +19,7 @@ package fr.mby.opa.picsimpl.dao;
 import java.util.List;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 
@@ -64,15 +65,51 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
+	public ProposalBranch updateBranch(final ProposalBranch branch) {
+		Assert.notNull(branch, "No ProposalBag supplied !");
+		Assert.notNull(branch.getId(), "Id should be set for update !");
+
+		final TxCallbackReturn<ProposalBranch> txCallback = new TxCallbackReturn<ProposalBranch>(this.getEmf()) {
+
+			@Override
+			protected ProposalBranch executeInTransaction(final EntityManager em) {
+				final ProposalBranch updatedBranch = em.merge(branch);
+				em.flush();
+				em.refresh(updatedBranch);
+				return updatedBranch;
+			}
+		};
+
+		final ProposalBranch updatedBag = txCallback.getReturnedValue();
+		return updatedBag;
+	}
+
+	@Override
 	public ProposalBag createBag(final ProposalBag bag) {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		Assert.isNull(bag.getId(), "Id should not be set for creation !");
+		final ProposalBranch branch = bag.getBranch();
+		Assert.notNull(branch, "No ProposalBranch found in ProposalBag !");
+		Assert.notNull(branch.getId(), "ProposalBranch Id should be set !");
 
 		new TxCallback(this.getEmf()) {
 
 			@Override
+			@SuppressWarnings("unchecked")
 			protected void executeInTransaction(final EntityManager em) {
+				// Retrieve base bag (parent bag) and lock the row
+				final Query findParentQuery = em.createNamedQuery(ProposalBag.FIND_LAST_BRANCH_BAG);
+				findParentQuery.setParameter("branchId", branch.getId());
+				findParentQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+
+				// Persist bag with its parent
+				final ProposalBag parentBag = Iterables.getFirst(findParentQuery.getResultList(), null);
+				bag.setBaseProposal(parentBag);
 				em.persist(bag);
+
+				// Update branch head pointer
+				branch.setHead(bag);
+				DbProposalDao.this.updateBranch(branch);
 			}
 		};
 
@@ -80,8 +117,7 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
-	public ProposalBag updateBag(final ProposalBag bag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException {
+	public ProposalBag updateBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		Assert.notNull(bag.getId(), "Id should be set for update !");
 
@@ -93,8 +129,7 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
-	public ProposalBag commitBag(final ProposalBag bag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException {
+	public ProposalBag commitBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		if (bag.isCommited()) {
 			throw new ProposalBagLockedException();
@@ -132,7 +167,6 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 			protected ProposalBag executeWithEntityManager(final EntityManager em) throws PersistenceException {
 				final Query findLastBagQuery = em.createNamedQuery(ProposalBag.FIND_LAST_ALBUM_BAG);
 				findLastBagQuery.setParameter("albumId", albumId);
-				findLastBagQuery.setMaxResults(1);
 
 				final ProposalBag bag = Iterables.getFirst(findLastBagQuery.getResultList(), null);
 				return bag;
