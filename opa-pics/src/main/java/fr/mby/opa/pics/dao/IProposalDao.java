@@ -22,6 +22,7 @@ import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.ProposalBranch;
+import fr.mby.opa.picsimpl.exception.ProposalBranchNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
@@ -31,9 +32,13 @@ public interface IProposalDao {
 
 	ProposalBranch createBranch(ProposalBranch branch);
 
-	ProposalBranch updateBranch(ProposalBranch branch);
+	ProposalBranch forkBranch(ProposalBranch fork, long branchToForkId) throws ProposalBranchNotFoundException;
 
-	ProposalBag createBag(ProposalBag bag);
+	ProposalBranch updateBranch(ProposalBranch branch) throws ProposalBranchNotFoundException;
+
+	ProposalBranch findBranch(long branchId);
+
+	ProposalBag createBag(ProposalBag bag, long branchId) throws ProposalBranchNotFoundException;
 
 	ProposalBag updateBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException;
 

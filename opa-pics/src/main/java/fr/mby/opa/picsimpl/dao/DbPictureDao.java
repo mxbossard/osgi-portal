@@ -140,7 +140,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	}
 
 	@Override
-	public Picture findPictureById(final Long id) {
+	public Picture findPictureById(final long id) {
 		Assert.notNull(id, "Picture Id should be supplied !");
 
 		final EmCallback<Picture> emCallback = new EmCallback<Picture>(this.getEmf()) {
@@ -175,7 +175,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	}
 
 	@Override
-	public Picture loadFullPictureById(final Long id) {
+	public Picture loadFullPictureById(final long id) {
 		Assert.notNull(id, "Picture Id should be supplied !");
 
 		final EmCallback<Picture> emCallback = new EmCallback<Picture>(this.getEmf()) {
@@ -195,7 +195,7 @@ public class DbPictureDao extends AbstractPicsDao implements IPictureDao {
 	}
 
 	@Override
-	public BinaryImage findImageById(final Long id) {
+	public BinaryImage findImageById(final long id) {
 		Assert.notNull(id, "Image Id should be supplied !");
 
 		final EmCallback<BinaryImage> emCallback = new EmCallback<BinaryImage>(this.getEmf()) {

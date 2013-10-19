@@ -34,6 +34,7 @@ import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.AbstractUnitProposal;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.ProposalBranch;
+import fr.mby.opa.picsimpl.exception.ProposalBranchNotFoundException;
 import fr.mby.utils.common.jpa.EmCallback;
 import fr.mby.utils.common.jpa.TxCallback;
 import fr.mby.utils.common.jpa.TxCallbackReturn;
@@ -65,6 +66,32 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
+	public ProposalBranch forkBranch(final ProposalBranch fork, final long branchToForkId) {
+		Assert.notNull(fork, "No ProposalBag supplied !");
+		Assert.isNull(fork.getId(), "Id should not be set for creation !");
+
+		// Duplicate the branch to Fork
+		new TxCallback(this.getEmf()) {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected void executeInTransaction(final EntityManager em) {
+				final Query loadFullBranchQuery = em.createNamedQuery(ProposalBranch.LOAD_FULL_BRANCH);
+				loadFullBranchQuery.setParameter("branchId", branchToForkId);
+				final ProposalBranch branchToFork = Iterables.getFirst(loadFullBranchQuery.getResultList(), null);
+				if (branchToFork == null) {
+					throw new ProposalBranchNotFoundException();
+				}
+
+				fork.setProposalBags(branchToFork.getProposalBags());
+				em.persist(fork);
+			}
+		};
+
+		return fork;
+	}
+
+	@Override
 	public ProposalBranch updateBranch(final ProposalBranch branch) {
 		Assert.notNull(branch, "No ProposalBag supplied !");
 		Assert.notNull(branch.getId(), "Id should be set for update !");
@@ -85,31 +112,52 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
-	public ProposalBag createBag(final ProposalBag bag) {
+	public ProposalBranch findBranch(final long branchId) {
+		final EmCallback<ProposalBranch> emCallback = new EmCallback<ProposalBranch>(this.getEmf()) {
+
+			@Override
+			protected ProposalBranch executeWithEntityManager(final EntityManager em) throws PersistenceException {
+
+				return em.find(ProposalBranch.class, branchId);
+			}
+		};
+
+		return emCallback.getReturnedValue();
+	}
+
+	@Override
+	public ProposalBag createBag(final ProposalBag bag, final long branchId) {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		Assert.isNull(bag.getId(), "Id should not be set for creation !");
-		final ProposalBranch branch = bag.getBranch();
-		Assert.notNull(branch, "No ProposalBranch found in ProposalBag !");
-		Assert.notNull(branch.getId(), "ProposalBranch Id should be set !");
 
 		new TxCallback(this.getEmf()) {
 
 			@Override
-			@SuppressWarnings("unchecked")
+			// @SuppressWarnings("unchecked")
 			protected void executeInTransaction(final EntityManager em) {
+				// Retrieve branch
+				final ProposalBranch branch = em.find(ProposalBranch.class, branchId, LockModeType.PESSIMISTIC_WRITE);
+				if (branch == null) {
+					throw new ProposalBranchNotFoundException();
+				}
+
 				// Retrieve base bag (parent bag) and lock the row
-				final Query findParentQuery = em.createNamedQuery(ProposalBag.FIND_LAST_BRANCH_BAG);
-				findParentQuery.setParameter("branchId", branch.getId());
-				findParentQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+				// final Query findParentQuery = em.createNamedQuery(ProposalBag.FIND_LAST_BRANCH_BAG);
+				// findParentQuery.setParameter("branchId", branchId);
+				// findParentQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
 
 				// Persist bag with its parent
-				final ProposalBag parentBag = Iterables.getFirst(findParentQuery.getResultList(), null);
-				bag.setBaseProposal(parentBag);
+				// final ProposalBag parentBag = Iterables.getFirst(findParentQuery.getResultList(), null);
+				// bag.setBaseProposal(parentBag);
+				// em.persist(bag);
+
+				// Persist bag with its parent
+				bag.setBaseProposal(branch.getHead());
 				em.persist(bag);
 
 				// Update branch head pointer
 				branch.setHead(bag);
-				DbProposalDao.this.updateBranch(branch);
+				em.merge(branch);
 			}
 		};
 

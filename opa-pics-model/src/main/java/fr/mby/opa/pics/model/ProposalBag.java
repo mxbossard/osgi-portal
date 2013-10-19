@@ -28,7 +28,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -102,10 +101,6 @@ public class ProposalBag {
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BASE_PROPOSAL_ID", updatable = false)
 	private ProposalBag baseProposal;
-
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "PROPOSAL_BRANCH_ID", updatable = false)
-	private ProposalBranch branch;
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
 	private Collection<CasingProposal> casingProposals;
@@ -285,25 +280,6 @@ public class ProposalBag {
 	 */
 	public void setEraseProposals(final Collection<EraseProposal> eraseProposals) {
 		this.eraseProposals = eraseProposals;
-	}
-
-	/**
-	 * Getter of branch.
-	 * 
-	 * @return the branch
-	 */
-	public ProposalBranch getBranch() {
-		return this.branch;
-	}
-
-	/**
-	 * Setter of branch.
-	 * 
-	 * @param branch
-	 *            the branch to set
-	 */
-	public void setBranch(final ProposalBranch branch) {
-		this.branch = branch;
 	}
 
 }

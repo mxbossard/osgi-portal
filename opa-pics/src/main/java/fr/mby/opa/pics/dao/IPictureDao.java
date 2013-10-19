@@ -38,13 +38,13 @@ public interface IPictureDao {
 
 	List<Picture> findPicturesByAlbumId(Long albumId, Long since);
 
-	Picture findPictureById(Long id);
+	Picture findPictureById(long id);
 
 	Long findPictureIdByHash(String hash);
 
-	Picture loadFullPictureById(Long id);
+	Picture loadFullPictureById(long id);
 
-	BinaryImage findImageById(Long id);
+	BinaryImage findImageById(long id);
 
 	List<Picture> findAllPictures(Long since);
 

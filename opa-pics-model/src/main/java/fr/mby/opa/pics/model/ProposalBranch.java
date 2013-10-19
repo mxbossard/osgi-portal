@@ -29,10 +29,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -56,7 +56,10 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 		@NamedQuery(name = ProposalBranch.FIND_BRANCHES_OF_ALBUM, query = "SELECT br"
 				+ " FROM ProposalBranch br WHERE br.album.id = :albumId ORDER BY br.creationTime DESC"),
 		@NamedQuery(name = ProposalBranch.LOAD_BRANCH_UNTIL, query = "SELECT br"
-				+ " FROM ProposalBranch br WHERE br.id = :branchId AND br.creationTime < :until"
+				+ " FROM ProposalBranch br JOIN FETCH br.proposalBags WHERE br.id = :branchId"
+				+ " AND br.proposalBags.creationTime < :until ORDER BY br.creationTime DESC"),
+		@NamedQuery(name = ProposalBranch.LOAD_FULL_BRANCH, query = "SELECT br"
+				+ " FROM ProposalBranch br JOIN FETCH br.proposalBags WHERE br.id = :branchId"
 				+ " ORDER BY br.creationTime DESC")})
 @Entity
 @Table(name = "PROPOSAL_BRANCH")
@@ -66,6 +69,8 @@ public class ProposalBranch {
 	public static final String FIND_BRANCHES_OF_ALBUM = "FIND_BRANCHES_OF_ALBUM";
 
 	public static final String LOAD_BRANCH_UNTIL = "LOAD_BRANCH_UNTIL";
+
+	public static final String LOAD_FULL_BRANCH = "LOAD_FULL_BRANCH";
 
 	@Version
 	@JsonIgnore
@@ -90,7 +95,7 @@ public class ProposalBranch {
 	private Timestamp creationTime;
 
 	@ElementCollection
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "proposalBag")
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<ProposalBag> proposalBags;
 
 	@OneToOne(fetch = FetchType.EAGER)

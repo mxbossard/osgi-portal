@@ -18,12 +18,12 @@ package fr.mby.opa.pics.service;
 
 import java.util.List;
 
+import fr.mby.opa.pics.exception.PictureNotFoundException;
 import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.CasingProposal;
 import fr.mby.opa.pics.model.EraseProposal;
-import fr.mby.opa.pics.model.Picture;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.ProposalBranch;
 import fr.mby.opa.pics.model.RankingProposal;
@@ -35,9 +35,11 @@ import fr.mby.opa.pics.model.Session;
  */
 public interface IProposalService {
 
-	ProposalBranch createBranch(String name, String description, Album album, ProposalBranch fork);
+	ProposalBranch createBranch(String name, String description, Album album, Long branchToForkId);
 
-	ProposalBag createBag(String name, String description, ProposalBranch branch);
+	ProposalBranch findBranch(long branchId);
+
+	ProposalBag createBag(String name, String description, long branchId);
 
 	ProposalBag updateBag(ProposalBag proposalBag) throws ProposalBagNotFoundException, ProposalBagLockedException;
 
@@ -49,10 +51,10 @@ public interface IProposalService {
 
 	List<ProposalBag> findBagAncestry(long branchId, long until);
 
-	CasingProposal createCasingProposal(Picture picture, Session session);
+	CasingProposal createCasingProposal(long pictureId, Session session) throws PictureNotFoundException;
 
-	RankingProposal createRankingProposal(Picture picture, int rank);
+	RankingProposal createRankingProposal(long pictureId, int rank) throws PictureNotFoundException;
 
-	EraseProposal createEraseProposal(Picture picture, boolean erase);
+	EraseProposal createEraseProposal(long pictureId, boolean erase) throws PictureNotFoundException;
 
 }

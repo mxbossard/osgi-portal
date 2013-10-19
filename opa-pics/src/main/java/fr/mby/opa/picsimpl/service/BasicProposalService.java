@@ -23,7 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
+import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.dao.IProposalDao;
+import fr.mby.opa.pics.exception.PictureNotFoundException;
 import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.Album;
@@ -46,9 +48,12 @@ public class BasicProposalService implements IProposalService {
 	@Autowired
 	private IProposalDao proposalDao;
 
+	@Autowired
+	private IPictureDao pictureDao;
+
 	@Override
 	public ProposalBranch createBranch(final String name, final String description, final Album album,
-			final ProposalBranch fork) {
+			final Long branchToForkId) {
 		Assert.hasText(name, "No name supplied !");
 		Assert.notNull(album, "No Album supplied !");
 
@@ -57,29 +62,34 @@ public class BasicProposalService implements IProposalService {
 		branch.setName(name);
 		branch.setDescription(description);
 
-		if (fork != null) {
-			// We fork the branch => we duplicate it
-			// TODO
-		}
+		final ProposalBranch createdBranch;
 
-		final ProposalBranch createdBranch = this.proposalDao.createBranch(branch);
+		if (branchToForkId != null) {
+			// We fork the branch => we duplicate it
+			createdBranch = this.proposalDao.forkBranch(branch, branchToForkId);
+		} else {
+			createdBranch = this.proposalDao.createBranch(branch);
+		}
 
 		return createdBranch;
 	}
 
 	@Override
-	public ProposalBag createBag(final String name, final String description, final ProposalBranch branch) {
+	public ProposalBranch findBranch(final long branchId) {
+		return this.proposalDao.findBranch(branchId);
+	}
+
+	@Override
+	public ProposalBag createBag(final String name, final String description, final long branchId) {
 		Assert.hasText(name, "No name supplied !");
-		Assert.notNull(branch, "No ProposalBranch supplied !");
 
 		final ProposalBag bag = new ProposalBag();
-		bag.setBranch(branch);
 		bag.setCreationTime(new Timestamp(System.currentTimeMillis()));
 		bag.setName(name);
 		bag.setDescription(description);
 		bag.setCommited(false);
 
-		final ProposalBag createdBag = this.proposalDao.createBag(bag);
+		final ProposalBag createdBag = this.proposalDao.createBag(bag, branchId);
 
 		return createdBag;
 	}
@@ -120,7 +130,14 @@ public class BasicProposalService implements IProposalService {
 	}
 
 	@Override
-	public CasingProposal createCasingProposal(final Picture picture, final Session session) {
+	public CasingProposal createCasingProposal(final long pictureId, final Session session) {
+		Assert.notNull(session, "No Session supplied !");
+
+		final Picture picture = this.pictureDao.findPictureById(pictureId);
+		if (picture == null) {
+			throw new PictureNotFoundException();
+		}
+
 		final CasingProposal proposal = new CasingProposal();
 		proposal.setCreationTime(this._getCurrentTimestamp());
 		proposal.setPicture(picture);
@@ -130,7 +147,12 @@ public class BasicProposalService implements IProposalService {
 	}
 
 	@Override
-	public RankingProposal createRankingProposal(final Picture picture, final int rank) {
+	public RankingProposal createRankingProposal(final long pictureId, final int rank) {
+		final Picture picture = this.pictureDao.findPictureById(pictureId);
+		if (picture == null) {
+			throw new PictureNotFoundException();
+		}
+
 		final RankingProposal proposal = new RankingProposal();
 		proposal.setCreationTime(this._getCurrentTimestamp());
 		proposal.setPicture(picture);
@@ -140,7 +162,12 @@ public class BasicProposalService implements IProposalService {
 	}
 
 	@Override
-	public EraseProposal createEraseProposal(final Picture picture, final boolean erase) {
+	public EraseProposal createEraseProposal(final long pictureId, final boolean erase) {
+		final Picture picture = this.pictureDao.findPictureById(pictureId);
+		if (picture == null) {
+			throw new PictureNotFoundException();
+		}
+
 		final EraseProposal proposal = new EraseProposal();
 		proposal.setCreationTime(this._getCurrentTimestamp());
 		proposal.setPicture(picture);

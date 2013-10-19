@@ -16,13 +16,9 @@
 
 package fr.mby.opa.picsimpl.service;
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.Collection;
@@ -265,100 +261,6 @@ public class BasicPictureFactory implements IPictureFactory {
 			creationTime = new Timestamp(System.currentTimeMillis());
 		}
 		return creationTime;
-	}
-
-	/**
-	 * @param picture
-	 * @param filename
-	 * @param width
-	 * @param height
-	 * @param keepScale
-	 * @param format
-	 * @param originalImage
-	 * @return
-	 * @throws IOException
-	 */
-	@Deprecated
-	private BinaryImage generateThumbnail(final BufferedImage originalImage, final String filename, final int width,
-			final int height, final boolean keepScale, final String format) throws IOException {
-
-		final BufferedImage resizedImage = this.resizeImage(originalImage, width, height, keepScale, true);
-
-		final ByteArrayOutputStream output = new ByteArrayOutputStream();
-		ImageIO.write(resizedImage, format, output);
-
-		final byte[] thumbnailData = output.toByteArray();
-
-		// Build Thumbnail
-		final BinaryImage thumbnail = new BinaryImage();
-		thumbnail.setData(thumbnailData);
-		thumbnail.setFilename(filename);
-		thumbnail.setFormat(format);
-		thumbnail.setWidth(resizedImage.getWidth());
-		thumbnail.setHeight(resizedImage.getHeight());
-
-		return thumbnail;
-	}
-
-	@Deprecated
-	private BufferedImage resizeImage(final BufferedImage image, final int width, final int height,
-			final boolean keepScale, final boolean withHint) {
-		final int oldWidth = image.getWidth();
-		final int oldHeight = image.getHeight();
-
-		int newWidth = -1;
-		int newHeight = -1;
-
-		if (keepScale) {
-			// Ratio of image to resize
-			final double ratio = (double) (oldWidth) / oldHeight;
-			// Ratio of frame the thumbnail will be embbed
-			final double frameRatio = (double) (width) / height;
-
-			if (ratio < frameRatio) {
-				newHeight = height;
-				newWidth = (int) (newHeight * ratio);
-			} else {
-				newWidth = width;
-				newHeight = (int) (newWidth / ratio);
-			}
-		} else {
-			newWidth = width;
-			newHeight = height;
-		}
-
-		final int type = image.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : image.getType();
-
-		return withHint ? this.resizeImageWithHint(image, newWidth, newHeight, type) : this.resizeImageWithoutHint(
-				image, newWidth, newHeight, type);
-	}
-
-	@Deprecated
-	private BufferedImage resizeImageWithoutHint(final java.awt.Image originalImage, final int width, final int height,
-			final int type) {
-		final BufferedImage resizedImage = new BufferedImage(width, height, type);
-
-		final Graphics2D graphics2D = resizedImage.createGraphics();
-		graphics2D.drawImage(originalImage, 0, 0, width, height, null);
-		graphics2D.dispose();
-
-		return resizedImage;
-	}
-
-	private BufferedImage resizeImageWithHint(final java.awt.Image originalImage, final int width, final int height,
-			final int type) {
-		final BufferedImage resizedImage = new BufferedImage(width, height, type);
-
-		final Graphics2D graphics2D = resizedImage.createGraphics();
-		graphics2D.setComposite(AlphaComposite.Src);
-		// below three lines are for RenderingHints for better image quality at cost of higher processing time
-		graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-		graphics2D.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-		graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		graphics2D.drawImage(originalImage, 0, 0, width, height, null);
-		graphics2D.dispose();
-
-		return resizedImage;
 	}
 
 }
