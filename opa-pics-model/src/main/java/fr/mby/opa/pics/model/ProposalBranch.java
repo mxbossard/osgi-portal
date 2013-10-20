@@ -35,6 +35,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -53,6 +54,8 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
  * 
  */
 @NamedQueries({
+		@NamedQuery(name = ProposalBranch.FIND_BRANCH_BY_NAME, query = "SELECT br"
+				+ " FROM ProposalBranch br WHERE br.album.id = :albumId AND br.name = :name"),
 		@NamedQuery(name = ProposalBranch.FIND_BRANCHES_OF_ALBUM, query = "SELECT br"
 				+ " FROM ProposalBranch br WHERE br.album.id = :albumId ORDER BY br.creationTime DESC"),
 		@NamedQuery(name = ProposalBranch.LOAD_BRANCH_UNTIL, query = "SELECT br"
@@ -62,9 +65,11 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 				+ " FROM ProposalBranch br JOIN FETCH br.proposalBags WHERE br.id = :branchId"
 				+ " ORDER BY br.creationTime DESC")})
 @Entity
-@Table(name = "PROPOSAL_BRANCH")
+@Table(name = "PROPOSAL_BRANCH", uniqueConstraints = {@UniqueConstraint(columnNames = {"ALBUM_ID", "NAME"})})
 @JsonInclude(Include.NON_NULL)
 public class ProposalBranch {
+
+	public static final String FIND_BRANCH_BY_NAME = "FIND_BRANCH_BY_NAME";
 
 	public static final String FIND_BRANCHES_OF_ALBUM = "FIND_BRANCHES_OF_ALBUM";
 

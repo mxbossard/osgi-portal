@@ -16,8 +16,11 @@
 
 package fr.mby.opa.picsimpl.dao;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
@@ -30,9 +33,12 @@ import org.springframework.util.Assert;
 import com.google.common.collect.Iterables;
 
 import fr.mby.opa.pics.dao.IAlbumDao;
+import fr.mby.opa.pics.dao.IProposalDao;
 import fr.mby.opa.pics.exception.AlbumNotFoundException;
 import fr.mby.opa.pics.exception.PictureNotFoundException;
 import fr.mby.opa.pics.model.Album;
+import fr.mby.opa.pics.model.ProposalBag;
+import fr.mby.opa.pics.model.ProposalBranch;
 import fr.mby.utils.common.jpa.EmCallback;
 import fr.mby.utils.common.jpa.TxCallback;
 import fr.mby.utils.common.jpa.TxCallbackReturn;
@@ -48,12 +54,37 @@ public class DbAlbumDao extends AbstractPicsDao implements IAlbumDao {
 	public Album createAlbum(final Album album) {
 		Assert.notNull(album, "No Album supplied !");
 		Assert.isNull(album.getId(), "Id should not be set for creation !");
+		Assert.hasText(album.getName(), "No Album name supplied !");
 
 		new TxCallback(this.getEmf()) {
 
 			@Override
 			protected void executeInTransaction(final EntityManager em) {
+				final Timestamp creationTime = new Timestamp(System.currentTimeMillis());
+
+				// Persist album
+				album.setCreationTime(creationTime);
+				album.setLocked(false);
 				em.persist(album);
+
+				// Create initial bag
+				final ProposalBag initialBag = new ProposalBag();
+				initialBag.setCommited(false);
+				initialBag.setCreationTime(creationTime);
+				initialBag.setName(IProposalDao.INITIAL_PROPOSAL_NAME);
+				initialBag.setRevision("0");
+				em.persist(initialBag);
+
+				// Create master branch
+				final ProposalBranch masterBranch = new ProposalBranch();
+				masterBranch.setAlbum(album);
+				masterBranch.setCreationTime(creationTime);
+				masterBranch.setName(IProposalDao.MASTER_BRANCH_NAME);
+				masterBranch.setHead(initialBag);
+				final List<ProposalBag> bagList = new ArrayList<>();
+				bagList.add(initialBag);
+				masterBranch.setProposalBags(bagList);
+				em.persist(masterBranch);
 			}
 		};
 

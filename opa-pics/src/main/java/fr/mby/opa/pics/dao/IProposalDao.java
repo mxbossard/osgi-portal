@@ -20,15 +20,19 @@ import java.util.List;
 
 import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
+import fr.mby.opa.pics.exception.ProposalBranchNotFoundException;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.ProposalBranch;
-import fr.mby.opa.picsimpl.exception.ProposalBranchNotFoundException;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
 public interface IProposalDao {
+
+	public static final String MASTER_BRANCH_NAME = "master";
+
+	public static final String INITIAL_PROPOSAL_NAME = "initial proposal";
 
 	ProposalBranch createBranch(ProposalBranch branch);
 
@@ -37,6 +41,8 @@ public interface IProposalDao {
 	ProposalBranch updateBranch(ProposalBranch branch) throws ProposalBranchNotFoundException;
 
 	ProposalBranch findBranch(long branchId);
+
+	ProposalBranch findBranchByName(long albumId, String name);
 
 	ProposalBag createBag(ProposalBag bag, long branchId) throws ProposalBranchNotFoundException;
 

@@ -62,7 +62,11 @@ public class SessionController {
 
 		final ProposalBranch branch = this.proposalService.findBranch(branchId);
 
-		final ProposalBag currentBag = branch.getHead();
+		ProposalBag currentBag = branch.getHead();
+		if (currentBag == null || currentBag.isCommited()) {
+			// create new bag
+			currentBag = this.proposalService.createBag("new bag", null, branchId);
+		}
 
 		final CasingProposal proposal = this.proposalService.createCasingProposal(pictureId, session);
 

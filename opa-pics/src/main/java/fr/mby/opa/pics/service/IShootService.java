@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package fr.mby.opa.picsimpl.exception;
+package fr.mby.opa.pics.service;
 
-import fr.mby.opa.pics.exception.PersistenceException;
+import fr.mby.opa.pics.model.Shoot;
 
 /**
  * @author Maxime Bossard - 2013
  * 
  */
-public class ProposalBranchNotFoundException extends PersistenceException {
+public interface IShootService {
 
-	/** Svuid. */
-	private static final long serialVersionUID = 8882703096195856131L;
+	Shoot createShoot(long pictureId, long branchId, String name, String description);
+
+	Shoot updateShoot(long shootId, long branchId, String name, String description);
+
+	Shoot addPictureToShoot(long pictureId, long shootId, long branchId);
+
+	Shoot addPicturesToShoot(long[] picturesId, long shootId, long branchId);
 
 }

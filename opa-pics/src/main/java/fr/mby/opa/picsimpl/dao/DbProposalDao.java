@@ -31,10 +31,10 @@ import com.google.common.collect.Iterables;
 import fr.mby.opa.pics.dao.IProposalDao;
 import fr.mby.opa.pics.exception.ProposalBagLockedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
+import fr.mby.opa.pics.exception.ProposalBranchNotFoundException;
 import fr.mby.opa.pics.model.AbstractUnitProposal;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.ProposalBranch;
-import fr.mby.opa.picsimpl.exception.ProposalBranchNotFoundException;
 import fr.mby.utils.common.jpa.EmCallback;
 import fr.mby.utils.common.jpa.TxCallback;
 import fr.mby.utils.common.jpa.TxCallbackReturn;
@@ -119,6 +119,25 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 			protected ProposalBranch executeWithEntityManager(final EntityManager em) throws PersistenceException {
 
 				return em.find(ProposalBranch.class, branchId);
+			}
+		};
+
+		return emCallback.getReturnedValue();
+	}
+
+	@Override
+	public ProposalBranch findBranchByName(final long albumId, final String name) {
+		final EmCallback<ProposalBranch> emCallback = new EmCallback<ProposalBranch>(this.getEmf()) {
+
+			@Override
+			@SuppressWarnings("unchecked")
+			protected ProposalBranch executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				final Query findBranchByNameQuery = em.createNamedQuery(ProposalBag.FIND_LAST_ALBUM_BAG);
+				findBranchByNameQuery.setParameter("albumId", albumId);
+				findBranchByNameQuery.setParameter("name", name);
+
+				final ProposalBranch bag = Iterables.getFirst(findBranchByNameQuery.getResultList(), null);
+				return bag;
 			}
 		};
 

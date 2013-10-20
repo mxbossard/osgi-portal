@@ -89,6 +89,10 @@ public class ProposalBag {
 	private String description;
 
 	@Basic(optional = false)
+	@Column(name = "REVISION")
+	private String revision;
+
+	@Basic(optional = false)
 	// TODO rename COMMITED
 	@Column(name = "LOCKED")
 	private Boolean commited;
@@ -166,6 +170,25 @@ public class ProposalBag {
 	 */
 	public void setDescription(final String description) {
 		this.description = description;
+	}
+
+	/**
+	 * Getter of revision.
+	 * 
+	 * @return the revision
+	 */
+	public String getRevision() {
+		return this.revision;
+	}
+
+	/**
+	 * Setter of revision.
+	 * 
+	 * @param revision
+	 *            the revision to set
+	 */
+	public void setRevision(final String revision) {
+		this.revision = revision;
 	}
 
 	/**
