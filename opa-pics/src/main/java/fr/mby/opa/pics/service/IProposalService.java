@@ -19,7 +19,7 @@ package fr.mby.opa.pics.service;
 import java.util.List;
 
 import fr.mby.opa.pics.exception.PictureNotFoundException;
-import fr.mby.opa.pics.exception.ProposalBagLockedException;
+import fr.mby.opa.pics.exception.ProposalBagCommitedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.CasingProposal;
@@ -41,9 +41,9 @@ public interface IProposalService {
 
 	ProposalBag createBag(String name, String description, long branchId);
 
-	ProposalBag updateBag(ProposalBag proposalBag) throws ProposalBagNotFoundException, ProposalBagLockedException;
+	ProposalBag updateBag(ProposalBag proposalBag) throws ProposalBagNotFoundException, ProposalBagCommitedException;
 
-	ProposalBag commitBag(ProposalBag proposalBag) throws ProposalBagNotFoundException, ProposalBagLockedException;
+	ProposalBag commitBag(ProposalBag proposalBag) throws ProposalBagNotFoundException, ProposalBagCommitedException;
 
 	ProposalBag findLastBag(long albumId);
 

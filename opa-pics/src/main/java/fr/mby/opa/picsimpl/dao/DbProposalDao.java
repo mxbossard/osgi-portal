@@ -29,7 +29,7 @@ import org.springframework.util.Assert;
 import com.google.common.collect.Iterables;
 
 import fr.mby.opa.pics.dao.IProposalDao;
-import fr.mby.opa.pics.exception.ProposalBagLockedException;
+import fr.mby.opa.pics.exception.ProposalBagCommitedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.exception.ProposalBranchNotFoundException;
 import fr.mby.opa.pics.model.AbstractUnitProposal;
@@ -184,22 +184,22 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
-	public ProposalBag updateBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException {
+	public ProposalBag updateBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagCommitedException {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		Assert.notNull(bag.getId(), "Id should be set for update !");
 
 		if (bag.isCommited()) {
-			throw new ProposalBagLockedException();
+			throw new ProposalBagCommitedException();
 		}
 
 		return this._updateProposalBagInternal(bag);
 	}
 
 	@Override
-	public ProposalBag commitBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException {
+	public ProposalBag commitBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagCommitedException {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		if (bag.isCommited()) {
-			throw new ProposalBagLockedException();
+			throw new ProposalBagCommitedException();
 		}
 
 		this._checkProposalBagIntegrity(bag);
@@ -223,6 +223,20 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 		};
 
 		return proposal;
+	}
+
+	@Override
+	public ProposalBag findBag(final long bagId) {
+		final EmCallback<ProposalBag> emCallback = new EmCallback<ProposalBag>(this.getEmf()) {
+
+			@Override
+			protected ProposalBag executeWithEntityManager(final EntityManager em) throws PersistenceException {
+				final ProposalBag bag = em.find(ProposalBag.class, bagId);
+				return bag;
+			}
+		};
+
+		return emCallback.getReturnedValue();
 	}
 
 	@Override

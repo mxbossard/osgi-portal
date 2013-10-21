@@ -21,7 +21,7 @@ package fr.mby.opa.pics.exception;
  * @author Maxime Bossard - 2013
  * 
  */
-public class ProposalBagLockedException extends ModelException {
+public class ProposalBagCommitedException extends ModelException {
 
 	/** Svuid. */
 	private static final long serialVersionUID = -680630552604809253L;

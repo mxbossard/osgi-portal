@@ -18,7 +18,7 @@ package fr.mby.opa.pics.dao;
 
 import java.util.List;
 
-import fr.mby.opa.pics.exception.ProposalBagLockedException;
+import fr.mby.opa.pics.exception.ProposalBagCommitedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.exception.ProposalBranchNotFoundException;
 import fr.mby.opa.pics.model.ProposalBag;
@@ -46,9 +46,11 @@ public interface IProposalDao {
 
 	ProposalBag createBag(ProposalBag bag, long branchId) throws ProposalBranchNotFoundException;
 
-	ProposalBag updateBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException;
+	ProposalBag updateBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagCommitedException;
 
-	ProposalBag commitBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagLockedException;
+	ProposalBag commitBag(ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagCommitedException;
+
+	ProposalBag findBag(long bagId);
 
 	ProposalBag findLastBag(long albumId);
 

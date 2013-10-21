@@ -16,6 +16,7 @@
 
 package fr.mby.opa.pics.web.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +32,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-import fr.mby.opa.pics.model.CasingProposal;
 import fr.mby.opa.pics.model.ProposalBag;
 import fr.mby.opa.pics.model.ProposalBranch;
 import fr.mby.opa.pics.model.Session;
-import fr.mby.opa.pics.service.IProposalService;
+import fr.mby.opa.pics.service.IProposalManager;
+import fr.mby.opa.pics.service.ISessionService;
 
 /**
  * @author Maxime Bossard - 2013
@@ -49,28 +50,28 @@ public class SessionController {
 	public static final String SESSION_CONTROLLER_PATH = "session";
 
 	@Autowired
-	private IProposalService proposalService;
+	private IProposalManager proposalManager;
+
+	@Autowired
+	private ISessionService sessionService;
 
 	@ResponseBody
 	@ResponseStatus(value = HttpStatus.CREATED)
 	@RequestMapping(method = RequestMethod.POST)
 	public Session createSessionJson(@Valid @RequestBody final Session session, @RequestParam final Long pictureId,
-			@RequestParam final Long branchId) throws Exception {
+			@RequestParam final Long albumId, final HttpServletRequest request) throws Exception {
 		Assert.notNull(session, "No Session supplied !");
 		Assert.notNull(pictureId, "No Picture Id supplied !");
-		Assert.notNull(branchId, "No ProposalBranch Id supplied !");
+		Assert.notNull(albumId, "No Album Id supplied !");
 
-		final ProposalBranch branch = this.proposalService.findBranch(branchId);
+		final ProposalBranch branch = this.proposalManager.getSelectedBranch(albumId, request);
 
-		ProposalBag currentBag = branch.getHead();
-		if (currentBag == null || currentBag.isCommited()) {
-			// create new bag
-			currentBag = this.proposalService.createBag("new bag", null, branchId);
-		}
+		final ProposalBag currentBag = branch.getHead();
 
-		final CasingProposal proposal = this.proposalService.createCasingProposal(pictureId, session);
+		final Session createdSession = this.sessionService.createSession(pictureId, currentBag.getId(),
+				session.getName(), session.getDescription());
 
-		return proposal.getSession();
+		return createdSession;
 	}
 
 	@ExceptionHandler

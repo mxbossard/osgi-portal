@@ -58,6 +58,8 @@ public class BasicProposalManager implements IProposalManager {
 			if (masterBranch != null) {
 				this.selectBranch(albumId, masterBranch, request);
 				branch = masterBranch;
+			} else {
+				throw new IllegalStateException("Master branch should exists !");
 			}
 		}
 

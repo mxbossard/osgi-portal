@@ -26,7 +26,7 @@ import org.springframework.util.Assert;
 import fr.mby.opa.pics.dao.IPictureDao;
 import fr.mby.opa.pics.dao.IProposalDao;
 import fr.mby.opa.pics.exception.PictureNotFoundException;
-import fr.mby.opa.pics.exception.ProposalBagLockedException;
+import fr.mby.opa.pics.exception.ProposalBagCommitedException;
 import fr.mby.opa.pics.exception.ProposalBagNotFoundException;
 import fr.mby.opa.pics.model.Album;
 import fr.mby.opa.pics.model.CasingProposal;
@@ -96,7 +96,7 @@ public class BasicProposalService implements IProposalService {
 
 	@Override
 	public ProposalBag updateBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException {
+			ProposalBagCommitedException {
 		Assert.notNull(proposalBag, "No ProposalBag supplied !");
 
 		final ProposalBag updatedBag = this.proposalDao.updateBag(proposalBag);
@@ -105,7 +105,7 @@ public class BasicProposalService implements IProposalService {
 
 	@Override
 	public ProposalBag commitBag(final ProposalBag proposalBag) throws ProposalBagNotFoundException,
-			ProposalBagLockedException {
+			ProposalBagCommitedException {
 		Assert.notNull(proposalBag, "No ProposalBag supplied !");
 
 		// TODO pull full revision to this bag and descend diff

@@ -24,9 +24,9 @@ import fr.mby.opa.pics.model.Session;
  */
 public interface ISessionService {
 
-	Session createSession(long pictureId, long branchId, String name, String description);
+	Session createSession(long pictureId, long bagId, String name, String description);
 
-	Session updateSession(long sessionId, long branchId, String name, String description);
+	Session updateSession(long sessionId, String name, String description);
 
 	Session addPictureToSession(long pictureId, long sessionId, long branchId);
 
