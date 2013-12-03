@@ -28,6 +28,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -50,16 +51,16 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
  * @author Maxime Bossard - 2013
  * 
  */
+
 @NamedQueries({
 		@NamedQuery(name = ProposalBag.FIND_LAST_ALBUM_BAG, query = "SELECT bag"
-				+ " FROM ProposalBag bag WHERE bag.branch.album.id = :albumId AND bag.creationTime = ("
-				+ " 	SELECT MAX(bag.creationTime) FROM ProposalBag bag WHERE bag.branch.album.id = :albumId )"),
+				+ " FROM ProposalBag bag JOIN FETCH bag.branches as br"
+				+ " WHERE br.album.id = :albumId ORDER BY bag.creationTime DESC"),
 		@NamedQuery(name = ProposalBag.FIND_BRANCH_BAGS_UNTIL, query = "SELECT bag"
-				+ " FROM ProposalBag bag WHERE bag.branch.id = :branchId AND bag.creationTime < :until"
+				+ " FROM ProposalBag bag JOIN FETCH bag.branches as br WHERE br.id = :branchId AND bag.creationTime < :until"
 				+ " ORDER BY bag.creationTime DESC"),
 		@NamedQuery(name = ProposalBag.FIND_LAST_BRANCH_BAG, query = "SELECT bag"
-				+ " FROM ProposalBag bag WHERE bag.branch.id = :branchId AND bag.creationTime = ("
-				+ " 	SELECT MAX(bag.creationTime) FROM ProposalBag bag WHERE bag.branch.id = :branchId )")})
+				+ " FROM ProposalBag bag JOIN FETCH bag.branches as br WHERE br.id = :branchId ORDER BY bag.creationTime DESC")})
 @Entity
 @Table(name = "PROPOSAL_BAG")
 @JsonInclude(Include.NON_NULL)
@@ -93,14 +94,16 @@ public class ProposalBag {
 	private String revision;
 
 	@Basic(optional = false)
-	// TODO rename COMMITED
-	@Column(name = "LOCKED")
+	@Column(name = "COMMITED")
 	private Boolean commited;
 
 	@Basic(optional = false)
 	@Column(name = "CREATION_TIME", columnDefinition = "TIMESTAMP", nullable = false, updatable = false)
 	@JsonSerialize(using = TimestampJsonSerializer.class)
 	private Timestamp creationTime;
+
+	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private Collection<ProposalBranch> branches;
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "BASE_PROPOSAL_ID", updatable = false)

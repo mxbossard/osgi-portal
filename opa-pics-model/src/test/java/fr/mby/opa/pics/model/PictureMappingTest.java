@@ -123,7 +123,7 @@ public class PictureMappingTest {
 		final Picture picture = new Picture();
 
 		final Timestamp now = new Timestamp(System.currentTimeMillis());
-
+		final String hash = String.valueOf(now.getTime());
 		picture.setCreationTime(now);
 		picture.setFilename("filename");
 		picture.setFormat("jpg");
@@ -132,7 +132,8 @@ public class PictureMappingTest {
 		picture.setThumbnailFormat("jpg");
 		picture.setThumbnailHeight(50);
 		picture.setThumbnailWidth(100);
-		picture.setOriginalHash(String.valueOf(now.getTime()));
+		picture.setOriginalHash(hash);
+		picture.setCurrentHash(hash);
 		picture.setWidth(300);
 
 		final BinaryImage image = new BinaryImage();

@@ -83,7 +83,7 @@ public class DbAlbumDao extends AbstractPicsDao implements IAlbumDao {
 				masterBranch.setHead(initialBag);
 				final List<ProposalBag> bagList = new ArrayList<>();
 				bagList.add(initialBag);
-				masterBranch.setProposalBags(bagList);
+				masterBranch.setBags(bagList);
 				em.persist(masterBranch);
 			}
 		};

@@ -17,12 +17,11 @@
 package fr.mby.opa.pics.model;
 
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.Collection;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -59,11 +58,14 @@ import fr.mby.opa.pics.model.converter.TimestampJsonSerializer;
 		@NamedQuery(name = ProposalBranch.FIND_BRANCHES_OF_ALBUM, query = "SELECT br"
 				+ " FROM ProposalBranch br WHERE br.album.id = :albumId ORDER BY br.creationTime DESC"),
 		@NamedQuery(name = ProposalBranch.LOAD_BRANCH_UNTIL, query = "SELECT br"
-				+ " FROM ProposalBranch br JOIN FETCH br.proposalBags WHERE br.id = :branchId"
-				+ " AND br.proposalBags.creationTime < :until ORDER BY br.creationTime DESC"),
+				+ " FROM ProposalBranch br JOIN FETCH br.bags as bags WHERE br.id = :branchId"
+				+ " AND bags.creationTime < :until ORDER BY br.creationTime DESC"),
 		@NamedQuery(name = ProposalBranch.LOAD_FULL_BRANCH, query = "SELECT br"
-				+ " FROM ProposalBranch br JOIN FETCH br.proposalBags WHERE br.id = :branchId"
-				+ " ORDER BY br.creationTime DESC")})
+				+ " FROM ProposalBranch br JOIN FETCH br.bags WHERE br.id = :branchId"
+				+ " ORDER BY br.creationTime DESC"),
+		@NamedQuery(name = ProposalBranch.FIND_LAST_ALBUM_BRANCH, query = "SELECT br"
+				+ " FROM ProposalBranch br WHERE br.album.id = :albumId AND br.creationTime = ("
+				+ " 	SELECT MAX(br.creationTime) FROM ProposalBranch br WHERE br.album.id = :albumId )")})
 @Entity
 @Table(name = "PROPOSAL_BRANCH", uniqueConstraints = {@UniqueConstraint(columnNames = {"ALBUM_ID", "NAME"})})
 @JsonInclude(Include.NON_NULL)
@@ -76,6 +78,8 @@ public class ProposalBranch {
 	public static final String LOAD_BRANCH_UNTIL = "LOAD_BRANCH_UNTIL";
 
 	public static final String LOAD_FULL_BRANCH = "LOAD_FULL_BRANCH";
+
+	public static final String FIND_LAST_ALBUM_BRANCH = "FIND_LAST_ALBUM_BRANCH";
 
 	@Version
 	@JsonIgnore
@@ -99,9 +103,8 @@ public class ProposalBranch {
 	@JsonSerialize(using = TimestampJsonSerializer.class)
 	private Timestamp creationTime;
 
-	@ElementCollection
 	@ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<ProposalBag> proposalBags;
+	private Collection<ProposalBag> bags;
 
 	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "HEAD_BAG_ID", updatable = true)
@@ -208,22 +211,22 @@ public class ProposalBranch {
 	}
 
 	/**
-	 * Getter of proposalBags.
+	 * Getter of bags.
 	 * 
-	 * @return the proposalBags
+	 * @return the bags
 	 */
-	public List<ProposalBag> getProposalBags() {
-		return this.proposalBags;
+	public Collection<ProposalBag> getBags() {
+		return this.bags;
 	}
 
 	/**
-	 * Setter of proposalBags.
+	 * Setter of bags.
 	 * 
-	 * @param proposalBags
-	 *            the proposalBags to set
+	 * @param bags
+	 *            the bags to set
 	 */
-	public void setProposalBags(final List<ProposalBag> proposalBags) {
-		this.proposalBags = proposalBags;
+	public void setBags(final Collection<ProposalBag> bags) {
+		this.bags = bags;
 	}
 
 	/**

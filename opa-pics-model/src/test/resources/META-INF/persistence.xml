@@ -13,6 +13,7 @@
 		<class>fr.mby.opa.pics.model.RankingProposal</class>
 		<class>fr.mby.opa.pics.model.EraseProposal</class>
 		<class>fr.mby.opa.pics.model.ProposalBag</class>
+		<class>fr.mby.opa.pics.model.ProposalBranch</class>
 		<class>fr.mby.opa.pics.model.Session</class>
 		<class>fr.mby.opa.pics.model.Shoot</class>
 		<class>fr.mby.opa.pics.model.Tag</class>

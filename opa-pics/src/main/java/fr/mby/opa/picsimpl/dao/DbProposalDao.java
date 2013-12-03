@@ -83,7 +83,7 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 					throw new ProposalBranchNotFoundException();
 				}
 
-				fork.setProposalBags(branchToFork.getProposalBags());
+				fork.setBags(branchToFork.getBags());
 				em.persist(fork);
 			}
 		};
@@ -132,7 +132,7 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 			@Override
 			@SuppressWarnings("unchecked")
 			protected ProposalBranch executeWithEntityManager(final EntityManager em) throws PersistenceException {
-				final Query findBranchByNameQuery = em.createNamedQuery(ProposalBag.FIND_LAST_ALBUM_BAG);
+				final Query findBranchByNameQuery = em.createNamedQuery(ProposalBranch.FIND_BRANCH_BY_NAME);
 				findBranchByNameQuery.setParameter("albumId", albumId);
 				findBranchByNameQuery.setParameter("name", name);
 
@@ -184,7 +184,8 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
-	public ProposalBag updateBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagCommitedException {
+	public ProposalBag updateBag(final ProposalBag bag) throws ProposalBagNotFoundException,
+			ProposalBagCommitedException {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		Assert.notNull(bag.getId(), "Id should be set for update !");
 
@@ -196,7 +197,8 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 	}
 
 	@Override
-	public ProposalBag commitBag(final ProposalBag bag) throws ProposalBagNotFoundException, ProposalBagCommitedException {
+	public ProposalBag commitBag(final ProposalBag bag) throws ProposalBagNotFoundException,
+			ProposalBagCommitedException {
 		Assert.notNull(bag, "No ProposalBag supplied !");
 		if (bag.isCommited()) {
 			throw new ProposalBagCommitedException();
@@ -248,6 +250,7 @@ public class DbProposalDao extends AbstractPicsDao implements IProposalDao {
 			protected ProposalBag executeWithEntityManager(final EntityManager em) throws PersistenceException {
 				final Query findLastBagQuery = em.createNamedQuery(ProposalBag.FIND_LAST_ALBUM_BAG);
 				findLastBagQuery.setParameter("albumId", albumId);
+				findLastBagQuery.setMaxResults(1);
 
 				final ProposalBag bag = Iterables.getFirst(findLastBagQuery.getResultList(), null);
 				return bag;

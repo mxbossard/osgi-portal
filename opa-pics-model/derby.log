@@ -1,7 +1,7 @@
 ----------------------------------------------------------------
-Wed Sep 11 08:53:16 CEST 2013:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.1.1 - (1458268): instance a816c00e-0141-0bcb-a2bf-00000cc6c630 
-on database directory C:\test.db with class loader sun.misc.Launcher$AppClassLoader@4de8b671 
+Tue Dec 03 21:02:09 CET 2013:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.10.1.1 - (1458268): instance a816c00e-0142-ba0d-b240-000009864d10 
+on database directory C:\test.db with class loader sun.misc.Launcher$AppClassLoader@6921dcac 
 Loaded from file:/F:/Users/max2/.m2/repository/org/apache/derby/derby/10.10.1.1/derby-10.10.1.1.jar
 java.vendor=Oracle Corporation
 java.runtime.version=1.7.0_07-b11
